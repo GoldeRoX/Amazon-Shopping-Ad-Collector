@@ -40,7 +40,7 @@ class MainActivity(unittest.TestCase):
         except:
             pass
 
-        for i in range(13):
+        for i in range(14):
             try:
                 self.driver.swipe(470, 1100, 470, 50, 400)
                 time.sleep(1)
@@ -53,6 +53,39 @@ class MainActivity(unittest.TestCase):
         activityname = self.driver.current_activity
         filename = activityname + ts
         filename.replace(".", "_")
+
+        temp_y_pos = []
+
+        temp_element_name = []
+
+        temp_element_xpath = []
+
+        temp_location = []
+
+        temp_size = []
+
+        #element_node = self.driver.find_element(By.XPATH, "//*[@text='Next→']")
+        element_node = self.driver.find_element(By.XPATH, TestData.TREE_OF_ADDS_XPATH1)
+        element_node.screenshot(f"../Screenshots/Second Add/{filename}.png")
+
+        elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
+
+        for x in range(len(elements)):
+            element = elements[x]
+
+            location = element.get_attribute("content-desc")
+
+            temp_element_xpath.append(str(location))
+
+            name = element.get_attribute("name")
+
+            temp_element_name.append(str(name))
+
+
+
+        print(temp_element_xpath)
+        print(temp_element_name)
+
 
 
         """try:
