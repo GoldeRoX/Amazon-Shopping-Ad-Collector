@@ -3,6 +3,7 @@ import time
 import unittest
 
 from appium import webdriver
+from appium.webdriver.common.appiumby import AppiumBy
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
@@ -40,7 +41,7 @@ class MainActivity(unittest.TestCase):
         except:
             pass
 
-        for i in range(14):
+        for i in range(16):
             try:
                 self.driver.swipe(470, 1100, 470, 50, 400)
                 time.sleep(1)
@@ -49,42 +50,45 @@ class MainActivity(unittest.TestCase):
 
     def test_firstAddCollector(self):
 
+        time.sleep(5)
         ts = time.strftime("%Y_%m_%d_%H%M%S")
         activityname = self.driver.current_activity
         filename = activityname + ts
         filename.replace(".", "_")
 
-        temp_y_pos = []
-
-        temp_element_name = []
-
-        temp_element_xpath = []
-
-        temp_location = []
-
-        temp_size = []
+        temp_element_text = []
 
         #element_node = self.driver.find_element(By.XPATH, "//*[@text='Next→']")
-        element_node = self.driver.find_element(By.XPATH, TestData.TREE_OF_ADDS_XPATH1)
-        element_node.screenshot(f"../Screenshots/Second Add/{filename}.png")
+        #element_node = self.driver.find_element(By.XPATH, TestData.TREE_OF_ADDS_XPATH1)
 
-        elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
-
-        for x in range(len(elements)):
-            element = elements[x]
-
-            location = element.get_attribute("content-desc")
-
-            temp_element_xpath.append(str(location))
-
-            name = element.get_attribute("name")
-
-            temp_element_name.append(str(name))
+        #element_node = self.driver.find_element(By.XPATH, "//*[@text='Next→']")
+        try:
+            child_node = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']")
+            #element_node = self.driver.find_element(AppiumBy.XPATH, TestData.FIRST_ADD_XPATH)
+            element_node = child_node.find_element(By.XPATH, "//..")
 
 
+            #element_node.screenshot(f"../Screenshots/Second Add/{filename}.png")
 
-        print(temp_element_xpath)
-        print(temp_element_name)
+            elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
+
+            for x in range(len(elements)):
+                element = elements[x]
+
+
+
+                text = element.get_attribute("text")
+                temp_element_text.append(str(text))
+
+                element.screenshot(f"../Screenshots/Second Add/{filename}.png")
+
+            assert True
+        except:
+            assert False
+
+
+
+        print(temp_element_text)
 
 
 
