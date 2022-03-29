@@ -57,7 +57,13 @@ class MainActivity(unittest.TestCase):
         filename = activityname + ts
         filename.replace(".", "_")
         try:
-            image = self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH_1).screenshot(f"../Screenshots/First Add/{filename}.png")
+            child =  self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']")
+            child_tag = child.tag_name
+            print(child_tag)
+        except:
+            pass
+        try:
+            image = self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH).screenshot(f"../Screenshots/First Add/{filename}.png")
         except:
             pass
         assert True
@@ -72,15 +78,15 @@ class MainActivity(unittest.TestCase):
 
         temp_element_text = []
 
-
-
         try:
-            element_node = self.driver.find_element(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]/android.view.View[3]/android.view.View")
+            element_node = self.driver.find_element(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]")
 
             #element_node.screenshot(f"../Screenshots/Second Add/{filename}.png")
             #print(element_node.text)
 
             elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
+
+
 
             for x in range(len(elements)):
                 element = elements[x]
@@ -112,4 +118,3 @@ if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(MainActivity)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
-"""http://pentagonlabs.pl/logowanie4labswww/index.php"""
