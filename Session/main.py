@@ -25,14 +25,16 @@ class MainActivity(unittest.TestCase):
         self.driver.find_element(By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID).click()
 
         """search item"""
-        """self.driver.implicitly_wait(10)
-        self.driver.find_element(By.XPATH, TestData.SEARCH_ICON_AMAZON_XPATH).click()
+        try:
+            self.driver.implicitly_wait(10)
+            self.driver.find_element(By.XPATH, TestData.SEARCH_ICON_AMAZON_XPATH).click()
 
-        self.driver.implicitly_wait(10)
-        self.driver.find_element(By.XPATH, TestData.SEARCH_AMAZON_SEND_TXT_XPATH).send_keys("oculus")"""
-        self.driver.implicitly_wait(10)
-        time.sleep(2)
-        self.driver.find_element(By.XPATH, TestData.OCULUS_BUTTON_XPATH).click()
+            self.driver.implicitly_wait(10)
+            self.driver.find_element(By.XPATH, TestData.SEARCH_AMAZON_SEND_TXT_XPATH).send_keys("oculus")
+        except:
+            self.driver.implicitly_wait(10)
+            time.sleep(2)
+            self.driver.find_element(By.XPATH, TestData.OCULUS_BUTTON_XPATH).click()
 
         try:
             self.driver.implicitly_wait(10)
@@ -50,6 +52,18 @@ class MainActivity(unittest.TestCase):
 
     def test_firstAddCollector(self):
 
+        ts = time.strftime("%Y_%m_%d_%H%M%S")
+        activityname = self.driver.current_activity
+        filename = activityname + ts
+        filename.replace(".", "_")
+        try:
+            image = self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH_1).screenshot(f"../Screenshots/First Add/{filename}.png")
+        except:
+            pass
+        assert True
+
+    def test_secondAddCollector(self):
+
         time.sleep(5)
         ts = time.strftime("%Y_%m_%d_%H%M%S")
         activityname = self.driver.current_activity
@@ -58,33 +72,28 @@ class MainActivity(unittest.TestCase):
 
         temp_element_text = []
 
-        #element_node = self.driver.find_element(By.XPATH, "//*[@text='Next→']")
-        #element_node = self.driver.find_element(By.XPATH, TestData.TREE_OF_ADDS_XPATH1)
 
-        #element_node = self.driver.find_element(By.XPATH, "//*[@text='Next→']")
+
         try:
-            child_node = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']")
-            #element_node = self.driver.find_element(AppiumBy.XPATH, TestData.FIRST_ADD_XPATH)
-            element_node = child_node.find_element(By.XPATH, "//..")
-
+            element_node = self.driver.find_element(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]/android.view.View[3]/android.view.View")
 
             #element_node.screenshot(f"../Screenshots/Second Add/{filename}.png")
+            #print(element_node.text)
 
             elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
 
             for x in range(len(elements)):
                 element = elements[x]
 
-
-
                 text = element.get_attribute("text")
-                temp_element_text.append(str(text))
+                if str(text) != "":
+                    temp_element_text.append(str(text))
+                    element.screenshot(f"../Screenshots/Second Add/{filename}.png")
 
-                element.screenshot(f"../Screenshots/Second Add/{filename}.png")
 
             assert True
         except:
-            assert False
+            print("no")
 
 
 
@@ -92,35 +101,8 @@ class MainActivity(unittest.TestCase):
 
 
 
-        """try:
-            element = self.driver.find_element(By.XPATH, '//android.view.View[contains(@text, "Next→")]').
-            x = re.findall('[0-9]+', element.)
-            if self.driver.find_element(By.XPATH, TestData.NEXT_BUTTON_SHOP_XPATH + f'[{i}]/android.view.View[3]/android.view.View').text == 'Leave feedback on Sponsored ad':
-                pass
-                #y = re.findall('[0-9]', TestData.NEXT_BUTTON_SHOP_XPATH)
-                #print(y)
-                #numbers = y[2]+y[3]
-                #print(numbers)
-                #self.driver.find_element(By.XPATH, ).text == 'Next→'
-            self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH_1+f'[{number-1}]/android.view.View[1]').screenshot(f"../Screenshots/First Add/{filename}.png")
-            assert True
-        except NoSuchElementException:
-            pass
-        assert False"""
-        #---------------------
-        """ts = time.strftime("%Y_%m_%d_%H%M%S")
-        activityname = self.driver.current_activity
-        filename = activityname + ts
-        filename.replace(".", "_")
-        try:
-            time.sleep(1)
-            image = self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH_2).screenshot(f"../Screenshots/First Add/{filename}.png")
-            #image = self.driver.find_element(By.ID, 'c620bb10-288e-42b2-9a4b-c1afba471868').screenshot(f"../Screenshots/First Add/{filename}.png")
-            assert True
-        except NoSuchElementException:
-            pass
-        assert False
-        """
+
+
 
     def tearDown(self) -> None:
         self.driver.close_app()
