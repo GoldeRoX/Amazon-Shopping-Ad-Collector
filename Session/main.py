@@ -1,3 +1,4 @@
+import os
 import re
 import time
 import unittest
@@ -52,16 +53,14 @@ class MainActivity(unittest.TestCase):
             except:
                 pass
 
-
-
-    def test_allAddsCollector(self):
+    def test_firstAddCollector(self):
         ts = time.strftime("%Y_%m_%d_%H%M%S")
         activityname = self.driver.current_activity
         filename = activityname + ts
         filename.replace(".", "_")
 
         try:
-            add = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']")
+            #add = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']")
 
             self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
             image_path = f"../Screenshots/First Add/{filename}.png"
@@ -74,69 +73,13 @@ class MainActivity(unittest.TestCase):
             # bounds : [0,820][1080,1166]
             cropped_image = img[820:1166, 0:1080]
             cv2.imwrite(f"../Screenshots/First Add/{filename}.png", cropped_image)
+
         except:
             pass
-
-
-
-
-        self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
-
-        image_path = f"../Screenshots/First Add/{filename}.png"
-
-
-
-        #
-
-        ts = time.strftime("%Y_%m_%d_%H%M%S")
-        activityname = self.driver.current_activity
-        filename = activityname + ts
-        filename.replace(".", "_")
-
-        temp_element_text = []
-
-        try:
-            element_node = self.driver.find_element(AppiumBy.XPATH,
-                                                    "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]")
-
-            # element_node.screenshot(f"../Screenshots/Second Add/{filename}.png")
-            # print(element_node.text)
-
-            elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
-
-            for x in range(len(elements)):
-                element = elements[x]
-
-                text = element.get_attribute("text")
-                if str(text) != "":
-                    temp_element_text.append(str(text))
-                    element.screenshot(f"../Screenshots/Second Add/{filename}.png")
-
+        if os.path.exists(f"../Screenshots/First Add/{filename}.png"):
             assert True
-        except:
-            print("no")
-
-        print(temp_element_text)
-
-    def test_firstAddCollector(self):
-
-        ts = time.strftime("%Y_%m_%d_%H%M%S")
-        activityname = self.driver.current_activity
-        filename = activityname + ts
-        filename.replace(".", "_")
-        try:
-            child = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']")
-            child_tag = child.location
-            print("add:" + child_tag)
-        except:
-            pass
-        try:
-            print("addreal:" + self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH).location)
-            image = self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH).screenshot(
-                f"../Screenshots/First Add/{filename}.png")
-        except:
-            pass
-        assert True
+        else:
+            assert False
 
     def test_secondAddCollector(self):
 
