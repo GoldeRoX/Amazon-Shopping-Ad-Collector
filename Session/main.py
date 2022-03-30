@@ -91,8 +91,7 @@ class MainActivity(unittest.TestCase):
         temp_element_text = []
 
         try:
-            element_node = self.driver.find_element(AppiumBy.XPATH,
-                                                    "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]")
+            element_node = self.driver.find_element(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]")
 
             # element_node.screenshot(f"../Screenshots/Second Add/{filename}.png")
             # print(element_node.text)
@@ -109,7 +108,7 @@ class MainActivity(unittest.TestCase):
 
             assert True
         except:
-            print("no")
+            print("error")
 
         print(temp_element_text)
 
