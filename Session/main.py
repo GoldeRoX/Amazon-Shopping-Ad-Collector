@@ -100,9 +100,9 @@ class MainActivity(unittest.TestCase):
                 element = elements[x]
 
                 text = element.get_attribute("text")
-                print(element.location_in_view)
-                #bounds = element.get_attribute("bounds").values()
-                #print(bounds.mapping)
+                #print(element.location_in_view)
+                #bounds = element.get_attribute("bounds")#.values()
+                #print(bounds)
                 #size = element.size
                 #w = size['width']
 
@@ -110,16 +110,19 @@ class MainActivity(unittest.TestCase):
                 temp_element_text.append(str(text))
                 #element.screenshot(f"../ScreenshotsBrands related to your search/{filename}.png")
 
-                self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
-                image_path = f"../Screenshots/Brands related to your search/{filename}.png"
+                self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{x}{filename}.png")
+                image_path = f"../Screenshots/Brands related to your search/{x}{filename}.png"
 
                 time.sleep(2)
                 img = cv2.imread(image_path)
 
+                #print(element.location_in_view)
+                #print(element.size)
+
                 # Attribute
                 # bounds : [44,1471][704,1977]
-                cropped_image = img[1471:1977, 44:704]
-                cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
+                cropped_image = img[element.location_in_view["y"]:element.location_in_view["y"]+element.size["height"], element.location_in_view["x"]:element.location_in_view["x"]+element.size["width"]]
+                cv2.imwrite(f"../Screenshots/Brands related to your search/{x}{filename}.png", cropped_image)
 
 
 
