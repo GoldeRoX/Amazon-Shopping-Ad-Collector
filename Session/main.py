@@ -48,6 +48,7 @@ class MainActivity(unittest.TestCase):
 
         for i in range(16):
             try:
+                time.sleep(1)
                 self.driver.swipe(470, 1100, 470, 50, 400)
                 time.sleep(1)
             except:
@@ -97,14 +98,18 @@ class MainActivity(unittest.TestCase):
                 element = elements[x]
 
                 text = element.get_attribute("text")
-                bounds = element.get_attribute("bounds")
-                print(bounds.values())
+                print(element.location)
+                #bounds = element.get_attribute("bounds").values()
+                #print(bounds.mapping)
+                #size = element.size
+                #w = size['width']
 
+                #print(w)
                 temp_element_text.append(str(text))
-                element.screenshot(f"../ScreenshotsBrands related to your search/{filename}.png")
+                #element.screenshot(f"../ScreenshotsBrands related to your search/{filename}.png")
 
-                self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
-                image_path = f"../Screenshots/Brands related to your search/{filename}.png"
+                self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{x}{filename}.png")
+                image_path = f"../Screenshots/Brands related to your search/{x}{filename}.png"
 
                 time.sleep(2)
                 img = cv2.imread(image_path)
@@ -112,14 +117,14 @@ class MainActivity(unittest.TestCase):
                 # Attribute
                 # bounds : [44,1471][704,1977]
                 cropped_image = img[1471:1977, 44:704]
-                cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
+                cv2.imwrite(f"../Screenshots/Brands related to your search/{x}{filename}.png", cropped_image)
 
 
             assert True
         except:
             print("error")
 
-        print(temp_element_b)
+        #print(temp_element_b)
         print(temp_element_text)
 
     def tearDown(self) -> None:
