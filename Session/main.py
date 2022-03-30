@@ -86,19 +86,19 @@ class MainActivity(unittest.TestCase):
         filename.replace(".", "_")
 
         temp_element_text = []
+        temp_element_b = []
 
         try:
-            element_node = self.driver.find_element(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]")
-
-            # element_node.screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
-            # print(element_node.text)
+            element_node = self.driver.find_element(By.XPATH, "//*[@text='Brands related to your search']/parent::*")
 
             elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
 
-            for x in range(len(elements)):
+            for x in range(6, len(elements), 2):
                 element = elements[x]
 
                 text = element.get_attribute("text")
+                bounds = element.get_attribute("bounds")
+                print(bounds.values())
 
                 temp_element_text.append(str(text))
                 element.screenshot(f"../ScreenshotsBrands related to your search/{filename}.png")
@@ -119,6 +119,7 @@ class MainActivity(unittest.TestCase):
         except:
             print("error")
 
+        print(temp_element_b)
         print(temp_element_text)
 
     def tearDown(self) -> None:
