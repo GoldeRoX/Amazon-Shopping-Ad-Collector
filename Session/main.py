@@ -60,14 +60,11 @@ class MainActivity(unittest.TestCase):
         filename.replace(".", "_")
 
         try:
-            #add = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']")
-
             self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
             image_path = f"../Screenshots/First Add/{filename}.png"
 
             time.sleep(2)
             img = cv2.imread(image_path)
-
 
             # Attribute
             # bounds : [0,820][1080,1166]
@@ -93,7 +90,7 @@ class MainActivity(unittest.TestCase):
         try:
             element_node = self.driver.find_element(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]")
 
-            # element_node.screenshot(f"../Screenshots/Second Add/{filename}.png")
+            # element_node.screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
             # print(element_node.text)
 
             elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
@@ -102,9 +99,21 @@ class MainActivity(unittest.TestCase):
                 element = elements[x]
 
                 text = element.get_attribute("text")
-                if str(text) != "":
-                    temp_element_text.append(str(text))
-                    element.screenshot(f"../Screenshots/Second Add/{filename}.png")
+
+                temp_element_text.append(str(text))
+                element.screenshot(f"../ScreenshotsBrands related to your search/{filename}.png")
+
+                self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
+                image_path = f"../Screenshots/Brands related to your search/{filename}.png"
+
+                time.sleep(2)
+                img = cv2.imread(image_path)
+
+                # Attribute
+                # bounds : [44,1471][704,1977]
+                cropped_image = img[1471:1977, 44:704]
+                cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
+
 
             assert True
         except:
