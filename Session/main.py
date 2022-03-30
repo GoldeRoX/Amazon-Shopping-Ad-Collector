@@ -1,16 +1,11 @@
 import os
-import re
 import time
 import unittest
 
 import cv2
-import numpy as np
 from appium import webdriver
-from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 
 from TestData.config import TestData
 
@@ -83,13 +78,7 @@ class MainActivity(unittest.TestCase):
 
     def test_secondAddCollector(self):
 
-        ts = time.strftime("%Y_%m_%d_%H%M%S")
-        activityname = self.driver.current_activity
-        filename = activityname + ts
-        filename.replace(".", "_")
-
         temp_element_text = []
-        temp_element_b = []
 
         try:
             element_node = self.driver.find_element(By.XPATH, "//*[@text='Brands related to your search']/parent::*")
@@ -97,47 +86,30 @@ class MainActivity(unittest.TestCase):
             elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
 
             for x in range(6, len(elements), 2):
+                ts = time.strftime("%Y_%m_%d_%H%M%S")
+                activityname = self.driver.current_activity
+                filename = activityname + ts
+                filename.replace(".", "_")
                 element = elements[x]
 
                 text = element.get_attribute("text")
-                #print(element.location_in_view)
-                #bounds = element.get_attribute("bounds")#.values()
-                #print(bounds)
-                #size = element.size
-                #w = size['width']
-
-                #print(w)
                 temp_element_text.append(str(text))
-                #element.screenshot(f"../ScreenshotsBrands related to your search/{filename}.png")
 
-                self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{x}{filename}.png")
-                image_path = f"../Screenshots/Brands related to your search/{x}{filename}.png"
+                self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
+                image_path = f"../Screenshots/Brands related to your search/{filename}.png"
 
                 time.sleep(2)
                 img = cv2.imread(image_path)
 
-                #print(element.location_in_view)
-                #print(element.size)
-
-                # Attribute
-                # bounds : [44,1471][704,1977]
                 cropped_image = img[element.location_in_view["y"]:element.location_in_view["y"]+element.size["height"], element.location_in_view["x"]:element.location_in_view["x"]+element.size["width"]]
-                cv2.imwrite(f"../Screenshots/Brands related to your search/{x}{filename}.png", cropped_image)
+                cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
 
-
-
-                #x = 400  /// y = 1700    | x = 800 /// y = 1700
-
-                #self.driver.swipe(100, 1500, 500, 1500)
-                #self.driver.execute_script('mobile: scroll', {"element": elements[x+1], "toVisible": True})
                 action = TouchAction(self.driver)
-                action.press(element).move_to(x=-353, y=0).release().perform()
+                action.press(element).move_to(x=-element.size["width"], y=0).release().perform()
 
             assert True
         except:
-            print("error")
-
-        #print(temp_element_b)
+            pass
         print(temp_element_text)
 
     def tearDown(self) -> None:
