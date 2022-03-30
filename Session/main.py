@@ -7,8 +7,10 @@ import cv2
 import numpy as np
 from appium import webdriver
 from appium.webdriver.common.appiumby import AppiumBy
+from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
 
 from TestData.config import TestData
 
@@ -46,7 +48,7 @@ class MainActivity(unittest.TestCase):
         except:
             pass
 
-        for i in range(16):
+        for i in range(13):
             try:
                 time.sleep(1)
                 self.driver.swipe(470, 1100, 470, 50, 400)
@@ -98,7 +100,7 @@ class MainActivity(unittest.TestCase):
                 element = elements[x]
 
                 text = element.get_attribute("text")
-                print(element.location)
+                print(element.location_in_view)
                 #bounds = element.get_attribute("bounds").values()
                 #print(bounds.mapping)
                 #size = element.size
@@ -108,8 +110,8 @@ class MainActivity(unittest.TestCase):
                 temp_element_text.append(str(text))
                 #element.screenshot(f"../ScreenshotsBrands related to your search/{filename}.png")
 
-                self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{x}{filename}.png")
-                image_path = f"../Screenshots/Brands related to your search/{x}{filename}.png"
+                self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
+                image_path = f"../Screenshots/Brands related to your search/{filename}.png"
 
                 time.sleep(2)
                 img = cv2.imread(image_path)
@@ -117,8 +119,16 @@ class MainActivity(unittest.TestCase):
                 # Attribute
                 # bounds : [44,1471][704,1977]
                 cropped_image = img[1471:1977, 44:704]
-                cv2.imwrite(f"../Screenshots/Brands related to your search/{x}{filename}.png", cropped_image)
+                cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
 
+
+
+                #x = 400  /// y = 1700    | x = 800 /// y = 1700
+
+                #self.driver.swipe(100, 1500, 500, 1500)
+                #self.driver.execute_script('mobile: scroll', {"element": elements[x+1], "toVisible": True})
+                action = TouchAction(self.driver)
+                action.press(element).move_to(x=-353, y=0).release().perform()
 
             assert True
         except:
