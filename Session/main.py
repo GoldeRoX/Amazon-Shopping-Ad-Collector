@@ -2,6 +2,8 @@ import re
 import time
 import unittest
 
+import cv2
+import numpy as np
 from appium import webdriver
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.common.exceptions import NoSuchElementException
@@ -49,33 +51,40 @@ class MainActivity(unittest.TestCase):
                 time.sleep(1)
             except:
                 pass
+
+
+
     def test_allAddsCollector(self):
         ts = time.strftime("%Y_%m_%d_%H%M%S")
         activityname = self.driver.current_activity
         filename = activityname + ts
         filename.replace(".", "_")
+
         try:
-            child = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/parent::*")
+            add = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']")
+
+            self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
+            image_path = f"../Screenshots/First Add/{filename}.png"
+
+            time.sleep(2)
+            img = cv2.imread(image_path)
 
 
-            elements = child.find_elements(By.XPATH, "//*[@class='android.view.View']")
-
-            elements[2].screenshot(f"../Screenshots/First Add/{filename}.png")
-
-            for x in range(len(elements)):
-                element = elements[x]
-                if element.get_attribute("scrollable") == "true":
-                    print(str(x) + " : " + str(element.get_attribute("bounds")))
-
-
+            # Attribute
+            # bounds : [0,820][1080,1166]
+            cropped_image = img[820:1166, 0:1080]
+            cv2.imwrite(f"../Screenshots/First Add/{filename}.png", cropped_image)
         except:
             pass
-        try:
-            pass
-            #print("addreal:"+self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH).location)
-            #image = self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH).screenshot(f"../Screenshots/First Add/{filename}.png")
-        except:
-            pass
+
+
+
+
+        self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
+
+        image_path = f"../Screenshots/First Add/{filename}.png"
+
+
 
         #
 
@@ -87,7 +96,8 @@ class MainActivity(unittest.TestCase):
         temp_element_text = []
 
         try:
-            element_node = self.driver.find_element(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]")
+            element_node = self.driver.find_element(AppiumBy.XPATH,
+                                                    "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]")
 
             # element_node.screenshot(f"../Screenshots/Second Add/{filename}.png")
             # print(element_node.text)
@@ -117,12 +127,13 @@ class MainActivity(unittest.TestCase):
         try:
             child = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']")
             child_tag = child.location
-            print("add:"+child_tag)
+            print("add:" + child_tag)
         except:
             pass
         try:
-            print("addreal:"+self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH).location)
-            image = self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH).screenshot(f"../Screenshots/First Add/{filename}.png")
+            print("addreal:" + self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH).location)
+            image = self.driver.find_element(By.XPATH, TestData.FIRST_ADD_XPATH).screenshot(
+                f"../Screenshots/First Add/{filename}.png")
         except:
             pass
         assert True
@@ -137,14 +148,13 @@ class MainActivity(unittest.TestCase):
         temp_element_text = []
 
         try:
-            element_node = self.driver.find_element(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]")
+            element_node = self.driver.find_element(AppiumBy.XPATH,
+                                                    "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View[1]/android.view.View/android.view.View[64]")
 
-            #element_node.screenshot(f"../Screenshots/Second Add/{filename}.png")
-            #print(element_node.text)
+            # element_node.screenshot(f"../Screenshots/Second Add/{filename}.png")
+            # print(element_node.text)
 
             elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
-
-
 
             for x in range(len(elements)):
                 element = elements[x]
@@ -154,19 +164,11 @@ class MainActivity(unittest.TestCase):
                     temp_element_text.append(str(text))
                     element.screenshot(f"../Screenshots/Second Add/{filename}.png")
 
-
             assert True
         except:
             print("no")
 
-
-
         print(temp_element_text)
-
-
-
-
-
 
     def tearDown(self) -> None:
         self.driver.close_app()
@@ -175,4 +177,3 @@ class MainActivity(unittest.TestCase):
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(MainActivity)
     unittest.TextTestRunner(verbosity=2).run(suite)
-
