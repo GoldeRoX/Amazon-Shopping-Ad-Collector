@@ -2,8 +2,8 @@ import os
 import time
 import unittest
 
-import cv2
-from appium import webdriver
+import cv2  # import opencv-python	4.5.5.64
+from appium import webdriver  # import Appium-Python-Client 2.2.0
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.webdriver.common.by import By
 
@@ -52,8 +52,8 @@ class MainActivity(unittest.TestCase):
 
     def test_firstAddCollector(self):
         ts = time.strftime("%Y_%m_%d_%H%M%S")
-        activityname = self.driver.current_activity
-        filename = activityname + ts
+        activity_name = self.driver.current_activity
+        filename = activity_name + ts
         filename.replace(".", "_")
 
         try:
@@ -87,8 +87,8 @@ class MainActivity(unittest.TestCase):
 
             for x in range(6, len(elements), 2):
                 ts = time.strftime("%Y_%m_%d_%H%M%S")
-                activityname = self.driver.current_activity
-                filename = activityname + ts
+                activity_name = self.driver.current_activity
+                filename = activity_name + ts
                 filename.replace(".", "_")
                 element = elements[x]
 
@@ -101,12 +101,13 @@ class MainActivity(unittest.TestCase):
                 time.sleep(2)
                 img = cv2.imread(image_path)
 
-                cropped_image = img[element.location_in_view["y"]:element.location_in_view["y"]+element.size["height"], element.location_in_view["x"]:element.location_in_view["x"]+element.size["width"]]
+                cropped_image = img[
+                                element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
+                                element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
                 cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
 
                 action = TouchAction(self.driver)
-                action.press(element).move_to(x=-element.size["width"]/2, y=0).release().perform()
-                #action.press(element).move_to(x=-element.location_in_view["x"], y=0).release().perform()
+                action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
                 time.sleep(2)
 
                 """open a temp file to store data"""
