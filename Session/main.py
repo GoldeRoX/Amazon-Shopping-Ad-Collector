@@ -5,12 +5,13 @@ import unittest
 import cv2  # import opencv-python	4.5.5.64
 from appium import webdriver  # import Appium-Python-Client 2.2.0
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 
 from TestData.config import TestData
-from database_connector import cursor, db_credentials
 
 
 class MainActivity(unittest.TestCase):
@@ -19,47 +20,59 @@ class MainActivity(unittest.TestCase):
 
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC)
 
-        wait = WebDriverWait(self.driver, 10)
-        wait.until(self.driver.find_element(By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID).click())
+        try:
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID)))
+        except (NoSuchElementException, TimeoutException):
+            pass
+        self.driver.find_element(By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID).click()
 
-        wait.until(self.driver.find_element(By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID).click())
+        try:
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID)))
+        except (NoSuchElementException, TimeoutException):
+            pass
+        self.driver.find_element(By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID).click()
 
         """search item"""
         try:
-            self.driver.implicitly_wait(10)
-            self.driver.find_element(By.XPATH, TestData.SEARCH_ICON_AMAZON_XPATH).click()
-
-            self.driver.implicitly_wait(10)
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")))
+        except (NoSuchElementException, TimeoutException):
+            pass
+            self.driver.find_element(By.XPATH, "//*[contains(@resource-id,'chrome_action_bar_search_icon')]").click()
+        try:
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, TestData.SEARCH_AMAZON_SEND_TXT_XPATH)))
+        except (NoSuchElementException, TimeoutException):
+            pass
             self.driver.find_element(By.XPATH, TestData.SEARCH_AMAZON_SEND_TXT_XPATH).send_keys("oculus")
-        except NoSuchElementException:
-            self.driver.implicitly_wait(10)
-            time.sleep(2)
+            self.driver.press_keycode(66)
+        try:
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, TestData.OCULUS_BUTTON_XPATH)))
+        except (NoSuchElementException, TimeoutException):
+            pass
             self.driver.find_element(By.XPATH, TestData.OCULUS_BUTTON_XPATH).click()
 
-        try:
-            self.driver.implicitly_wait(10)
-            time.sleep(2)
+            """try:
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, TestData.COOKIE_ACCEPT_XPATH)))
             self.driver.find_element(By.XPATH, TestData.COOKIE_ACCEPT_XPATH).click()
         except NoSuchElementException:
-            pass
+            pass"""
 
         for i in range(11):
-            try:
-                time.sleep(2)
-                self.driver.swipe(470, 1100, 470, 50, 400)
-            except NoSuchElementException:
-                pass
+            time.sleep(2)
+            self.driver.swipe(470, 1100, 470, 50, 400)
 
     def test_firstAddCollector(self):
-        ts = time.strftime("%Y_%m_%d_%H%M%S")
-        activity_name = self.driver.current_activity
-        filename = activity_name + ts
-        filename = filename.replace(".", "_")
+        filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
 
         try:
             element_node = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*")
 
+            #com.amazon.mShop.android.shopping: id / chrome_action_bar_search_icon
+
             elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
+
+            for x in range(len(elements)):
+                element = elements[x]
+                print(element)
 
             self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
             image_path = f"../Screenshots/First Add/{filename}.png"
@@ -90,10 +103,7 @@ class MainActivity(unittest.TestCase):
             elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
 
             for x in range(6, len(elements), 2):
-                ts = time.strftime("%Y_%m_%d_%H%M%S")
-                activity_name = self.driver.current_activity
-                filename = activity_name + ts
-                filename = filename.replace(".", "_")
+                filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
                 element = elements[x]
 
                 """informacje do bazy danych"""
