@@ -109,6 +109,10 @@ class MainActivity(unittest.TestCase):
                 #action.press(element).move_to(x=-element.location_in_view["x"], y=0).release().perform()
                 time.sleep(2)
 
+                """open a temp file to store data"""
+                with open("temp.txt", "a") as file:
+                    file.writelines(str(text) + " - " + filename + ".png\n")
+
             assert True
         except:
             print("ERROR")
