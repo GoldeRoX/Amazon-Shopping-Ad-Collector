@@ -105,8 +105,8 @@ class MainActivity(unittest.TestCase):
                 cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
 
                 action = TouchAction(self.driver)
-                #action.press(element).move_to(x=-element.size["width"], y=0).release().perform()
-                action.press(element).move_to(x=-element.location_in_view["x"], y=0).release().perform()
+                action.press(element).move_to(x=-element.size["width"]/2, y=0).release().perform()
+                #action.press(element).move_to(x=-element.location_in_view["x"], y=0).release().perform()
                 time.sleep(2)
 
             assert True
