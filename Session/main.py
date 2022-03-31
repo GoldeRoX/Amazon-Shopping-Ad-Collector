@@ -43,11 +43,10 @@ class MainActivity(unittest.TestCase):
         except:
             pass
 
-        for i in range(13):
+        for i in range(11):
             try:
-                time.sleep(1)
+                time.sleep(2)
                 self.driver.swipe(470, 1100, 470, 50, 400)
-                time.sleep(1)
             except:
                 pass
 
@@ -74,6 +73,7 @@ class MainActivity(unittest.TestCase):
         if os.path.exists(f"../Screenshots/First Add/{filename}.png"):
             assert True
         else:
+            print("ERROR")
             assert False
 
     def test_secondAddCollector(self):
@@ -105,10 +105,13 @@ class MainActivity(unittest.TestCase):
                 cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
 
                 action = TouchAction(self.driver)
-                action.press(element).move_to(x=-element.size["width"], y=0).release().perform()
+                #action.press(element).move_to(x=-element.size["width"], y=0).release().perform()
+                action.press(element).move_to(x=-element.location_in_view["x"], y=0).release().perform()
+                time.sleep(2)
 
             assert True
         except:
+            print("ERROR")
             pass
         print(temp_element_text)
 
