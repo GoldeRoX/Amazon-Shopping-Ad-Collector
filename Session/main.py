@@ -57,6 +57,10 @@ class MainActivity(unittest.TestCase):
         filename = filename.replace(".", "_")
 
         try:
+            element_node = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*")
+
+            elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
+
             self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
             image_path = f"../Screenshots/First Add/{filename}.png"
 
@@ -68,7 +72,7 @@ class MainActivity(unittest.TestCase):
             cropped_image = img[820:1166, 0:1080]
             cv2.imwrite(f"../Screenshots/First Add/{filename}.png", cropped_image)
 
-        except:
+        except NoSuchElementException:
             pass
         if os.path.exists(f"../Screenshots/First Add/{filename}.png"):
             assert True
@@ -92,6 +96,11 @@ class MainActivity(unittest.TestCase):
                 filename = filename.replace(".", "_")
                 element = elements[x]
 
+                """informacje do bazy danych"""
+                width = element.size["width"]
+                height = element.size["height"]
+                location_x = element.location["x"]
+                location_y = element.location["y"]
                 text = element.get_attribute("text")
                 temp_element_text.append(str(text))
 
@@ -109,21 +118,6 @@ class MainActivity(unittest.TestCase):
                 action = TouchAction(self.driver)
                 action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
                 time.sleep(2)
-
-                """insert into DB"""
-                with cursor(**db_credentials) as c:
-                    c.execute(f"INSERT INTO `Brands_related_to_your_search` (`Atrybut_text`, `img`) VALUES (`{str(text)}`, LOAD_FILE(`../Screenshots/Brands related to your search/{filename}.png`));")
-                # "
-                # INSERT INTO `Wydawnictwo` (`Id_Wydawnictwo`, `Nazwa_Wydawnictwa`, `Adres_Wydawnictwa`, `E-mail`) VALUES
-                # (1, 'Nowa Era', 'Malych Lotników 1', 'MalychLotników@interia.pl')
-
-                """with cursor(**db_credentials) as c:
-                c.execute("describe Brands_related_to_your_search;")
-                re = c.fetchall()
-                desc = c.description
-                print(re)
-                print([a[0] for a in desc])"""
-
 
                 """open a temp file to store data"""
                 with open("temp.txt", "a") as file:
