@@ -39,16 +39,16 @@ class MainActivity(unittest.TestCase):
             pass
             self.driver.find_element(By.XPATH, "//*[contains(@resource-id,'chrome_action_bar_search_icon')]").click()
         try:
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, TestData.SEARCH_AMAZON_SEND_TXT_XPATH)))
-        except (NoSuchElementException, TimeoutException):
-            pass
-            self.driver.find_element(By.XPATH, TestData.SEARCH_AMAZON_SEND_TXT_XPATH).send_keys("oculus")
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text")))
+            self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text").send_keys("oculus")
             self.driver.press_keycode(66)
-        try:
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, TestData.OCULUS_BUTTON_XPATH)))
         except (NoSuchElementException, TimeoutException):
-            pass
-            self.driver.find_element(By.XPATH, TestData.OCULUS_BUTTON_XPATH).click()
+            try:
+                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, TestData.OCULUS_BUTTON_XPATH)))
+                self.driver.find_element(By.XPATH, TestData.OCULUS_BUTTON_XPATH).click()
+            except (NoSuchElementException, TimeoutException):
+                pass
+
 
             """try:
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, TestData.COOKIE_ACCEPT_XPATH)))
