@@ -40,8 +40,4 @@ db_credentials = {
 }
 
 with cursor(**db_credentials) as c:
-    c.execute("describe Brands_related_to_your_search;")
-    re = c.fetchall()
-    desc = c.description
-    print(re)
-    print([a[0] for a in desc])
+    c.execute(f"INSERT INTO `Brands_related_to_your_search` (`Atrybut_text`, `img`) VALUES (`{str('text')}`, LOAD_FILE(`../Screenshots/Brands related to your search/{'com.amazon.mShop.navigation.MainActivity2022_03_31_122114.png'}.png`));")

@@ -5,9 +5,12 @@ import unittest
 import cv2  # import opencv-python	4.5.5.64
 from appium import webdriver  # import Appium-Python-Client 2.2.0
 from appium.webdriver.common.touch_action import TouchAction
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
 
 from TestData.config import TestData
+from database_connector import cursor, db_credentials
 
 
 class MainActivity(unittest.TestCase):
@@ -16,13 +19,10 @@ class MainActivity(unittest.TestCase):
 
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC)
 
-        self.driver.implicitly_wait(10)
-        time.sleep(2)
-        self.driver.find_element(By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID).click()
+        wait = WebDriverWait(self.driver, 10)
+        wait.until(self.driver.find_element(By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID).click())
 
-        self.driver.implicitly_wait(10)
-        time.sleep(2)
-        self.driver.find_element(By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID).click()
+        wait.until(self.driver.find_element(By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID).click())
 
         """search item"""
         try:
@@ -31,7 +31,7 @@ class MainActivity(unittest.TestCase):
 
             self.driver.implicitly_wait(10)
             self.driver.find_element(By.XPATH, TestData.SEARCH_AMAZON_SEND_TXT_XPATH).send_keys("oculus")
-        except:
+        except NoSuchElementException:
             self.driver.implicitly_wait(10)
             time.sleep(2)
             self.driver.find_element(By.XPATH, TestData.OCULUS_BUTTON_XPATH).click()
@@ -40,21 +40,21 @@ class MainActivity(unittest.TestCase):
             self.driver.implicitly_wait(10)
             time.sleep(2)
             self.driver.find_element(By.XPATH, TestData.COOKIE_ACCEPT_XPATH).click()
-        except:
+        except NoSuchElementException:
             pass
 
         for i in range(11):
             try:
                 time.sleep(2)
                 self.driver.swipe(470, 1100, 470, 50, 400)
-            except:
+            except NoSuchElementException:
                 pass
 
     def test_firstAddCollector(self):
         ts = time.strftime("%Y_%m_%d_%H%M%S")
         activity_name = self.driver.current_activity
         filename = activity_name + ts
-        filename.replace(".", "_")
+        filename = filename.replace(".", "_")
 
         try:
             self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
@@ -89,7 +89,7 @@ class MainActivity(unittest.TestCase):
                 ts = time.strftime("%Y_%m_%d_%H%M%S")
                 activity_name = self.driver.current_activity
                 filename = activity_name + ts
-                filename.replace(".", "_")
+                filename = filename.replace(".", "_")
                 element = elements[x]
 
                 text = element.get_attribute("text")
@@ -110,12 +110,27 @@ class MainActivity(unittest.TestCase):
                 action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
                 time.sleep(2)
 
+                """insert into DB"""
+                with cursor(**db_credentials) as c:
+                    c.execute(f"INSERT INTO `Brands_related_to_your_search` (`Atrybut_text`, `img`) VALUES (`{str(text)}`, LOAD_FILE(`../Screenshots/Brands related to your search/{filename}.png`));")
+                # "
+                # INSERT INTO `Wydawnictwo` (`Id_Wydawnictwo`, `Nazwa_Wydawnictwa`, `Adres_Wydawnictwa`, `E-mail`) VALUES
+                # (1, 'Nowa Era', 'Malych Lotników 1', 'MalychLotników@interia.pl')
+
+                """with cursor(**db_credentials) as c:
+                c.execute("describe Brands_related_to_your_search;")
+                re = c.fetchall()
+                desc = c.description
+                print(re)
+                print([a[0] for a in desc])"""
+
+
                 """open a temp file to store data"""
                 with open("temp.txt", "a") as file:
                     file.writelines(str(text) + " - " + filename + ".png\n")
 
             assert True
-        except:
+        except NoSuchElementException:
             print("ERROR")
             pass
         print(temp_element_text)
