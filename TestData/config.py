@@ -13,14 +13,12 @@ class TestData:
 
     REDIRECT_MARKETPLACE_ID = 'com.amazon.mShop.android.shopping:id/btn_redirect_marketplace'
 
-    SKIP_REDIRECT_MARKETPLACE_ID = 'com.amazon.mShop.android.shopping:id/btn_cancel'
+    SKIP_REDIRECT_MARKETPLACE_ID = "com.amazon.mShop.android.shopping:id/btn_cancel"
 
     OCULUS_BUTTON_XPATH = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/android.view.View/android.view.View[2]/android.view.View[2]/android.view.View/android.view.View[1]/android.view.View/android.view.View/android.view.View'
 
 
     SEARCH_ICON_AMAZON_XPATH = '(//android.widget.LinearLayout[@content-desc="Szukaj"])[2]/android.widget.ImageView'
-
-    SEARCH_AMAZON_SEND_TXT_XPATH = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.EditText'
 
     COOKIE_ACCEPT_XPATH = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[3]/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View[1]/android.view.View/android.view.View[3]/android.view.View/android.widget.Button"
     #--------------------#
