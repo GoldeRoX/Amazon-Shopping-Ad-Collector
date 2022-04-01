@@ -106,7 +106,7 @@ class MainActivity(unittest.TestCase):
 
                 action = TouchAction(self.driver)
                 action.press(element).move_to(x=-element.size["width"], y=0).release().perform()
-
+#yes
             assert True
         except:
             pass
