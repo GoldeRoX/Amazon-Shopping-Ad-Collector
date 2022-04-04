@@ -65,14 +65,33 @@ class MainActivity(unittest.TestCase):
 
         try:
             element_node = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*")
+            #element_node.screenshot("test.png")
 
             #com.amazon.mShop.android.shopping: id / chrome_action_bar_search_icon
 
             elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
+            element = elements[0]
+            print(elements)
+            print(len(elements))
 
-            for x in range(len(elements)):
-                element = elements[x]
-                print(element)
+            width = element.size["width"]
+            height = element.size["height"]
+            location_x = element.location["x"]
+            location_y = element.location["y"]
+            text = element.get_attribute("text")
+
+
+            self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
+            image_path = f"../Screenshots/First Add/{filename}.png"
+
+            #time.sleep(2)
+            img = cv2.imread(image_path)
+
+            for i in range(len(elements)):
+                filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
+                element = elements[i]
+                print("wysokosc - " + str(element.get_attribute("bounds")))
+
 
             self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
             image_path = f"../Screenshots/First Add/{filename}.png"
@@ -80,9 +99,14 @@ class MainActivity(unittest.TestCase):
             time.sleep(2)
             img = cv2.imread(image_path)
 
-            # Attribute
-            # bounds : [0,820][1080,1166]
-            cropped_image = img[820:1166, 0:1080]
+
+                # Attribute
+                # bounds : [0,820][1080,1166]
+                #cropped_image = img[820:1166, 0:1080]
+
+
+                #[0,396][1080,743]
+            cropped_image = img[396:743, 0:self.driver.get_window_size()["x"]]
             cv2.imwrite(f"../Screenshots/First Add/{filename}.png", cropped_image)
 
         except NoSuchElementException:
