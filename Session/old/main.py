@@ -65,12 +65,12 @@ class MainActivity(unittest.TestCase):
         filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
 
         try:
-            element_node = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*")
+            element_bot = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*")
             #element_node.screenshot("test.png")
 
             #com.amazon.mShop.android.shopping: id / chrome_action_bar_search_icon
 
-            elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
+            elements = element_bot.find_elements(By.XPATH, "//*[@class='android.view.View']")
             element = elements[0]
             print(elements)
             print(len(elements))
