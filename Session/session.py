@@ -1,3 +1,4 @@
+import datetime
 import os
 import time
 
@@ -60,13 +61,13 @@ class MainActivity():
             pass"""
 
         for i in range(11):
-            time.sleep(2)
+            time.sleep(1)
             self.driver.swipe(470, 1100, 470, 50, 400)
 
-    def test_firstAddCollector(self):
+    def firstAddCollector(self) -> None:
 
-        filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
 
+        global filename
         try:
             element_bot = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
 
@@ -77,12 +78,14 @@ class MainActivity():
                     ad.append(x)
 
             for element in ad:
+                filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
 
                 width = element.size["width"]
                 height = element.size["height"]
                 location_x = element.location["x"]
                 location_y = element.location["y"]
                 text = element.get_attribute("text")
+                #timestamp = datetime.now()
 
                 self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
                 image_path = f"../Screenshots/First Add/{filename}.png"
@@ -102,7 +105,7 @@ class MainActivity():
             print("ERROR")
 
 
-    def test_secondAddCollector(self):
+    def secondAddCollector(self) -> None:
 
         temp_element_text = []
 
@@ -145,7 +148,7 @@ class MainActivity():
         except NoSuchElementException:
             print("ERROR")
             pass
-        print(temp_element_text)
+        #print(temp_element_text)
 
     def tearDown(self) -> None:
         self.driver.close_app()
@@ -153,7 +156,9 @@ class MainActivity():
 if __name__ == "__main__":
     Amazon = MainActivity(webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC))
     Amazon.setUp()
-    Amazon.test_firstAddCollector()
-    Amazon.test_secondAddCollector()
+    Amazon.firstAddCollector()
+    Amazon.secondAddCollector()
     #time.sleep(100000)
     Amazon.tearDown()
+
+
