@@ -1,6 +1,5 @@
 import os
 import time
-import unittest
 
 import cv2  # import opencv-python	4.5.5.64
 from appium import webdriver  # import Appium-Python-Client 2.2.0
@@ -69,57 +68,31 @@ class MainActivity():
         filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
 
         try:
-            element_bot = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*")
-            elements = element_bot.find_elements(By.XPATH, "//*[@class='android.view.View']")
-            element = elements[1]
-            print(elements)
-            print(len(elements))
+            element_bot = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
 
-            width = element.size["width"]
-            height = element.size["height"]
-            location_x = element.location["x"]
-            location_y = element.location["y"]
-            text = element.get_attribute("text")
+            ad = []
 
+            for x in element_bot:
+                if x.size["height"] > 100:
+                    ad.append(x)
 
-            print(width)
-            print(height)
-            print(location_x)
-            print(location_y)
-            print(text)
-            print(element.location_in_view["y"]+element.size["height"])
-            print(element.location_in_view["x"]+element.size["width"])
+            for element in ad:
 
-            self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
-            image_path = f"../Screenshots/First Add/{filename}.png"
+                width = element.size["width"]
+                height = element.size["height"]
+                location_x = element.location["x"]
+                location_y = element.location["y"]
+                text = element.get_attribute("text")
 
-            #time.sleep(2)
-            img = cv2.imread(image_path)
+                self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
+                image_path = f"../Screenshots/First Add/{filename}.png"
 
-            for i in range(len(elements)):
-                filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
-                element = elements[i]
-                print("wysokosc - " + str(element.get_attribute("bounds")))
+                img = cv2.imread(image_path)
 
-
-            self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
-            image_path = f"../Screenshots/First Add/{filename}.png"
-
-            time.sleep(2)
-            img = cv2.imread(image_path)
-
-
-                # Attribute
-                # bounds : [0,820][1080,1166]
-                # cropped_image = img[820:1166, 0:1080]
-
-
-                #[0,396][1080,743]
-            #cropped_image = img[396:743, 0:1080]
-            cropped_image = img[
-                            element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
-                            element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
-            cv2.imwrite(f"../Screenshots/First Add/{filename}.png", cropped_image)
+                cropped_image = img[
+                    element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
+                    element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
+                cv2.imwrite(f"../Screenshots/First Add/{filename}.png", cropped_image)
 
         except NoSuchElementException:
             pass
@@ -182,4 +155,5 @@ if __name__ == "__main__":
     Amazon.setUp()
     Amazon.test_firstAddCollector()
     Amazon.test_secondAddCollector()
+    #time.sleep(100000)
     Amazon.tearDown()
