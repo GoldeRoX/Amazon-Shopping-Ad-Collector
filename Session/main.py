@@ -61,6 +61,7 @@ class MainActivity(unittest.TestCase):
             self.driver.swipe(470, 1100, 470, 50, 400)
 
     def test_firstAddCollector(self):
+        #test
         filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
 
         try:
