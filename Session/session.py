@@ -1,4 +1,3 @@
-import datetime
 import os
 import time
 
@@ -14,51 +13,53 @@ from selenium.webdriver.common.by import By
 from TestData.config import TestData
 
 
-
-class MainActivity():
+class MainActivity:
 
     def __init__(self, driver):
         self.driver = driver
 
     def setUp(self) -> None:
 
-        #self.driver = webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC)
+        # self.driver = webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC)
 
         try:
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID)))
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID)))
         except (NoSuchElementException, TimeoutException):
             pass
         self.driver.find_element(By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID).click()
 
         try:
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID)))
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID)))
         except (NoSuchElementException, TimeoutException):
             pass
         self.driver.find_element(By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID).click()
 
         """search item"""
         try:
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")))
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
+                (By.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")))
         except (NoSuchElementException, TimeoutException):
             pass
             self.driver.find_element(By.XPATH, "//*[contains(@resource-id,'chrome_action_bar_search_icon')]").click()
         try:
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text")))
-            self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text").send_keys("oculus")
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text")))
+            self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text").send_keys(
+                "oculus")
             self.driver.press_keycode(66)
         except (NoSuchElementException, TimeoutException):
             try:
-                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, TestData.OCULUS_BUTTON_XPATH)))
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, TestData.OCULUS_BUTTON_XPATH)))
                 self.driver.find_element(By.XPATH, TestData.OCULUS_BUTTON_XPATH).click()
             except (NoSuchElementException, TimeoutException):
                 pass
 
-
-            """try:
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, TestData.COOKIE_ACCEPT_XPATH)))
-            self.driver.find_element(By.XPATH, TestData.COOKIE_ACCEPT_XPATH).click()
-        except NoSuchElementException:
-            pass"""
+            """try: WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, 
+            TestData.COOKIE_ACCEPT_XPATH))) self.driver.find_element(By.XPATH, TestData.COOKIE_ACCEPT_XPATH).click() 
+            except NoSuchElementException: pass """
 
         for i in range(11):
             time.sleep(1)
@@ -66,14 +67,13 @@ class MainActivity():
 
     def firstAddCollector(self) -> None:
 
-
         global filename
+
         try:
-            element_bot = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
+            sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
 
             ad = []
-
-            for x in element_bot:
+            for x in sponsored_ads:
                 if x.size["height"] > 100:
                     ad.append(x)
 
@@ -85,7 +85,7 @@ class MainActivity():
                 location_x = element.location["x"]
                 location_y = element.location["y"]
                 text = element.get_attribute("text")
-                #timestamp = datetime.now()
+                """timestamp = datetime.now()"""
 
                 self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
                 image_path = f"../Screenshots/First Add/{filename}.png"
@@ -93,8 +93,8 @@ class MainActivity():
                 img = cv2.imread(image_path)
 
                 cropped_image = img[
-                    element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
-                    element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
+                                element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
+                                element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
                 cv2.imwrite(f"../Screenshots/First Add/{filename}.png", cropped_image)
 
         except NoSuchElementException:
@@ -103,7 +103,6 @@ class MainActivity():
             print("ok")
         else:
             print("ERROR")
-
 
     def secondAddCollector(self) -> None:
 
@@ -148,17 +147,16 @@ class MainActivity():
         except NoSuchElementException:
             print("ERROR")
             pass
-        #print(temp_element_text)
+        # print(temp_element_text)
 
     def tearDown(self) -> None:
         self.driver.close_app()
+
 
 if __name__ == "__main__":
     Amazon = MainActivity(webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC))
     Amazon.setUp()
     Amazon.firstAddCollector()
     Amazon.secondAddCollector()
-    #time.sleep(100000)
+    # time.sleep(100000)
     Amazon.tearDown()
-
-
