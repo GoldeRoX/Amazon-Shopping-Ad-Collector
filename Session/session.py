@@ -78,8 +78,8 @@ class MainActivity:
                     ad.append(x)
 
             for element in ad:
+                """info do bazy danych"""
                 filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
-
                 width = element.size["width"]
                 height = element.size["height"]
                 location_x = element.location["x"]
@@ -114,10 +114,10 @@ class MainActivity:
             elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
 
             for x in range(6, len(elements), 2):
-                filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
                 element = elements[x]
 
-                """informacje do bazy danych"""
+                """info do bazy danych"""
+                filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
                 width = element.size["width"]
                 height = element.size["height"]
                 location_x = element.location["x"]
