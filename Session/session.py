@@ -14,11 +14,15 @@ from selenium.webdriver.common.by import By
 from TestData.config import TestData
 
 
-class MainActivity(unittest.TestCase):
+
+class MainActivity():
+
+    def __init__(self, driver):
+        self.driver = driver
 
     def setUp(self) -> None:
 
-        self.driver = webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC)
+        #self.driver = webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC)
 
         try:
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID)))
@@ -61,7 +65,7 @@ class MainActivity(unittest.TestCase):
             self.driver.swipe(470, 1100, 470, 50, 400)
 
     def test_firstAddCollector(self):
-        #test
+
         filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
 
         try:
@@ -107,16 +111,16 @@ class MainActivity(unittest.TestCase):
 
 
                 #[0,396][1080,743]
-            cropped_image = img[396:743, 0:self.driver.get_window_size()["x"]]
+            cropped_image = img[396:743, 0:1080]
             cv2.imwrite(f"../Screenshots/First Add/{filename}.png", cropped_image)
 
         except NoSuchElementException:
             pass
         if os.path.exists(f"../Screenshots/First Add/{filename}.png"):
-            assert True
+            print("ok")
         else:
             print("ERROR")
-            assert False
+
 
     def test_secondAddCollector(self):
 
@@ -158,7 +162,6 @@ class MainActivity(unittest.TestCase):
                 with open("temp.txt", "a") as file:
                     file.writelines(str(text) + " - " + filename + ".png\n")
 
-            assert True
         except NoSuchElementException:
             print("ERROR")
             pass
@@ -167,7 +170,9 @@ class MainActivity(unittest.TestCase):
     def tearDown(self) -> None:
         self.driver.close_app()
 
-
 if __name__ == "__main__":
-    suite = unittest.TestLoader().loadTestsFromTestCase(MainActivity)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    Amazon = MainActivity(webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC))
+    Amazon.setUp()
+    Amazon.test_firstAddCollector()
+    Amazon.test_secondAddCollector()
+    Amazon.tearDown()
