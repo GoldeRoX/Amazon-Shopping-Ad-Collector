@@ -78,6 +78,7 @@ class MainActivity:
                     ad.append(x)
 
             for element in ad:
+                #yes
                 """info do bazy danych"""
                 filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
                 width = element.size["width"]
