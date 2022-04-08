@@ -78,6 +78,7 @@ class MainActivity:
                     ad.append(x)
 
             for element in ad:
+
                 """info do bazy danych"""
                 filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
                 width = element.size["width"]
@@ -151,6 +152,13 @@ class MainActivity:
 
     def tearDown(self) -> None:
         self.driver.close_app()
+
+    #TODO zrobic uniwersalna funkcje do pobierania wszytskich danych z konkretnego obiektu. Funkcja powinna miec argument nazwy folderu + tabeli DB
+    def collectData(self):
+        pass
+    """funkcja do zbierania/wysylania danych reklamowych"""
+
+
 
 
 if __name__ == "__main__":
