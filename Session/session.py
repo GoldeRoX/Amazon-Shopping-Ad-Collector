@@ -12,7 +12,7 @@ from selenium.webdriver.common.by import By
 
 from TestData.config import TestData
 
-#test
+#testu
 class MainActivity:
 
     def __init__(self, driver):
