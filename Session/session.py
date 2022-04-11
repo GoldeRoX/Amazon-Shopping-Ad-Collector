@@ -15,8 +15,8 @@ from TestData.config import TestData
 #testu
 class MainActivity:
 
-    def __init__(self, driver):
-        self.driver = driver
+    def __init__(self):
+        self.driver = webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC)
 
     def setUp(self) -> None:
 
@@ -67,7 +67,6 @@ class MainActivity:
 
     def firstAdCollector(self) -> None:
 
-        #global filename
         try:
             #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
             #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*/preceding-sibling::*")
@@ -159,6 +158,9 @@ class MainActivity:
             pass
         # print(temp_element_text)
 
+    def relatedInspiration(self):
+        pass
+
     def tearDown(self) -> None:
         self.driver.close_app()
 
@@ -171,7 +173,7 @@ class MainActivity:
 
 
 if __name__ == "__main__":
-    Amazon = MainActivity(webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC))
+    Amazon = MainActivity()
     Amazon.setUp()
     Amazon.firstAdCollector()
     Amazon.secondAdCollector()
