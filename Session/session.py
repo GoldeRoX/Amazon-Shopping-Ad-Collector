@@ -70,7 +70,15 @@ class MainActivity:
         #global filename
 
         try:
-            sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
+            try:
+                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
+                    (By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")))
+
+                sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
+            except (NoSuchElementException, TimeoutException):
+                sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*/preceding-sibling::*")
+            #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
+            #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*/preceding-sibling::*")
 
             ad = []
             for x in sponsored_ads:
@@ -96,10 +104,10 @@ class MainActivity:
                 cropped_image = img[
                                 element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
                                 element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
-                cv2.imwrite(f"../Screenshots/First Add/{filename}.png", cropped_image)
+                cv2.imwrite(f"../Screenshots/First Ad/{filename}.png", cropped_image)
 
         except NoSuchElementException:
-            pass
+            print("error")
 
     def secondAdCollector(self) -> None:
 
