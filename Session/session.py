@@ -65,9 +65,9 @@ class MainActivity:
             time.sleep(1)
             self.driver.swipe(470, 1100, 470, 50, 400)
 
-    def firstAddCollector(self) -> None:
+    def firstAdCollector(self) -> None:
 
-        global filename
+        #global filename
 
         try:
             sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
@@ -88,8 +88,8 @@ class MainActivity:
                 text = element.get_attribute("text")
                 """timestamp = datetime.now()"""
 
-                self.driver.save_screenshot(f"../Screenshots/First Add/{filename}.png")
-                image_path = f"../Screenshots/First Add/{filename}.png"
+                self.driver.save_screenshot(f"../Screenshots/First Ad/{filename}.png")
+                image_path = f"../Screenshots/First Ad/{filename}.png"
 
                 img = cv2.imread(image_path)
 
@@ -100,12 +100,8 @@ class MainActivity:
 
         except NoSuchElementException:
             pass
-        if os.path.exists(f"../Screenshots/First Add/{filename}.png"):
-            print("ok")
-        else:
-            print("ERROR")
 
-    def secondAddCollector(self) -> None:
+    def secondAdCollector(self) -> None:
 
         temp_element_text = []
 
@@ -164,7 +160,7 @@ class MainActivity:
 if __name__ == "__main__":
     Amazon = MainActivity(webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC))
     Amazon.setUp()
-    Amazon.firstAddCollector()
-    Amazon.secondAddCollector()
+    Amazon.firstAdCollector()
+    Amazon.secondAdCollector()
     # time.sleep(100000)
     Amazon.tearDown()
