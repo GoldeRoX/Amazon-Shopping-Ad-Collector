@@ -68,22 +68,27 @@ class MainActivity:
     def firstAdCollector(self) -> None:
 
         #global filename
-
         try:
-            try:
-                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
-                    (By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")))
-
-                sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
-            except (NoSuchElementException, TimeoutException):
-                sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*/preceding-sibling::*")
             #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
             #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*/preceding-sibling::*")
+            #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
+            #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*/preceding-sibling::*")
+            sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")#/preceding-sibling::*")
+           # sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*/following-sibling::*")
 
             ad = []
-            for x in sponsored_ads:
+            """for x in sponsored_ads:
+                elements = x.find_elements(By.XPATH, "//*[@class='android.view.View']")
+                print(elements)
+                print(len(elements))
                 if x.size["height"] > 100:
-                    ad.append(x)
+                    ad.append(x)"""
+            for x in sponsored_ads:
+                elements = x.find_elements(By.XPATH, "//*[@class='android.view.View']")
+                for element in elements:
+                    if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
+                        ad.append(element)
+
 
             for element in ad:
 
