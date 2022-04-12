@@ -165,8 +165,6 @@ class MainActivity:
                 ;"""
 
         with cursor(**db_credentials) as c:
-            # c.execute(
-            #     f"INSERT INTO `{str(table_name)}` (`filename`, `width`, `height`, `location_x`, `location_y`, `text`, `timestamp`) VALUES (`{str(filename)}`, `{int(width)}`, `{int(height)}`, `{int(location_x)}`, `{int(location_y)}`, `{str(text)}`, `{str(timestamp)}`);")
             c.execute(
                 query,
                 (filename, width, height, location_x, location_y, text, timestamp)
@@ -179,4 +177,3 @@ if __name__ == "__main__":
     Amazon.brands_related_to_your_search_Collector()
     Amazon.related_inspiration()
     Amazon.tearDown()
-    # print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
