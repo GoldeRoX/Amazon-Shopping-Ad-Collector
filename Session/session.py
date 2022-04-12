@@ -94,7 +94,7 @@ class MainActivity:
                                 element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
                 cv2.imwrite(f"../Screenshots/First Ad/{filename}.png", cropped_image)
 
-                MainActivity.send_data_to_db(self, "bottom_ad", filename, width, height, location_x, location_y, text, timestamp)
+                MainActivity().send_data_to_db("bottom_ad", filename, width, height, location_x, location_y, text, timestamp)
 
         except NoSuchElementException:
             print("error")
@@ -156,11 +156,21 @@ class MainActivity:
         self.driver.close_app()
 
     def send_data_to_db(self, table_name, filename, width, height, location_x, location_y, text, timestamp):
+        query = f"""
+                INSERT INTO 
+                    {str(table_name)}
+                    (filename, width, height, location_x, location_y, text, timestamp)
+                VALUES
+                    (%s, %s, %s, %s, %s, %s, %s)
+                ;"""
 
         with cursor(**db_credentials) as c:
+            # c.execute(
+            #     f"INSERT INTO `{str(table_name)}` (`filename`, `width`, `height`, `location_x`, `location_y`, `text`, `timestamp`) VALUES (`{str(filename)}`, `{int(width)}`, `{int(height)}`, `{int(location_x)}`, `{int(location_y)}`, `{str(text)}`, `{str(timestamp)}`);")
             c.execute(
-                f"INSERT INTO `{str(table_name)}` (`filename`, `width`, `height`, `location_x`, `location_y`, `text`, `timestamp`) VALUES (`{str(filename)}`, `{int(width)}`, `{int(height)}`, `{int(location_x)}`, `{int(location_y)}`, `{str(text)}`, `{str(timestamp)}`);")
-
+                query,
+                (filename, width, height, location_x, location_y, text, timestamp)
+            )
 
 if __name__ == "__main__":
     Amazon = MainActivity()
