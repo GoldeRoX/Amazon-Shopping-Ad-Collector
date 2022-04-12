@@ -96,7 +96,7 @@ class MainActivity:
         except NoSuchElementException:
             print("error")
 
-    def secondAdCollector(self) -> None:
+    def Brands_related_to_your_search_Collector(self) -> None:
 
         temp_element_text = []
 
@@ -140,17 +140,14 @@ class MainActivity:
             print("ERROR")
             pass
 
-    def relatedInspiration(self):
+    def Related_Inspiration(self):
         try:
-            #WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//*[@text='RELATED INSPIRATION']")))
+            # WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//*[@text='RELATED INSPIRATION']")))
             element = self.driver.find_element(By.XPATH, "(//*[@text='RELATED INSPIRATION']")
-
-
             print(element)
-            print(element.size["width"])
-            print(element.size["height"])
 
-        except (NoSuchElementException, TimeoutException):
+
+        except NoSuchElementException:
             print("####error####")
 
     def tearDown(self) -> None:
@@ -159,7 +156,6 @@ class MainActivity:
     # TODO zrobic uniwersalna funkcje do pobierania wszytskich danych z konkretnego obiektu. Funkcja powinna miec argument nazwy folderu + tabeli DB
     def collectData(self):
         pass
-
     """funkcja do zbierania/wysylania danych reklamowych"""
 
 
@@ -167,6 +163,6 @@ if __name__ == "__main__":
     Amazon = MainActivity()
     Amazon.setUp()
     Amazon.firstAdCollector()
-    Amazon.secondAdCollector()
-    Amazon.relatedInspiration()
+    Amazon.Brands_related_to_your_search_Collector()
+    Amazon.Related_Inspiration()
     Amazon.tearDown()
