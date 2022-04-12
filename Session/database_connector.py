@@ -33,7 +33,7 @@ def cursor(*args, **kwargs) -> ContextManager[Cursor]:
 
 db_credentials = {
     'host': '127.0.0.1',
-    'database': 'amazon_adds',
+    'database': 'Amazon_ads',
     'user': 'root',
     'password': '',
     'charset': 'utf8mb4'

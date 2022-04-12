@@ -1,4 +1,3 @@
-import os
 import time
 
 import cv2  # import opencv-python	4.5.5.64
@@ -7,9 +6,11 @@ from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 
+from datetime import datetime
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+from database_connector import cursor, db_credentials
 from TestData.config import TestData
 
 
@@ -61,7 +62,7 @@ class MainActivity:
             except:
                 pass
 
-    def firstAdCollector(self) -> None:
+    def bottom_ad(self) -> None:
 
         try:
             sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")
@@ -81,7 +82,7 @@ class MainActivity:
                 location_x = element.location["x"]
                 location_y = element.location["y"]
                 text = element.get_attribute("text")
-                """timestamp = datetime.now()"""
+                """timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")"""
 
                 self.driver.save_screenshot(f"../Screenshots/First Ad/{filename}.png")
                 image_path = f"../Screenshots/First Ad/{filename}.png"
@@ -96,7 +97,7 @@ class MainActivity:
         except NoSuchElementException:
             print("error")
 
-    def Brands_related_to_your_search_Collector(self) -> None:
+    def brands_related_to_your_search_Collector(self) -> None:
 
         temp_element_text = []
 
@@ -140,7 +141,7 @@ class MainActivity:
             print("ERROR")
             pass
 
-    def Related_Inspiration(self):
+    def related_inspiration(self):
         try:
             # WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//*[@text='RELATED INSPIRATION']")))
             element = self.driver.find_element(By.XPATH, "(//*[@text='RELATED INSPIRATION']")
@@ -154,15 +155,17 @@ class MainActivity:
         self.driver.close_app()
 
     # TODO zrobic uniwersalna funkcje do pobierania wszytskich danych z konkretnego obiektu. Funkcja powinna miec argument nazwy folderu + tabeli DB
-    def collectData(self):
-        pass
-    """funkcja do zbierania/wysylania danych reklamowych"""
+    def send_data_to_db(self, table_name, filename, width, height, location_x, location_y, text, timestamp):
 
+        with cursor(**db_credentials) as c:
+            c.execute(
+                f"INSERT INTO `{table_name}` (`filename`, `width`, `height`, `location_x`, `location_y`, `text`, `timestamp`) VALUES (`{str(filename)}`, `{int(width)}`, `{int(height)}`, `{int(location_x)}`, `{int(location_y)}`, `{str(text)}`, `{str(timestamp)}`);")
 
 if __name__ == "__main__":
     Amazon = MainActivity()
     Amazon.setUp()
-    Amazon.firstAdCollector()
-    Amazon.Brands_related_to_your_search_Collector()
-    Amazon.Related_Inspiration()
+    Amazon.bottom_ad()
+    Amazon.brands_related_to_your_search_Collector()
+    Amazon.related_inspiration()
     Amazon.tearDown()
+    #print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
