@@ -12,6 +12,7 @@ from selenium.webdriver.common.by import By
 
 from TestData.config import TestData
 
+
 class MainActivity:
 
     def __init__(self):
@@ -39,7 +40,7 @@ class MainActivity:
         except (NoSuchElementException, TimeoutException):
             self.driver.find_element(By.XPATH, "//*[contains(@resource-id,'chrome_action_bar_search_icon')]").click()
         try:
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text")))
             self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text").send_keys(
                 "oculus")
@@ -53,36 +54,27 @@ class MainActivity:
                 pass
 
         for i in range(11):
-            time.sleep(1)
-            self.driver.swipe(470, 1100, 470, 50, 400)
+            try:
+                time.sleep(1)
+                self.driver.swipe(470, 1100, 470, 50, 400)
+                time.sleep(1)
+            except:
+                pass
 
     def firstAdCollector(self) -> None:
 
         try:
-            #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
-            #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*/preceding-sibling::*")
-            #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']/parent::*/preceding-sibling::*")
-            #sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*/preceding-sibling::*")
-            sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")#/preceding-sibling::*")
-           # sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*/following-sibling::*")
+            sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")
 
             ad = []
-            """for x in sponsored_ads:
-                elements = x.find_elements(By.XPATH, "//*[@class='android.view.View']")
-                print(elements)
-                print(len(elements))
-                if x.size["height"] > 100:
-                    ad.append(x)"""
             for x in sponsored_ads:
                 elements = x.find_elements(By.XPATH, "//*[@class='android.view.View']")
                 for element in elements:
                     if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
                         ad.append(element)
 
-
             for element in ad:
-
-                """info do bazy danych"""
+                """informacje do bazy danych"""
                 filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
                 width = element.size["width"]
                 height = element.size["height"]
@@ -116,7 +108,7 @@ class MainActivity:
             for x in range(6, len(elements), 2):
                 element = elements[x]
 
-                """info do bazy danych"""
+                """informacje do bazy danych"""
                 filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
                 width = element.size["width"]
                 height = element.size["height"]
@@ -138,7 +130,7 @@ class MainActivity:
 
                 action = TouchAction(self.driver)
                 action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
-                time.sleep(2)
+                time.sleep(1)
 
                 """open a temp file to store data"""
                 with open("temp.txt", "a") as file:
@@ -147,25 +139,28 @@ class MainActivity:
         except NoSuchElementException:
             print("ERROR")
             pass
-        # print(temp_element_text)
 
     def relatedInspiration(self):
         try:
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//*[@text='RELATED INSPIRATION See all']/following-sibling::*/following-sibling::*")))
-        except (NoSuchElementException, TimeoutException):
-            pass
+            #WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//*[@text='RELATED INSPIRATION']")))
+            element = self.driver.find_element(By.XPATH, "(//*[@text='RELATED INSPIRATION']")
 
+
+            print(element)
+            print(element.size["width"])
+            print(element.size["height"])
+
+        except (NoSuchElementException, TimeoutException):
+            print("####error####")
 
     def tearDown(self) -> None:
         self.driver.close_app()
 
-    #TODO zrobic uniwersalna funkcje do pobierania wszytskich danych z konkretnego obiektu. Funkcja powinna miec argument nazwy folderu + tabeli DB
+    # TODO zrobic uniwersalna funkcje do pobierania wszytskich danych z konkretnego obiektu. Funkcja powinna miec argument nazwy folderu + tabeli DB
     def collectData(self):
         pass
+
     """funkcja do zbierania/wysylania danych reklamowych"""
-
-
 
 
 if __name__ == "__main__":
@@ -173,5 +168,5 @@ if __name__ == "__main__":
     Amazon.setUp()
     Amazon.firstAdCollector()
     Amazon.secondAdCollector()
-    # time.sleep(100000)
+    Amazon.relatedInspiration()
     Amazon.tearDown()
