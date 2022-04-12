@@ -12,16 +12,12 @@ from selenium.webdriver.common.by import By
 
 from TestData.config import TestData
 
-#testu
 class MainActivity:
 
     def __init__(self):
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC)
 
     def setUp(self) -> None:
-
-        # self.driver = webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC)
-
         try:
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID)))
@@ -41,7 +37,6 @@ class MainActivity:
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
                 (By.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")))
         except (NoSuchElementException, TimeoutException):
-            pass
             self.driver.find_element(By.XPATH, "//*[contains(@resource-id,'chrome_action_bar_search_icon')]").click()
         try:
             WebDriverWait(self.driver, 10).until(
@@ -56,10 +51,6 @@ class MainActivity:
                 self.driver.find_element(By.XPATH, TestData.OCULUS_BUTTON_XPATH).click()
             except (NoSuchElementException, TimeoutException):
                 pass
-
-            """try: WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, 
-            TestData.COOKIE_ACCEPT_XPATH))) self.driver.find_element(By.XPATH, TestData.COOKIE_ACCEPT_XPATH).click() 
-            except NoSuchElementException: pass """
 
         for i in range(11):
             time.sleep(1)
@@ -159,7 +150,12 @@ class MainActivity:
         # print(temp_element_text)
 
     def relatedInspiration(self):
-        pass
+        try:
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//*[@text='RELATED INSPIRATION See all']/following-sibling::*/following-sibling::*")))
+        except (NoSuchElementException, TimeoutException):
+            pass
+
 
     def tearDown(self) -> None:
         self.driver.close_app()
