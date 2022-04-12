@@ -82,7 +82,7 @@ class MainActivity:
                 location_x = element.location["x"]
                 location_y = element.location["y"]
                 text = element.get_attribute("text")
-                """timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")"""
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
                 self.driver.save_screenshot(f"../Screenshots/First Ad/{filename}.png")
                 image_path = f"../Screenshots/First Ad/{filename}.png"
@@ -93,6 +93,8 @@ class MainActivity:
                                 element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
                                 element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
                 cv2.imwrite(f"../Screenshots/First Ad/{filename}.png", cropped_image)
+
+                MainActivity.send_data_to_db(self, "bottom_ad", filename, width, height, location_x, location_y, text, timestamp)
 
         except NoSuchElementException:
             print("error")
@@ -147,19 +149,18 @@ class MainActivity:
             element = self.driver.find_element(By.XPATH, "(//*[@text='RELATED INSPIRATION']")
             print(element)
 
-
         except NoSuchElementException:
             print("####error####")
 
     def tearDown(self) -> None:
         self.driver.close_app()
 
-    # TODO zrobic uniwersalna funkcje do pobierania wszytskich danych z konkretnego obiektu. Funkcja powinna miec argument nazwy folderu + tabeli DB
     def send_data_to_db(self, table_name, filename, width, height, location_x, location_y, text, timestamp):
 
         with cursor(**db_credentials) as c:
             c.execute(
-                f"INSERT INTO `{table_name}` (`filename`, `width`, `height`, `location_x`, `location_y`, `text`, `timestamp`) VALUES (`{str(filename)}`, `{int(width)}`, `{int(height)}`, `{int(location_x)}`, `{int(location_y)}`, `{str(text)}`, `{str(timestamp)}`);")
+                f"INSERT INTO `{str(table_name)}` (`filename`, `width`, `height`, `location_x`, `location_y`, `text`, `timestamp`) VALUES (`{str(filename)}`, `{int(width)}`, `{int(height)}`, `{int(location_x)}`, `{int(location_y)}`, `{str(text)}`, `{str(timestamp)}`);")
+
 
 if __name__ == "__main__":
     Amazon = MainActivity()
@@ -168,4 +169,4 @@ if __name__ == "__main__":
     Amazon.brands_related_to_your_search_Collector()
     Amazon.related_inspiration()
     Amazon.tearDown()
-    #print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    # print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
