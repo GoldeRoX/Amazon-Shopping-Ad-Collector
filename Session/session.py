@@ -150,7 +150,7 @@ class MainActivity:
             print(element)
 
         except NoSuchElementException:
-            print("####error####")
+            print("##error##")
 
     def tearDown(self) -> None:
         self.driver.close_app()
