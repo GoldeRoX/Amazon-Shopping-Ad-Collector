@@ -110,41 +110,42 @@ class MainActivity:
 
     def brands_related_to_your_search_Collector(self) -> None:
         try:
+            #element_node = self.driver.find_elements(By.XPATH, "//*[@text='Brands related to your search']/parent::*")
             element_node = self.driver.find_element(By.XPATH, "//*[contains(@text, 'Brands related to your search')]/parent::*")
             print(element_node)
-            print("0-1")
             elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
-            print("0")
             for x in range(len(elements)):
-                print("1")
                 element = elements[x]
                 if element.get_attribute("clickable") == "true":
 
-                    """informacje do bazy danych"""
-                    width = element.size["width"]
-                    height = element.size["height"]
-                    location_x = element.location["x"]
-                    location_y = element.location["y"]
-                    text = element.get_attribute("text")
-                    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    filename = (self.driver.current_activity + timestamp).replace(".", "_")
+                    try:
+                        """informacje do bazy danych"""
+                        width = element.size["width"]
+                        height = element.size["height"]
+                        location_x = element.location["x"]
+                        location_y = element.location["y"]
+                        text = element.get_attribute("text")
+                        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
-                    self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
-                    image_path = f"../Screenshots/Brands related to your search/{filename}.png"
-                    time.sleep(1)
-                    img = cv2.imread(image_path)
-                    cropped_image = img[
-                                    element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
-                                    element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
-                    cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
+                        self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
+                        image_path = f"../Screenshots/Brands related to your search/{filename}.png"
+                        time.sleep(1)
+                        img = cv2.imread(image_path)
+                        cropped_image = img[
+                                        element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
+                                        element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
+                        cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
 
-                    MainActivity().send_data_to_db("brands_related_to_your_search", filename, width, height, location_x,
-                                                   location_y, text, timestamp)
+                        MainActivity().send_data_to_db("brands_related_to_your_search", filename, width, height, location_x,
+                                                       location_y, text, timestamp)
 
-                    """scroll through ads"""
-                    action = TouchAction(self.driver)
-                    action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
-                    time.sleep(1)
+                        """scroll through ads"""
+                        action = TouchAction(self.driver)
+                        action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
+                        time.sleep(1)
+                    except:
+                        pass
 
         except NoSuchElementException:
             # TODO zamienic pass na konkret
@@ -171,6 +172,9 @@ class MainActivity:
                 ;"""
 
         with cursor(**db_credentials) as c:
+            if not text:
+                text = None
+
             c.execute(
                 query,
                 (filename, width, height, location_x, location_y, text, timestamp)
@@ -181,7 +185,7 @@ if __name__ == "__main__":
     # TODO zorganizowac plynny system logiki
     Amazon = MainActivity()
     Amazon.setUp()
-    Amazon.bottom_ad()
     Amazon.brands_related_to_your_search_Collector()
+    Amazon.bottom_ad()
     #Amazon.related_inspiration()
     Amazon.tearDown()
