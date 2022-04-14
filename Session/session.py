@@ -100,12 +100,8 @@ class MainActivity:
             print("error")
 
     def brands_related_to_your_search_Collector(self) -> None:
-
-        temp_element_text = []
-
         try:
             element_node = self.driver.find_element(By.XPATH, "//*[@text='Brands related to your search']/parent::*")
-
             elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
 
             for x in range(6, len(elements), 2):
@@ -129,7 +125,7 @@ class MainActivity:
                                 element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
                 cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
 
-                MainActivity().send_data_to_db("bottom_ad", filename, width, height, location_x, location_y, text, timestamp)
+                MainActivity().send_data_to_db("brands_related_to_your_search", filename, width, height, location_x, location_y, text, timestamp)
 
                 """scroll through ads"""
                 action = TouchAction(self.driver)
@@ -146,7 +142,8 @@ class MainActivity:
     def related_inspiration(self):
         try:
             # WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//*[@text='RELATED INSPIRATION']")))
-            element = self.driver.find_element(By.XPATH, "(//*[@text='RELATED INSPIRATION']")
+            element = self.driver.find_element(By.XPATH, "(//*[@text='RELATED INSPIRATION See all']")
+
             print(element)
 
         except NoSuchElementException:
