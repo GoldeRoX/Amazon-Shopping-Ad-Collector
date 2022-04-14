@@ -34,19 +34,26 @@ class MainActivity:
             pass
         self.driver.find_element(By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID).click()
 
+        #TODO skonfigurowac wyszukiwanie przez search bar w celu dowolnosci wyszukiwania
         """search item"""
         try:
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
-                (By.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")))
+                (By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[1]/android.widget.LinearLayout/android.widget.TextView')))
         except (NoSuchElementException, TimeoutException):
-            self.driver.find_element(By.XPATH, "//*[contains(@resource-id,'chrome_action_bar_search_icon')]").click()
+            self.driver.find_element(By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[1]/android.widget.LinearLayout/android.widget.TextView').click()
         try:
             WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text")))
             self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text").send_keys(
-                "oculus")
+                "oculus oculus 2")
             self.driver.press_keycode(66)
         except (NoSuchElementException, TimeoutException):
+            """try:
+                WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, TestData.LAPTOP_BUTTON_XPATH)))
+                self.driver.find_element(By.XPATH, TestData.LAPTOP_BUTTON_XPATH).click()
+            except (NoSuchElementException, TimeoutException):
+                pass"""
             try:
                 WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located((By.XPATH, TestData.OCULUS_BUTTON_XPATH)))
@@ -54,6 +61,7 @@ class MainActivity:
             except (NoSuchElementException, TimeoutException):
                 pass
 
+        """scroll through app Y"""
         for i in range(11):
             try:
                 time.sleep(1)
@@ -69,7 +77,7 @@ class MainActivity:
 
             ad = []
             for x in sponsored_ads:
-                elements = x.find_elements(By.XPATH, "//*[@class='android.view.View']")
+                elements = x.find_elements(By.XPATH, ".//*[@class='android.view.View']")
                 for element in elements:
                     if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
                         ad.append(element)
@@ -94,61 +102,61 @@ class MainActivity:
                                 element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
                 cv2.imwrite(f"../Screenshots/First Ad/{filename}.png", cropped_image)
 
-                MainActivity().send_data_to_db("bottom_ad", filename, width, height, location_x, location_y, text, timestamp)
+                MainActivity().send_data_to_db("bottom_ad", filename, width, height, location_x, location_y, text,
+                                               timestamp)
 
-        except NoSuchElementException:
-            print("error")
+        except (NoSuchElementException, TimeoutException):
+            print("ERROR-bottom_ad")
 
     def brands_related_to_your_search_Collector(self) -> None:
         try:
-            element_node = self.driver.find_element(By.XPATH, "//*[@text='Brands related to your search']/parent::*")
-            elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
-
-            for x in range(6, len(elements), 2):
+            element_node = self.driver.find_element(By.XPATH, "//*[contains(@text, 'Brands related to your search')]/parent::*")
+            print(element_node)
+            print("0-1")
+            elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
+            print("0")
+            for x in range(len(elements)):
+                print("1")
                 element = elements[x]
+                if element.get_attribute("clickable") == "true":
 
-                """informacje do bazy danych"""
-                width = element.size["width"]
-                height = element.size["height"]
-                location_x = element.location["x"]
-                location_y = element.location["y"]
-                text = element.get_attribute("text")
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                filename = (self.driver.current_activity + timestamp).replace(".", "_")
+                    """informacje do bazy danych"""
+                    width = element.size["width"]
+                    height = element.size["height"]
+                    location_x = element.location["x"]
+                    location_y = element.location["y"]
+                    text = element.get_attribute("text")
+                    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
-                self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
-                image_path = f"../Screenshots/Brands related to your search/{filename}.png"
-                time.sleep(2)
-                img = cv2.imread(image_path)
-                cropped_image = img[
-                                element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
-                                element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
-                cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
+                    self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
+                    image_path = f"../Screenshots/Brands related to your search/{filename}.png"
+                    time.sleep(1)
+                    img = cv2.imread(image_path)
+                    cropped_image = img[
+                                    element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
+                                    element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
+                    cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
 
-                MainActivity().send_data_to_db("brands_related_to_your_search", filename, width, height, location_x, location_y, text, timestamp)
+                    MainActivity().send_data_to_db("brands_related_to_your_search", filename, width, height, location_x,
+                                                   location_y, text, timestamp)
 
-                """scroll through ads"""
-                action = TouchAction(self.driver)
-                action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
-                time.sleep(1)
-
-
+                    """scroll through ads"""
+                    action = TouchAction(self.driver)
+                    action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
+                    time.sleep(1)
 
         except NoSuchElementException:
-            #TODO zamienic pass na konkret
-            print("ERROR")
-            pass
+            # TODO zamienic pass na konkret
+            print("ERROR-brands_related_to_your_search_Collector")
 
-    def related_inspiration(self):
+    def related_inspiration(self) -> None:
         try:
-            # WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, "//*[@text='RELATED INSPIRATION']")))
             element = self.driver.find_element(By.XPATH, "(//*[@text='RELATED INSPIRATION See all']")
-
             print(element)
 
         except NoSuchElementException:
-            print("##error##")
-            pass
+            print("ERROR-related_inspiration")
 
     def tearDown(self) -> None:
         self.driver.close_app()
@@ -168,11 +176,12 @@ class MainActivity:
                 (filename, width, height, location_x, location_y, text, timestamp)
             )
 
+
 if __name__ == "__main__":
-    #TODO zorganizowac plynny system logiki
+    # TODO zorganizowac plynny system logiki
     Amazon = MainActivity()
     Amazon.setUp()
     Amazon.bottom_ad()
     Amazon.brands_related_to_your_search_Collector()
-    Amazon.related_inspiration()
+    #Amazon.related_inspiration()
     Amazon.tearDown()
