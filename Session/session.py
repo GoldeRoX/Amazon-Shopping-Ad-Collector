@@ -76,13 +76,13 @@ class MainActivity:
 
             for element in ad:
                 """informacje do bazy danych"""
-                filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
                 width = element.size["width"]
                 height = element.size["height"]
                 location_x = element.location["x"]
                 location_y = element.location["y"]
                 text = element.get_attribute("text")
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
                 self.driver.save_screenshot(f"../Screenshots/First Ad/{filename}.png")
                 image_path = f"../Screenshots/First Ad/{filename}.png"
@@ -112,34 +112,34 @@ class MainActivity:
                 element = elements[x]
 
                 """informacje do bazy danych"""
-                filename = (self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")).replace(".", "_")
                 width = element.size["width"]
                 height = element.size["height"]
                 location_x = element.location["x"]
                 location_y = element.location["y"]
                 text = element.get_attribute("text")
-                temp_element_text.append(str(text))
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
                 self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
                 image_path = f"../Screenshots/Brands related to your search/{filename}.png"
-
                 time.sleep(2)
                 img = cv2.imread(image_path)
-
                 cropped_image = img[
                                 element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
                                 element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
                 cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
 
+                MainActivity().send_data_to_db("bottom_ad", filename, width, height, location_x, location_y, text, timestamp)
+
+                """scroll through ads"""
                 action = TouchAction(self.driver)
                 action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
                 time.sleep(1)
 
-                """open a temp file to store data"""
-                with open("temp.txt", "a") as file:
-                    file.writelines(str(text) + " - " + filename + ".png\n")
+
 
         except NoSuchElementException:
+            #TODO zamienic pass na konkret
             print("ERROR")
             pass
 
@@ -151,6 +151,7 @@ class MainActivity:
 
         except NoSuchElementException:
             print("##error##")
+            pass
 
     def tearDown(self) -> None:
         self.driver.close_app()
@@ -171,6 +172,7 @@ class MainActivity:
             )
 
 if __name__ == "__main__":
+    #TODO zorganizowac plynny system logiki
     Amazon = MainActivity()
     Amazon.setUp()
     Amazon.bottom_ad()
