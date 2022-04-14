@@ -62,11 +62,10 @@ class MainActivity:
                 pass
 
         """scroll through app Y"""
-        for i in range(11):
+        for i in range(14):
             try:
-                time.sleep(1)
                 self.driver.swipe(470, 1100, 470, 50, 400)
-                time.sleep(1)
+                #time.sleep(1)
             except:
                 pass
 
@@ -144,7 +143,8 @@ class MainActivity:
                         action = TouchAction(self.driver)
                         action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
                         time.sleep(1)
-                    except:
+                    except Exception as e:
+                        print(e)
                         pass
 
         except NoSuchElementException:
@@ -183,9 +183,14 @@ class MainActivity:
 
 if __name__ == "__main__":
     # TODO zorganizowac plynny system logiki
-    Amazon = MainActivity()
-    Amazon.setUp()
-    Amazon.brands_related_to_your_search_Collector()
-    Amazon.bottom_ad()
-    #Amazon.related_inspiration()
-    Amazon.tearDown()
+    while True:
+        try:
+            Amazon = MainActivity()
+            Amazon.setUp()
+            Amazon.brands_related_to_your_search_Collector()
+            Amazon.bottom_ad()
+            #Amazon.related_inspiration()
+            Amazon.tearDown()
+        except Exception as e:
+            print(f'Excepion occured : {e}')
+            pass
