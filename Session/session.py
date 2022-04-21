@@ -183,7 +183,10 @@ class MainActivity:
 
 if __name__ == "__main__":
     # TODO zorganizowac plynny system logiki
-    while True:
+    Amazon = MainActivity()
+    Amazon.setUp()
+    Amazon.brands_related_to_your_search_Collector()
+    """while True:
         try:
             Amazon = MainActivity()
             Amazon.setUp()
@@ -193,4 +196,4 @@ if __name__ == "__main__":
             Amazon.tearDown()
         except Exception as e:
             print(f'Excepion occured : {e}')
-            pass
+            pass"""
