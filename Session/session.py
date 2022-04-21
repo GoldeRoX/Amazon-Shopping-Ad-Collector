@@ -4,6 +4,7 @@ import cv2  # import opencv-python	4.5.5.64
 from appium import webdriver  # import Appium-Python-Client 2.2.0
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 
 from datetime import datetime
@@ -80,6 +81,7 @@ class MainActivity:
                 for element in elements:
                     if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
                         ad.append(element)
+                print("len(ad) = "+str(len(ad)))
 
             for element in ad:
                 """informacje do bazy danych"""
@@ -104,18 +106,19 @@ class MainActivity:
                 MainActivity().send_data_to_db("bottom_ad", filename, width, height, location_x, location_y, text,
                                                timestamp)
 
-        except (NoSuchElementException, TimeoutException):
+        except NoSuchElementException:
             print("ERROR-bottom_ad")
 
     def brands_related_to_your_search_Collector(self):
         try:
             #element_node = self.driver.find_elements(By.XPATH, "//*[@text='Brands related to your search']/parent::*")
             element_node = self.driver.find_element(By.XPATH, "//*[contains(@text, 'Brands related to your search')]/parent::*")
-            elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
+            elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
+
             for x in range(len(elements)):
                 element = elements[x]
                 if element.get_attribute("clickable") == "true":
-
+                    print(element)
                     try:
                         """informacje do bazy danych"""
                         width = element.size["width"]
@@ -128,33 +131,32 @@ class MainActivity:
 
                         self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
                         image_path = f"../Screenshots/Brands related to your search/{filename}.png"
-                        time.sleep(1)
                         img = cv2.imread(image_path)
                         cropped_image = img[
                                         element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
                                         element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
                         cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
 
+                        """scroll through ads"""
+                        print("1")
+                        action = TouchAction(self.driver)
+                        action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
+                        #self.driver.swipe(element.location["x"], element.location["y"], element.size["width"] / 2, element.location["y"], 400)
+                        print("0")
+
                         MainActivity().send_data_to_db("brands_related_to_your_search", filename, width, height, location_x,
                                                        location_y, text, timestamp)
-                        while element != elements[len(elements)-1]:
-                            try:
-                                """scroll through ads"""
-                                time.sleep(1)
-                                action = TouchAction(self.driver)
-                                action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
-                                time.sleep(1)
-                            except:
-                                pass
+
+
+
                     except Exception as e:
-                        print(e)
+                        print(f'Excepion occured : {e}')
                         pass
 
-        except NoSuchElementException:
+        except Exception as e:
             # TODO zamienic pass na konkret
-            print("ERROR-brands_related_to_your_search_Collector")
-
-        return True
+            print(f'Excepion occured : {e}')
+            pass
 
     def related_inspiration(self) -> None:
         try:
@@ -190,21 +192,22 @@ if __name__ == "__main__":
     # TODO zorganizowac plynny system logiki
     """Amazon = MainActivity()
     Amazon.setUp()
-    Amazon.brands_related_to_your_search_Collector()"""
+    Amazon.brands_related_to_your_search_Collector()
     while True:
         try:
             Amazon = MainActivity()
             Amazon.setUp()
             Amazon = MainActivity()
-            while not Amazon.brands_related_to_your_search_Collector():
-                try:
-                    Amazon.brands_related_to_your_search_Collector()
-                except:
-                    pass
+            Amazon.bottom_ad()
             Amazon.brands_related_to_your_search_Collector()
-            #Amazon.bottom_ad()
             #Amazon.related_inspiration()
             Amazon.tearDown()
         except Exception as e:
             print(f'Excepion occured : {e}')
-            pass
+            pass"""
+    Amazon = MainActivity()
+    Amazon.setUp()
+    #Amazon.bottom_ad()
+    Amazon.brands_related_to_your_search_Collector()
+    #Amazon.related_inspiration()
+    Amazon.tearDown()
