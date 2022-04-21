@@ -107,7 +107,7 @@ class MainActivity:
         except (NoSuchElementException, TimeoutException):
             print("ERROR-bottom_ad")
 
-    def brands_related_to_your_search_Collector(self) -> None:
+    def brands_related_to_your_search_Collector(self):
         try:
             #element_node = self.driver.find_elements(By.XPATH, "//*[@text='Brands related to your search']/parent::*")
             element_node = self.driver.find_element(By.XPATH, "//*[contains(@text, 'Brands related to your search')]/parent::*")
@@ -140,6 +140,7 @@ class MainActivity:
                         while element != elements[len(elements)-1]:
                             try:
                                 """scroll through ads"""
+                                time.sleep(1)
                                 action = TouchAction(self.driver)
                                 action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
                                 time.sleep(1)
@@ -152,6 +153,8 @@ class MainActivity:
         except NoSuchElementException:
             # TODO zamienic pass na konkret
             print("ERROR-brands_related_to_your_search_Collector")
+
+        return True
 
     def related_inspiration(self) -> None:
         try:
@@ -193,6 +196,11 @@ if __name__ == "__main__":
             Amazon = MainActivity()
             Amazon.setUp()
             Amazon = MainActivity()
+            while not Amazon.brands_related_to_your_search_Collector():
+                try:
+                    Amazon.brands_related_to_your_search_Collector()
+                except:
+                    pass
             Amazon.brands_related_to_your_search_Collector()
             #Amazon.bottom_ad()
             #Amazon.related_inspiration()
