@@ -144,6 +144,8 @@ class MainActivity:
                         #self.driver.swipe(element.location["x"], element.location["y"], element.size["width"] / 2, element.location["y"], 400)
                         print("0")
 
+
+                        #TODO zmienic by wysysalo po iteracjach wszytsko na raz
                         MainActivity().send_data_to_db("brands_related_to_your_search", filename, width, height, location_x,
                                                        location_y, text, timestamp)
 
