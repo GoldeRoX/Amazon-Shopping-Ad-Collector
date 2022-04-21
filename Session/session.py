@@ -111,8 +111,7 @@ class MainActivity:
         try:
             #element_node = self.driver.find_elements(By.XPATH, "//*[@text='Brands related to your search']/parent::*")
             element_node = self.driver.find_element(By.XPATH, "//*[contains(@text, 'Brands related to your search')]/parent::*")
-            print(element_node)
-            elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
+            elements = element_node.find_elements(By.XPATH, "//*[@class='android.view.View']")
             for x in range(len(elements)):
                 element = elements[x]
                 if element.get_attribute("clickable") == "true":
@@ -138,11 +137,14 @@ class MainActivity:
 
                         MainActivity().send_data_to_db("brands_related_to_your_search", filename, width, height, location_x,
                                                        location_y, text, timestamp)
-
-                        """scroll through ads"""
-                        action = TouchAction(self.driver)
-                        action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
-                        time.sleep(1)
+                        while element != elements[len(elements)-1]:
+                            try:
+                                """scroll through ads"""
+                                action = TouchAction(self.driver)
+                                action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
+                                time.sleep(1)
+                            except:
+                                pass
                     except Exception as e:
                         print(e)
                         pass
@@ -183,17 +185,18 @@ class MainActivity:
 
 if __name__ == "__main__":
     # TODO zorganizowac plynny system logiki
-    Amazon = MainActivity()
+    """Amazon = MainActivity()
     Amazon.setUp()
-    Amazon.brands_related_to_your_search_Collector()
-    """while True:
+    Amazon.brands_related_to_your_search_Collector()"""
+    while True:
         try:
             Amazon = MainActivity()
             Amazon.setUp()
+            Amazon = MainActivity()
             Amazon.brands_related_to_your_search_Collector()
-            Amazon.bottom_ad()
+            #Amazon.bottom_ad()
             #Amazon.related_inspiration()
             Amazon.tearDown()
         except Exception as e:
             print(f'Excepion occured : {e}')
-            pass"""
+            pass
