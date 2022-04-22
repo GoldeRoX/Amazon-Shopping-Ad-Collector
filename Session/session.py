@@ -115,6 +115,7 @@ class MainActivity:
             element_node = self.driver.find_element(By.XPATH, "//*[contains(@text, 'Brands related to your search')]/parent::*")
             elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
 
+            ads_meta_data = []
             for x in range(len(elements)):
                 element = elements[x]
                 if element.get_attribute("clickable") == "true":
@@ -138,14 +139,12 @@ class MainActivity:
                         cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
 
                         """scroll through ads"""
-                        print("1")
                         action = TouchAction(self.driver)
                         action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
                         #self.driver.swipe(element.location["x"], element.location["y"], element.size["width"] / 2, element.location["y"], 400)
-                        print("0")
 
 
-                        #TODO zmienic by wysysalo po iteracjach wszytsko na raz
+                        #TODO zmienic by wysysalo po iteracjach wszytsko na raz | przeniec wszytskie infomracje na raz
                         MainActivity().send_data_to_db("brands_related_to_your_search", filename, width, height, location_x,
                                                        location_y, text, timestamp)
 
