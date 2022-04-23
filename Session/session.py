@@ -218,9 +218,10 @@ if __name__ == "__main__":
             Amazon.bottom_ad()
             Amazon.brands_related_to_your_search_Collector()
             #Amazon.related_inspiration()
-            Amazon.tearDown()
         except Exception as e:
             print(f'Excepion occured : {e}')
             pass
+        finally:
+            Amazon.tearDown()
     #TODO przetestowac zmiany zawarte w metodzie brands_related_to_your_search_Collector() | zmiany polegaja na modyfikacji wysylania do DB
     #TODO stworzyc jedna metode do wysylania wszytskich reklam do jednej tabeli. (zmodyfikowac istniejaca)
