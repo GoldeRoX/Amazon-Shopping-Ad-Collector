@@ -71,7 +71,7 @@ class MainActivity:
                 pass
 
     def bottom_ad(self) -> None:
-
+        #TODO naprawic efektywnosc | dziala w 50% przypadkow. Najlepiej by sprawdzic czemu wywala, i upewniac sie ze bez scr. nie wysyla danych i wice wersa
         try:
             sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")
 
