@@ -115,7 +115,7 @@ class MainActivity:
                     MainActivity().send_data_to_db("bottom_ad", ad[0], ad[1], ad[2], ad[3],
                                                    ad[4], ad[5], ad[6])
                 except Exception as e:
-                    print(f'Excepion occured : {e}')
+                    print(f'Excepion occured in sending meta_data to DB: {e}')
                     pass
 
         except NoSuchElementException:
@@ -215,14 +215,12 @@ if __name__ == "__main__":
         Amazon = MainActivity()
         try:
             Amazon.setUp()
-            Amazon = MainActivity()
             Amazon.bottom_ad()
             Amazon.brands_related_to_your_search_Collector()
             #Amazon.related_inspiration()
+            Amazon.tearDown()
         except Exception as e:
             print(f'Excepion occured : {e}')
             pass
-        finally:
-            Amazon.tearDown()
     #TODO przetestowac zmiany zawarte w metodzie brands_related_to_your_search_Collector() | zmiany polegaja na modyfikacji wysylania do DB
     #TODO stworzyc jedna metode do wysylania wszytskich reklam do jednej tabeli. (zmodyfikowac istniejaca)
