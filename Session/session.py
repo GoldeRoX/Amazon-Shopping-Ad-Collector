@@ -83,6 +83,7 @@ class MainActivity:
                         ad.append(element)
                 print("len(ad) = "+str(len(ad)))
 
+            ads_meta_data = []
             for element in ad:
                 """informacje do bazy danych"""
                 width = element.size["width"]
@@ -93,7 +94,10 @@ class MainActivity:
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
+                ads_meta_data.append([filename, width, height, location_x, location_y, text, timestamp])
+
                 self.driver.save_screenshot(f"../Screenshots/First Ad/{filename}.png")
+
                 image_path = f"../Screenshots/First Ad/{filename}.png"
 
                 img = cv2.imread(image_path)
@@ -103,15 +107,23 @@ class MainActivity:
                                 element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
                 cv2.imwrite(f"../Screenshots/First Ad/{filename}.png", cropped_image)
 
-                MainActivity().send_data_to_db("bottom_ad", filename, width, height, location_x, location_y, text,
-                                               timestamp)
+                #MainActivity().send_data_to_db("bottom_ad", filename, width, height, location_x, location_y, text,
+                #                               timestamp)
+
+            for ad in ads_meta_data:
+                try:
+                    MainActivity().send_data_to_db("bottom_ad", ad[0], ad[1], ad[2], ad[3],
+                                                   ad[4], ad[5], ad[6])
+                except Exception as e:
+                    print(f'Excepion occured : {e}')
+                    pass
 
         except NoSuchElementException:
             print("ERROR-bottom_ad")
+            pass
 
     def brands_related_to_your_search_Collector(self):
         try:
-            #element_node = self.driver.find_elements(By.XPATH, "//*[@text='Brands related to your search']/parent::*")
             element_node = self.driver.find_element(By.XPATH, "//*[contains(@text, 'Brands related to your search')]/parent::*")
             elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
 
@@ -130,6 +142,11 @@ class MainActivity:
                         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
+                        #zorganizowac system dodawania meta_danych za pomoca listy list.
+                        #Spowoduje to mam nadzieje mozliwosc dodania jednoczesnego wielu
+                        #danych za jednym wyslaniem kwerendowym do DB
+                        ads_meta_data.append([filename, width, height, location_x, location_y, text, timestamp])
+
                         self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
                         image_path = f"../Screenshots/Brands related to your search/{filename}.png"
                         img = cv2.imread(image_path)
@@ -141,18 +158,18 @@ class MainActivity:
                         """scroll through ads"""
                         action = TouchAction(self.driver)
                         action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
-                        #self.driver.swipe(element.location["x"], element.location["y"], element.size["width"] / 2, element.location["y"], 400)
-
-
-                        #TODO zmienic by wysysalo po iteracjach wszytsko na raz | przeniec wszytskie infomracje na raz
-                        MainActivity().send_data_to_db("brands_related_to_your_search", filename, width, height, location_x,
-                                                       location_y, text, timestamp)
-
-
 
                     except Exception as e:
                         print(f'Excepion occured : {e}')
                         pass
+
+            for ad in ads_meta_data:
+                try:
+                    MainActivity().send_data_to_db("brands_related_to_your_search", ad[0], ad[1], ad[2], ad[3],
+                                                   ad[4], ad[5], ad[6])
+                except Exception as e:
+                    print(f'Excepion occured : {e}')
+                    pass
 
         except Exception as e:
             # TODO zamienic pass na konkret
@@ -191,24 +208,21 @@ class MainActivity:
 
 if __name__ == "__main__":
     # TODO zorganizowac plynny system logiki
-    """Amazon = MainActivity()
-    Amazon.setUp()
-    Amazon.brands_related_to_your_search_Collector()
+    #Amazon = MainActivity()
+    #Amazon.setUp()
+    #Amazon.brands_related_to_your_search_Collector()
     while True:
+        Amazon = MainActivity()
         try:
-            Amazon = MainActivity()
             Amazon.setUp()
             Amazon = MainActivity()
             Amazon.bottom_ad()
             Amazon.brands_related_to_your_search_Collector()
             #Amazon.related_inspiration()
-            Amazon.tearDown()
         except Exception as e:
             print(f'Excepion occured : {e}')
-            pass"""
-    Amazon = MainActivity()
-    Amazon.setUp()
-    #Amazon.bottom_ad()
-    Amazon.brands_related_to_your_search_Collector()
-    #Amazon.related_inspiration()
-    Amazon.tearDown()
+            pass
+        finally:
+            Amazon.tearDown()
+    #TODO przetestowac zmiany zawarte w metodzie brands_related_to_your_search_Collector() | zmiany polegaja na modyfikacji wysylania do DB
+    #TODO stworzyc jedna metode do wysylania wszytskich reklam do jednej tabeli. (zmodyfikowac istniejaca)
