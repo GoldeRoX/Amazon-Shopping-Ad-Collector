@@ -71,7 +71,6 @@ class MainActivity:
                 pass
 
     def bottom_ad(self) -> None:
-        #TODO naprawic efektywnosc | dziala w 50% przypadkow. Najlepiej by sprawdzic czemu wywala, i upewniac sie ze bez scr. nie wysyla danych i wice wersa
         try:
             sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")
 
@@ -84,6 +83,7 @@ class MainActivity:
                 print("len(ad) = "+str(len(ad)))
 
             ads_meta_data = []
+
             for element in ad:
                 """informacje do bazy danych"""
                 width = element.size["width"]
@@ -107,14 +107,12 @@ class MainActivity:
                                 element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
                 cv2.imwrite(f"../Screenshots/First Ad/{filename}.png", cropped_image)
 
-                #MainActivity().send_data_to_db("bottom_ad", filename, width, height, location_x, location_y, text,
-                #                               timestamp)
-
             for ad in ads_meta_data:
                 try:
-                    if(exists(f"../Screenshots/First Ad/{ad[0]}.png")):
-                        MainActivity().send_data_to_db("bottom_ad", ad[0], ad[1], ad[2], ad[3],
-                                                   ad[4], ad[5], ad[6])
+                    if exists(f"../Screenshots/First Ad/{ad[0]}.png"):
+
+                        MainActivity().send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 1)
+
                 except Exception as e:
                     print(f'Excepion occured in sending meta_data to DB: {e}')
                     remove(f"../Screenshots/First Ad/{ad[0]}.png")
@@ -167,10 +165,13 @@ class MainActivity:
 
             for ad in ads_meta_data:
                 try:
-                    MainActivity().send_data_to_db("brands_related_to_your_search", ad[0], ad[1], ad[2], ad[3],
-                                                   ad[4], ad[5], ad[6])
+                    if exists(f"../Screenshots/Brands related to your search/{ad[0]}.png"):
+
+                        MainActivity().send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 2)
+
                 except Exception as e:
-                    print(f'Excepion occured : {e}')
+                    print(f'Excepion occured in sending meta_data to DB: {e}')
+                    remove(f"../Screenshots/Brands related to your search/{ad[0]}.png")
                     pass
 
         except Exception as e:
@@ -189,13 +190,13 @@ class MainActivity:
     def tearDown(self) -> None:
         self.driver.close_app()
 
-    def send_data_to_db(self, table_name, filename, width, height, location_x, location_y, text, timestamp):
-        query = f"""
+    def send_data_to_db(self, filename, width, height, location_x, location_y, text, timestamp, id_ad_type):
+        query = """
                 INSERT INTO 
-                    {str(table_name)}
-                    (filename, width, height, location_x, location_y, text, timestamp)
+                    ads_meta_data
+                    (filename, width, height, location_x, location_y, text, timestamp, id_ad_type)
                 VALUES
-                    (%s, %s, %s, %s, %s, %s, %s)
+                    (%s, %s, %s, %s, %s, %s, %s, %s)
                 ;"""
 
         with cursor(**db_credentials) as c:
@@ -204,7 +205,7 @@ class MainActivity:
 
             c.execute(
                 query,
-                (filename, width, height, location_x, location_y, text, timestamp)
+                (filename, width, height, location_x, location_y, text, timestamp, id_ad_type)
             )
 
 
