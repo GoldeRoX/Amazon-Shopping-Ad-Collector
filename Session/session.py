@@ -4,9 +4,10 @@ import cv2  # import opencv-python	4.5.5.64
 from appium import webdriver  # import Appium-Python-Client 2.2.0
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from selenium.webdriver import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 
+from os.path import exists
+from os import remove
 from datetime import datetime
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -66,7 +67,6 @@ class MainActivity:
         for i in range(14):
             try:
                 self.driver.swipe(470, 1100, 470, 50, 400)
-                #time.sleep(1)
             except:
                 pass
 
@@ -112,10 +112,12 @@ class MainActivity:
 
             for ad in ads_meta_data:
                 try:
-                    MainActivity().send_data_to_db("bottom_ad", ad[0], ad[1], ad[2], ad[3],
+                    if(exists(f"../Screenshots/First Ad/{ad[0]}.png")):
+                        MainActivity().send_data_to_db("bottom_ad", ad[0], ad[1], ad[2], ad[3],
                                                    ad[4], ad[5], ad[6])
                 except Exception as e:
                     print(f'Excepion occured in sending meta_data to DB: {e}')
+                    remove(f"../Screenshots/First Ad/{ad[0]}.png")
                     pass
 
         except NoSuchElementException:
