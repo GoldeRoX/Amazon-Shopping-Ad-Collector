@@ -39,3 +39,21 @@ db_credentials = {
     'charset': 'utf8mb4'
 }
 
+
+def send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, id_ad_type):
+    query = """
+            INSERT INTO 
+                ads_meta_data
+                (filename, width, height, location_x, location_y, text, timestamp, id_ad_type)
+            VALUES
+                (%s, %s, %s, %s, %s, %s, %s, %s)
+            ;"""
+
+    with cursor(**db_credentials) as c:
+        if not text:
+            text = None
+
+        c.execute(
+            query,
+            (filename, width, height, location_x, location_y, text, timestamp, id_ad_type)
+        )

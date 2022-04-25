@@ -12,6 +12,7 @@ from datetime import datetime
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+from database_connector import send_data_to_db
 from database_connector import cursor, db_credentials
 from TestData.config import TestData
 
@@ -111,16 +112,14 @@ class MainActivity:
                 try:
                     if exists(f"../Screenshots/First Ad/{ad[0]}.png"):
 
-                        MainActivity().send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 1)
+                        send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 1)
 
                 except Exception as e:
                     print(f'Excepion occured in sending meta_data to DB: {e}')
                     remove(f"../Screenshots/First Ad/{ad[0]}.png")
-                    pass
 
         except NoSuchElementException:
             print("ERROR-bottom_ad")
-            pass
 
     def brands_related_to_your_search_Collector(self):
         try:
@@ -161,69 +160,42 @@ class MainActivity:
 
                     except Exception as e:
                         print(f'Excepion occured : {e}')
-                        pass
 
             for ad in ads_meta_data:
                 try:
                     if exists(f"../Screenshots/Brands related to your search/{ad[0]}.png"):
 
-                        MainActivity().send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 2)
+                        send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 2)
 
                 except Exception as e:
                     print(f'Excepion occured in sending meta_data to DB: {e}')
                     remove(f"../Screenshots/Brands related to your search/{ad[0]}.png")
-                    pass
 
         except Exception as e:
             # TODO zamienic pass na konkret
             print(f'Excepion occured : {e}')
-            pass
 
     def related_inspiration(self) -> None:
         try:
-            element = self.driver.find_element(By.XPATH, "(//*[@text='RELATED INSPIRATION See all']")
-            print(element)
+            element = self.driver.find_element(By.XPATH, "//*[@text='RELATED INSPIRATION See all']/parent::*")
+            print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"+str(element))
 
-        except NoSuchElementException:
-            print("ERROR-related_inspiration")
+        except Exception as e:
+            print(f'Excepion occured %%%%%%%%%: {e}')
 
     def tearDown(self) -> None:
         self.driver.close_app()
 
-    def send_data_to_db(self, filename, width, height, location_x, location_y, text, timestamp, id_ad_type):
-        query = """
-                INSERT INTO 
-                    ads_meta_data
-                    (filename, width, height, location_x, location_y, text, timestamp, id_ad_type)
-                VALUES
-                    (%s, %s, %s, %s, %s, %s, %s, %s)
-                ;"""
-
-        with cursor(**db_credentials) as c:
-            if not text:
-                text = None
-
-            c.execute(
-                query,
-                (filename, width, height, location_x, location_y, text, timestamp, id_ad_type)
-            )
-
-
 if __name__ == "__main__":
-    # TODO zorganizowac plynny system logiki
-    #Amazon = MainActivity()
-    #Amazon.setUp()
-    #Amazon.brands_related_to_your_search_Collector()
     while True:
         Amazon = MainActivity()
         try:
             Amazon.setUp()
-            Amazon.bottom_ad()
-            Amazon.brands_related_to_your_search_Collector()
-            #Amazon.related_inspiration()
+            #Amazon.bottom_ad()
+            #Amazon.brands_related_to_your_search_Collector()
+            Amazon.related_inspiration()
         except Exception as e:
             print(f'Excepion occured : {e}')
-            pass
         finally:
             Amazon.tearDown()
     #TODO przetestowac zmiany zawarte w metodzie brands_related_to_your_search_Collector() | zmiany polegaja na modyfikacji wysylania do DB
