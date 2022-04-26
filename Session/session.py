@@ -141,9 +141,6 @@ class MainActivity:
                         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
-                        #zorganizowac system dodawania meta_danych za pomoca listy list.
-                        #Spowoduje to mam nadzieje mozliwosc dodania jednoczesnego wielu
-                        #danych za jednym wyslaniem kwerendowym do DB
                         ads_meta_data.append([filename, width, height, location_x, location_y, text, timestamp])
 
                         self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
@@ -177,8 +174,70 @@ class MainActivity:
 
     def related_inspiration(self) -> None:
         try:
-            element = self.driver.find_element(By.XPATH, "//*[@text='RELATED INSPIRATION See all']/parent::*")
-            print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"+str(element))
+            ads_block = self.driver.find_elements(By.XPATH, "//*[@text='RELATED INSPIRATION']/parent::*/following-sibling::*[2]/child::*/child::*/child::*")
+
+            print(ads_block)
+            print(len(ads_block))
+
+            ads_meta_data = []
+            x = 0
+            for ad1 in ads_block:
+                ads_block_crc = ad1.find_elements(By.XPATH, ".//*[@class='android.view.View']")
+                for ad in ads_block_crc:
+                    if str(ad.get_attribute("text")).startswith("Follow the brand"):
+                        x+=1
+
+                        """informacje do bazy danych"""
+                        width = ad.size["width"]
+                        height = ad.size["height"]
+                        location_x = ad.location["x"]
+                        location_y = ad.location["y"]
+                        text = ad.get_attribute("text")
+                        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        filename = (self.driver.current_activity + timestamp).replace(".", "_")
+
+                        #tutaj ify i na koncu zweryfikowac scr -> wyslac do bd
+
+                        ad_img = ad.find_element(By.XPATH, "child::*/child::*/child::*")
+
+                        self.driver.save_screenshot(f"../Screenshots/Related Inspiration/{filename}.png")
+                        image_path = f"../Screenshots/Related Inspiration/{filename}.png"
+                        img = cv2.imread(image_path)
+                        cropped_image = img[
+                                        ad_img.location_in_view["y"]:ad_img.location_in_view["y"] + ad_img.size[
+                                            "height"],
+                                        ad_img.location_in_view["x"]:ad_img.location_in_view["x"] + ad_img.size[
+                                            "width"]]
+                        cv2.imwrite(f"../Screenshots/Related Inspiration/{filename}.png", cropped_image)
+
+                        """scroll through ads"""
+
+                        action = TouchAction(self.driver)
+                            #z prawej strony na lewo
+                            #action.press(ad_img).move_to(x=-ad_img.size["width"] / 2, y=0).release().perform()
+                            #location_y+(height/2)
+                        #action.press(x=location_x+width, y=0).move_to(x=location_x+(width/2), y=0).release().perform()
+                        self.driver.execute_script('mobile: scroll', {"element": ad_img, "toVisible": True})
+
+                        """
+                        int centerX = element.getLocation().getX() + (element.getSize().getWidth()/2)
+                        driver.swipe(centerX, bottomY, centerX, topY, duration);
+                        """
+
+
+                        ads_meta_data.append([filename, width, height, location_x, location_y, text, timestamp, str(x)]) #testowe
+
+
+
+            print(ads_meta_data)
+
+            """ads = element.find_elements(By.XPATH, ".//*[@class='android.view.View']")
+
+            print(len(ads))
+            for ad in ads:
+                print(ad)"""
+
+
 
         except Exception as e:
             print(f'Excepion occured %%%%%%%%%: {e}')
@@ -200,3 +259,6 @@ if __name__ == "__main__":
             Amazon.tearDown()
     #TODO przetestowac zmiany zawarte w metodzie brands_related_to_your_search_Collector() | zmiany polegaja na modyfikacji wysylania do DB
     #TODO stworzyc jedna metode do wysylania wszytskich reklam do jednej tabeli. (zmodyfikowac istniejaca)
+
+
+    #TODO kazda "sesja" MUSI wysylac cropowane scr. to folderow o nazwie rok-mies-dzien | sprawdza czy folder istnieje jak nie to stworzy
