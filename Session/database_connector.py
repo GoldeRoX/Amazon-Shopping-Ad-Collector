@@ -64,7 +64,5 @@ def get_last_saved_id_from_db() -> int:
 
     with cursor(**db_credentials) as c:
         c.execute(query)
-
         result = cursor.fetchall()
-
-        return int(result[0])
+    return int(result[0])
