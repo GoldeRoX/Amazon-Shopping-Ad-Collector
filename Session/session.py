@@ -1,3 +1,4 @@
+import os.path
 import time
 
 import cv2  # import opencv-python	4.5.5.64
@@ -12,8 +13,8 @@ from datetime import datetime
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
+from database_connector import get_last_saved_id_from_db
 from database_connector import send_data_to_db
-from database_connector import cursor, db_credentials
 from TestData.config import TestData
 
 
@@ -160,7 +161,7 @@ class MainActivity:
 
             for ad in ads_meta_data:
                 try:
-                    if exists(f"../Screenshots/Brands related to your search/{ad[0]}.png"):
+                    if os.path.exists(f"../Screenshots/Brands related to your search/{ad[0]}.png"):
 
                         send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 2)
 
@@ -200,18 +201,9 @@ class MainActivity:
 
                         ad_img = ad.find_element(By.XPATH, "child::*/child::*/child::*")
 
-                        self.driver.save_screenshot(f"../Screenshots/Related Inspiration/{filename}.png")
-                        image_path = f"../Screenshots/Related Inspiration/{filename}.png"
-                        img = cv2.imread(image_path)
-                        cropped_image = img[
-                                        ad_img.location_in_view["y"]:ad_img.location_in_view["y"] + ad_img.size[
-                                            "height"],
-                                        ad_img.location_in_view["x"]:ad_img.location_in_view["x"] + ad_img.size[
-                                            "width"]]
-                        cv2.imwrite(f"../Screenshots/Related Inspiration/{filename}.png", cropped_image)
+                        MainActivity.save_croped_scr(self, ad_img)
 
                         """scroll through ads"""
-
                         action = TouchAction(self.driver)
                             #z prawej strony na lewo
                             #action.press(ad_img).move_to(x=-ad_img.size["width"] / 2, y=0).release().perform()
@@ -237,10 +229,26 @@ class MainActivity:
             for ad in ads:
                 print(ad)"""
 
-
-
         except Exception as e:
             print(f'Excepion occured %%%%%%%%%: {e}')
+
+    def save_croped_scr(self, object_to_save):
+
+        date_folder_name = datetime.now().strftime("%Y-%m-%d")
+
+        if not os.path.exists(f"../Screenshots/{date_folder_name}"):
+            os.mkdir(f"../Screenshots/{date_folder_name}")
+
+        img_name = get_last_saved_id_from_db()+1
+
+        image_path = f"../Screenshots/{date_folder_name}/{img_name}.png"
+        img = cv2.imread(image_path)
+        cropped_image = img[
+                        object_to_save.location_in_view["y"]:object_to_save.location_in_view["y"] + object_to_save.size[
+                            "height"],
+                        object_to_save.location_in_view["x"]:object_to_save.location_in_view["x"] + object_to_save.size[
+                            "width"]]
+        cv2.imwrite(f"../Screenshots/{date_folder_name}/{img_name}.png", cropped_image)
 
     def tearDown(self) -> None:
         self.driver.close_app()

@@ -57,3 +57,14 @@ def send_data_to_db(filename, width, height, location_x, location_y, text, times
             query,
             (filename, width, height, location_x, location_y, text, timestamp, id_ad_type)
         )
+
+
+def get_last_saved_id_from_db() -> int:
+    query = "SELECT MAX(id) FROM ads_meta_data;"
+
+    with cursor(**db_credentials) as c:
+        c.execute(query)
+
+    result = cursor.fetchone()
+
+    return int(result[0])
