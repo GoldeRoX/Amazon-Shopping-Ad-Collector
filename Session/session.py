@@ -98,16 +98,7 @@ class MainActivity:
 
                 ads_meta_data.append([filename, width, height, location_x, location_y, text, timestamp])
 
-                self.driver.save_screenshot(f"../Screenshots/First Ad/{filename}.png")
-
-                image_path = f"../Screenshots/First Ad/{filename}.png"
-
-                img = cv2.imread(image_path)
-
-                cropped_image = img[
-                                element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
-                                element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
-                cv2.imwrite(f"../Screenshots/First Ad/{filename}.png", cropped_image)
+                MainActivity.save_croped_scr(self, element)
 
             for ad in ads_meta_data:
                 try:
@@ -144,13 +135,7 @@ class MainActivity:
 
                         ads_meta_data.append([filename, width, height, location_x, location_y, text, timestamp])
 
-                        self.driver.save_screenshot(f"../Screenshots/Brands related to your search/{filename}.png")
-                        image_path = f"../Screenshots/Brands related to your search/{filename}.png"
-                        img = cv2.imread(image_path)
-                        cropped_image = img[
-                                        element.location_in_view["y"]:element.location_in_view["y"] + element.size["height"],
-                                        element.location_in_view["x"]:element.location_in_view["x"] + element.size["width"]]
-                        cv2.imwrite(f"../Screenshots/Brands related to your search/{filename}.png", cropped_image)
+                        MainActivity.save_croped_scr(self, element)
 
                         """scroll through ads"""
                         action = TouchAction(self.driver)
@@ -258,9 +243,9 @@ if __name__ == "__main__":
         Amazon = MainActivity()
         try:
             Amazon.setUp()
-            #Amazon.bottom_ad()
+            Amazon.bottom_ad()
             #Amazon.brands_related_to_your_search_Collector()
-            Amazon.related_inspiration()
+            #Amazon.related_inspiration()
         except Exception as e:
             print(f'Excepion occured : {e}')
         finally:
