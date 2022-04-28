@@ -1,6 +1,7 @@
 import MySQLdb
 from MySQLdb.connections import Connection
-from MySQLdb.cursors import Cursor # pip install mysqlclient~=2.0.3 | sudo apt-get install python-dev libmysqlclient-dev
+from MySQLdb.cursors import \
+    Cursor  # pip install mysqlclient~=2.0.3 | sudo apt-get install python-dev libmysqlclient-dev
 import contextlib
 from typing import (
     ContextManager,
@@ -64,5 +65,21 @@ def get_last_saved_id_from_db() -> int:
 
     with cursor(**db_credentials) as c:
         c.execute(query)
-        result = cursor.fetchall()
+        result = c.fetchone()
+
+    if result[0] is None:
+        return 1
     return int(result[0])
+
+
+res = get_last_saved_id_from_db()
+print(res)
+"""
+    cnx = mysql.connector.connect(database='world')
+cursor = cnx.cursor(dictionary=True)
+cursor.execute("SELECT * FROM country WHERE Continent = 'Europe'")
+
+print("Countries in Europe:")
+for row in cursor:
+    print("* {Name}".format(Name=row['Name']))
+"""
