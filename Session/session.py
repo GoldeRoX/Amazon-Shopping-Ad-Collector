@@ -212,7 +212,7 @@ class MainActivity:
         except Exception as e:
             print(f'Excepion occured %%%%%%%%%: {e}')
 
-    def save_croped_scr(self, object_to_save):
+    def save_croped_scr(self, object_to_save) -> None:
 
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
