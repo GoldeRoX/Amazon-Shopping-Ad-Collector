@@ -70,16 +70,3 @@ def get_last_saved_id_from_db() -> int:
     if result[0] is None:
         return 0
     return int(result[0])
-
-
-res = get_last_saved_id_from_db()
-print(res)
-"""
-    cnx = mysql.connector.connect(database='world')
-cursor = cnx.cursor(dictionary=True)
-cursor.execute("SELECT * FROM country WHERE Continent = 'Europe'")
-
-print("Countries in Europe:")
-for row in cursor:
-    print("* {Name}".format(Name=row['Name']))
-"""
