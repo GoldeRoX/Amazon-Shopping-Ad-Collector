@@ -101,14 +101,9 @@ class MainActivity:
                 MainActivity.save_croped_scr(self, element)
 
             for ad in ads_meta_data:
-                try:
-                    if exists(f"../Screenshots/First Ad/{ad[0]}.png"):
+                send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 1)
 
-                        send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 1)
 
-                except Exception as e:
-                    print(f'Excepion occured in sending meta_data to DB: {e}')
-                    remove(f"../Screenshots/First Ad/{ad[0]}.png")
 
         except NoSuchElementException:
             print("ERROR-bottom_ad")
@@ -224,16 +219,18 @@ class MainActivity:
         if not os.path.exists(f"../Screenshots/{date_folder_name}"):
             os.mkdir(f"../Screenshots/{date_folder_name}")
 
-        img_name = get_last_saved_id_from_db()+1
+        img_name = int(get_last_saved_id_from_db())+1
 
-        image_path = f"../Screenshots/{date_folder_name}/{img_name}.png"
+        image_path = f"../Screenshots/{date_folder_name}/{str(img_name)}.png"
+        self.driver.save_screenshot(image_path)
         img = cv2.imread(image_path)
+
         cropped_image = img[
                         object_to_save.location_in_view["y"]:object_to_save.location_in_view["y"] + object_to_save.size[
                             "height"],
                         object_to_save.location_in_view["x"]:object_to_save.location_in_view["x"] + object_to_save.size[
                             "width"]]
-        cv2.imwrite(f"../Screenshots/{date_folder_name}/{img_name}.png", cropped_image)
+        cv2.imwrite(image_path, cropped_image)
 
     def tearDown(self) -> None:
         self.driver.close_app()

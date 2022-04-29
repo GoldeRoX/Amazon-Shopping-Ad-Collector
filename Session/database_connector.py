@@ -68,7 +68,7 @@ def get_last_saved_id_from_db() -> int:
         result = c.fetchone()
 
     if result[0] is None:
-        return 1
+        return 0
     return int(result[0])
 
 
