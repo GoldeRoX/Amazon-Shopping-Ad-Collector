@@ -140,14 +140,8 @@ class MainActivity:
                         print(f'Excepion occured : {e}')
 
             for ad in ads_meta_data:
-                try:
-                    if os.path.exists(f"../Screenshots/Brands related to your search/{ad[0]}.png"):
+                    send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 2)
 
-                        send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 2)
-
-                except Exception as e:
-                    print(f'Excepion occured in sending meta_data to DB: {e}')
-                    remove(f"../Screenshots/Brands related to your search/{ad[0]}.png")
 
         except Exception as e:
             # TODO zamienic pass na konkret
@@ -241,7 +235,7 @@ if __name__ == "__main__":
         try:
             Amazon.setUp()
             Amazon.bottom_ad()
-            #Amazon.brands_related_to_your_search_Collector()
+            Amazon.brands_related_to_your_search_Collector()
             #Amazon.related_inspiration()
         except Exception as e:
             print(f'Excepion occured : {e}')
