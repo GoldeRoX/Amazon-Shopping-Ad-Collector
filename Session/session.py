@@ -151,16 +151,11 @@ class MainActivity:
         try:
             ads_block = self.driver.find_elements(By.XPATH, "//*[@text='RELATED INSPIRATION']/parent::*/following-sibling::*[2]/child::*/child::*/child::*")
 
-            print(ads_block)
-            print(len(ads_block))
-
-            ads_meta_data = []
             x = 0
             for ad1 in ads_block:
                 ads_block_crc = ad1.find_elements(By.XPATH, ".//*[@class='android.view.View']")
                 for ad in ads_block_crc:
                     if str(ad.get_attribute("text")).startswith("Follow the brand"):
-                        x+=1
 
                         """informacje do bazy danych"""
                         width = ad.size["width"]
@@ -171,16 +166,17 @@ class MainActivity:
                         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
+                        """save cropped scr"""
                         ad_img = ad.find_element(By.XPATH, "child::*/child::*/child::*")
+                        time.sleep(1)
+                        MainActivity.save_croped_scr(self, ad_img)
 
-                        """scroll through ads"""
-                        if ads_block_crc[x]:
-                            MainActivity.save_croped_scr(self, ad_img)
-                            self.driver.swipe(location_x + (width/2), location_y + (height/2), ads_block_crc[x].size["width"]/2, ads_block_crc[x].location["y"]+(ads_block_crc[x].size["height"]/2))
-                            time.sleep(1)
-                            send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, 3)
+                        """scroll through ads | send data to db"""
+                        #if ads_block_crc[x]:
+                        send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, 3)
+                        self.driver.swipe(location_x + (width/2), location_y + (height/2), ads_block_crc[x].size["width"]/2, ads_block_crc[x].location["y"]+(ads_block_crc[x].size["height"]/2))
 
-
+                        x += 1
 
         except Exception as e:
             print(f'Excepion occured %%%%%%%%%: {e}')
