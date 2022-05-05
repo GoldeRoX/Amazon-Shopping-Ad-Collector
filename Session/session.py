@@ -172,36 +172,15 @@ class MainActivity:
                         filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
                         ad_img = ad.find_element(By.XPATH, "child::*/child::*/child::*")
-                        MainActivity.save_croped_scr(self, ad_img)
 
                         """scroll through ads"""
-                        action = TouchAction(self.driver)
-
-                        #action.press(x=location_x+(width / 2), y=location_y+(height/2)).move_to(x=-int(width / 2), y=location_y+(height/2)).release().perform()
-
                         if ads_block_crc[x]:
+                            MainActivity.save_croped_scr(self, ad_img)
                             self.driver.swipe(location_x + (width/2), location_y + (height/2), ads_block_crc[x].size["width"]/2, ads_block_crc[x].location["y"]+(ads_block_crc[x].size["height"]/2))
-                            #action.press(ad).move_to(ads_block_crc[x]).release().perform()
-                            #scrollObject = dict(direction="right", text="some_text", element=ads_block_crc[x].id)
-                            #elf.driver.execute_script("mobile: scroll", scrollObject)
-                            """
-                            scrollObject = dict(direction="down", text="some_text", element=appium_driver_elem.id)
-                            self.driver.execute_script("mobile: scrollTo", scrollObject)
-                            """
-                        #action.press(x=location_x+(width / 2), y=location_y+height).move_to(x=-width / 2, y=location_y+height).release().perform() #TODO
-
-                        send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, 3)
-                        ads_meta_data.append([filename, width, height, location_x, location_y, text, timestamp, str(x)]) #testowe
+                            time.sleep(1)
+                            send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, 3)
 
 
-
-            print(ads_meta_data)
-
-            """ads = element.find_elements(By.XPATH, ".//*[@class='android.view.View']")
-
-            print(len(ads))
-            for ad in ads:
-                print(ad)"""
 
         except Exception as e:
             print(f'Excepion occured %%%%%%%%%: {e}')
