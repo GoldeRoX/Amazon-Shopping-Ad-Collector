@@ -171,26 +171,26 @@ class MainActivity:
                         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
-                        #tutaj ify i na koncu zweryfikowac scr -> wyslac do bd
-
                         ad_img = ad.find_element(By.XPATH, "child::*/child::*/child::*")
-
                         MainActivity.save_croped_scr(self, ad_img)
 
                         """scroll through ads"""
                         action = TouchAction(self.driver)
-                            #z prawej strony na lewo
-                            #action.press(ad_img).move_to(x=-ad_img.size["width"] / 2, y=0).release().perform()
-                            #location_y+(height/2)
-                        #action.press(x=location_x+width, y=0).move_to(x=location_x+(width/2), y=0).release().perform()
-                        self.driver.execute_script('mobile: scroll', {"element": ad_img, "toVisible": True})
 
-                        """
-                        int centerX = element.getLocation().getX() + (element.getSize().getWidth()/2)
-                        driver.swipe(centerX, bottomY, centerX, topY, duration);
-                        """
+                        #action.press(x=location_x+(width / 2), y=location_y+(height/2)).move_to(x=-int(width / 2), y=location_y+(height/2)).release().perform()
 
+                        if ads_block_crc[x]:
+                            self.driver.swipe(location_x + (width/2), location_y + (height/2), ads_block_crc[x].size["width"]/2, ads_block_crc[x].location["y"]+(ads_block_crc[x].size["height"]/2))
+                            #action.press(ad).move_to(ads_block_crc[x]).release().perform()
+                            #scrollObject = dict(direction="right", text="some_text", element=ads_block_crc[x].id)
+                            #elf.driver.execute_script("mobile: scroll", scrollObject)
+                            """
+                            scrollObject = dict(direction="down", text="some_text", element=appium_driver_elem.id)
+                            self.driver.execute_script("mobile: scrollTo", scrollObject)
+                            """
+                        #action.press(x=location_x+(width / 2), y=location_y+height).move_to(x=-width / 2, y=location_y+height).release().perform() #TODO
 
+                        send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, 3)
                         ads_meta_data.append([filename, width, height, location_x, location_y, text, timestamp, str(x)]) #testowe
 
 
@@ -235,8 +235,8 @@ if __name__ == "__main__":
         try:
             Amazon.setUp()
             Amazon.bottom_ad()
-            Amazon.brands_related_to_your_search_Collector()
-            #Amazon.related_inspiration()
+            #Amazon.brands_related_to_your_search_Collector()
+            Amazon.related_inspiration()
         except Exception as e:
             print(f'Excepion occured : {e}')
         finally:
