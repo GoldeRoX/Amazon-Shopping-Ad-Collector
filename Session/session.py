@@ -166,17 +166,14 @@ class MainActivity:
                         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
-                        """save cropped scr"""
-                        ad_img = ad.find_element(By.XPATH, "child::*/child::*/child::*")
-                        time.sleep(1)
-                        MainActivity.save_croped_scr(self, ad_img)
+                        MainActivity.save_croped_scr(self, ad)
 
                         """scroll through ads | send data to db"""
-                        #if ads_block_crc[x]:
-                        send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, 3)
-                        self.driver.swipe(location_x + (width/2), location_y + (height/2), ads_block_crc[x].size["width"]/2, ads_block_crc[x].location["y"]+(ads_block_crc[x].size["height"]/2))
-
-                        x += 1
+                        if ads_block_crc[x]:
+                            send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, 3)
+                            self.driver.swipe(location_x + (width/2), location_y + (height/2), ads_block_crc[x].size["width"]/2, ads_block_crc[x].location["y"]+(ads_block_crc[x].size["height"]/2))
+                            time.sleep(2)
+                            x += 1
 
         except Exception as e:
             print(f'Excepion occured %%%%%%%%%: {e}')
@@ -195,9 +192,9 @@ class MainActivity:
         img = cv2.imread(image_path)
 
         cropped_image = img[
-                        object_to_save.location_in_view["y"]:object_to_save.location_in_view["y"] + object_to_save.size[
+                        object_to_save.location["y"]:object_to_save.location["y"] + object_to_save.size[
                             "height"],
-                        object_to_save.location_in_view["x"]:object_to_save.location_in_view["x"] + object_to_save.size[
+                        object_to_save.location["x"]:object_to_save.location["x"] + object_to_save.size[
                             "width"]]
         cv2.imwrite(image_path, cropped_image)
 
@@ -219,8 +216,3 @@ if __name__ == "__main__":
                 Amazon.tearDown()
             except Exception:
                 pass
-    #TODO przetestowac zmiany zawarte w metodzie brands_related_to_your_search_Collector() | zmiany polegaja na modyfikacji wysylania do DB
-    #TODO stworzyc jedna metode do wysylania wszytskich reklam do jednej tabeli. (zmodyfikowac istniejaca)
-
-
-    #TODO kazda "sesja" MUSI wysylac cropowane scr. to folderow o nazwie rok-mies-dzien | sprawdza czy folder istnieje jak nie to stworzy
