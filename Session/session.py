@@ -166,13 +166,15 @@ class MainActivity:
                         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
-                        MainActivity.save_croped_scr(self, ad)
+
 
                         """scroll through ads | send data to db"""
                         if ads_block_crc[x]:
                             send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, 3)
                             self.driver.swipe(location_x + (width/2), location_y + (height/2), ads_block_crc[x].size["width"]/2, ads_block_crc[x].location["y"]+(ads_block_crc[x].size["height"]/2))
-                            time.sleep(2)
+                            time.sleep(1)
+                            MainActivity.save_croped_scr(self, ad)
+                            time.sleep(1)
                             x += 1
 
         except Exception as e:
