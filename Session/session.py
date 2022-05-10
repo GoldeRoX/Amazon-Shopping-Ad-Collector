@@ -17,11 +17,14 @@ from database_connector import get_last_saved_id_from_db
 from database_connector import send_data_to_db
 from TestData.config import TestData
 
+from Ads import Bottom_ad
+
+
 
 class MainActivity:
 
-    def __init__(self):
-        self.driver = webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC)
+    def __init__(self, driver):
+        self.driver = driver
 
     def setUp(self) -> None:
         try:
@@ -38,7 +41,6 @@ class MainActivity:
             pass
         self.driver.find_element(By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID).click()
 
-        #TODO skonfigurowac wyszukiwanie przez search bar w celu dowolnosci wyszukiwania
         """search item"""
         try:
             WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
@@ -75,14 +77,13 @@ class MainActivity:
     def bottom_ad(self) -> None:
         try:
             sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")
-
+            print(sponsored_ads)
             ad = []
             for x in sponsored_ads:
                 elements = x.find_elements(By.XPATH, ".//*[@class='android.view.View']")
                 for element in elements:
                     if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
                         ad.append(element)
-                print("len(ad) = "+str(len(ad)))
 
             ads_meta_data = []
 
@@ -144,7 +145,6 @@ class MainActivity:
 
 
         except Exception as e:
-            # TODO zamienic pass na konkret
             print(f'Excepion occured : {e}')
 
     def related_inspiration(self) -> None:
@@ -166,19 +166,19 @@ class MainActivity:
                         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
-
-
                         """scroll through ads | send data to db"""
                         if ads_block_crc[x]:
                             send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, 3)
-                            self.driver.swipe(location_x + (width/2), location_y + (height/2), ads_block_crc[x].size["width"]/2, ads_block_crc[x].location["y"]+(ads_block_crc[x].size["height"]/2))
-                            time.sleep(1)
+                            self.driver.swipe(location_x + (width/2), location_y + (height/2),
+                                              ads_block_crc[x].size["width"]/2, ads_block_crc[x].location["y"]+
+                                              (ads_block_crc[x].size["height"]/2))
+                            time.sleep(2)
                             MainActivity.save_croped_scr(self, ad)
-                            time.sleep(1)
+                            time.sleep(2)
                             x += 1
 
         except Exception as e:
-            print(f'Excepion occured %%%%%%%%%: {e}')
+            print(f'Excepion occured retade_ins: {e}')
 
     def save_croped_scr(self, object_to_save) -> None:
 
@@ -205,11 +205,10 @@ class MainActivity:
 
 if __name__ == "__main__":
     while True:
-        Amazon = MainActivity()
+        Amazon = MainActivity(webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC))
         try:
             Amazon.setUp()
-            Amazon.bottom_ad()
-            #Amazon.brands_related_to_your_search_Collector()
+            #Amazon.bottom_ad()
             Amazon.related_inspiration()
         except Exception as e:
             print(f'Excepion occured : {e}')
@@ -218,3 +217,4 @@ if __name__ == "__main__":
                 Amazon.tearDown()
             except Exception:
                 pass
+
