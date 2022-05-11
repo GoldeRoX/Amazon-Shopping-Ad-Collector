@@ -77,7 +77,6 @@ class MainActivity:
     def bottom_ad(self) -> None:
         try:
             sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")
-            print(sponsored_ads)
             ad = []
             for x in sponsored_ads:
                 elements = x.find_elements(By.XPATH, ".//*[@class='android.view.View']")
@@ -208,7 +207,7 @@ if __name__ == "__main__":
         Amazon = MainActivity(webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC))
         try:
             Amazon.setUp()
-            #Amazon.bottom_ad()
+            Amazon.bottom_ad()
             Amazon.related_inspiration()
         except Exception as e:
             print(f'Excepion occured : {e}')
