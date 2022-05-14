@@ -216,4 +216,3 @@ if __name__ == "__main__":
                 Amazon.tearDown()
             except Exception:
                 pass
-
