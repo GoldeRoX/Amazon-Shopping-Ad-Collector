@@ -17,15 +17,15 @@ from BaseAd import *
 from database_connector import get_last_saved_id_from_db
 from database_connector import send_data_to_db
 
-class Bottom_ad(BaseAd):
+class Bottom_ad():
 
     def __init__(self, driver):
         super().__init__(driver)
         self.driver = driver
 
-    def is_element_present_with_xpath(self, xpath):
+    def is_element_present_with_xpath(self, xpath, time_to_wait):
         try:
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
+            WebDriverWait(self.driver, time_to_wait).until(EC.presence_of_element_located(
                 (By.XPATH,
                  xpath)))
             return True
@@ -83,7 +83,7 @@ class Bottom_ad(BaseAd):
     def run_script(self):
 
         global sponsored_ads
-        if self.is_element_present_with_xpath("//*[@text='Sponsored']/parent::*"):
+        if self.is_element_present_with_xpath("//*[@text='Sponsored']/parent::*", 10):
             sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")
         ads =self.find_all_bot_ads(sponsored_ads)
         self.save_data_from_ad(ads)

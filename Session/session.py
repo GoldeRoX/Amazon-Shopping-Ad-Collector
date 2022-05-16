@@ -7,19 +7,12 @@ from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 
-from os.path import exists
-from os import remove
 from datetime import datetime
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
 from database_connector import get_last_saved_id_from_db
 from database_connector import send_data_to_db
-from TestData.config import TestData
-
-from Ads import Bottom_ad
-
-
 
 class MainActivity:
 
@@ -29,17 +22,17 @@ class MainActivity:
     def setUp(self) -> None:
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID)))
+                EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")))
         except (NoSuchElementException, TimeoutException):
             pass
-        self.driver.find_element(By.ID, TestData.SKIP_REDIRECT_MARKETPLACE_ID).click()
+        self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
 
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID)))
+                EC.presence_of_element_located((By.ID, 'com.amazon.mShop.android.shopping:id/skip_sign_in_button')))
         except (NoSuchElementException, TimeoutException):
             pass
-        self.driver.find_element(By.ID, TestData.SKIP_SIGN_IN_BUTTON_ID).click()
+        self.driver.find_element(By.ID, 'com.amazon.mShop.android.shopping:id/skip_sign_in_button').click()
 
         """search item"""
         try:
@@ -54,16 +47,12 @@ class MainActivity:
                 "oculus oculus 2")
             self.driver.press_keycode(66)
         except (NoSuchElementException, TimeoutException):
-            """try:
-                WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, TestData.LAPTOP_BUTTON_XPATH)))
-                self.driver.find_element(By.XPATH, TestData.LAPTOP_BUTTON_XPATH).click()
-            except (NoSuchElementException, TimeoutException):
-                pass"""
             try:
                 WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, TestData.OCULUS_BUTTON_XPATH)))
-                self.driver.find_element(By.XPATH, TestData.OCULUS_BUTTON_XPATH).click()
+                    EC.presence_of_element_located((By.XPATH, '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]'
+                                                              '/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/android.view.View/android.view.View[2]/android.view.View[2]/android.view.View/android.view.View[1]/android.view.View/android.view.View/android.view.View')))
+                self.driver.find_element(By.XPATH, '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]'
+                                                   '/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/android.view.View/android.view.View[2]/android.view.View[2]/android.view.View/android.view.View[1]/android.view.View/android.view.View/android.view.View').click()
             except (NoSuchElementException, TimeoutException):
                 pass
 
@@ -204,7 +193,15 @@ class MainActivity:
 
 if __name__ == "__main__":
     while True:
-        Amazon = MainActivity(webdriver.Remote("http://localhost:4723/wd/hub", TestData.APPIUM_DESC))
+        APPIUM_DESC = {
+            "platformName": "Android",
+            "appium:platformVersion": "9",
+            "appium:automationName": "UiAutomator2",
+            "appium:appPackage": "com.amazon.mShop.android.shopping",
+            "appium:appActivity": "com.amazon.mShop.home.HomeActivity",
+            "appium:deviceName": "emulator-5554"
+        }
+        Amazon = MainActivity(webdriver.Remote("http://localhost:4723/wd/hub", APPIUM_DESC))
         try:
             Amazon.setUp()
             Amazon.bottom_ad()
