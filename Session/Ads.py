@@ -8,11 +8,11 @@ from appium.webdriver.common.mobileby import MobileBy
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotVisibleException, \
     ElementNotSelectableException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
 from datetime import datetime
 from selenium.webdriver.support import expected_conditions as EC
-from BaseAd import *
 
 from database_connector import get_last_saved_id_from_db
 from database_connector import send_data_to_db
@@ -20,7 +20,6 @@ from database_connector import send_data_to_db
 class Bottom_ad():
 
     def __init__(self, driver):
-        super().__init__(driver)
         self.driver = driver
 
     def is_element_present_with_xpath(self, xpath, time_to_wait):
@@ -88,4 +87,13 @@ class Bottom_ad():
         ads =self.find_all_bot_ads(sponsored_ads)
         self.save_data_from_ad(ads)
 
-
+APPIUM_DESC = {
+    "platformName": "Android",
+    "appium:platformVersion": "9",
+    "appium:automationName": "UiAutomator2",
+    "appium:appPackage": "com.amazon.mShop.android.shopping",
+    "appium:appActivity": "com.amazon.mShop.home.HomeActivity",
+    "appium:deviceName": "emulator-5554"
+}
+ad = Bottom_ad(webdriver.Remote("http://localhost:4723/wd/hub", APPIUM_DESC))
+ad.run_script()

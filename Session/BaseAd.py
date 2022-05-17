@@ -1,7 +1,7 @@
 from telnetlib import EC
 from traceback import print_stack
 
-from abc import ABCMeta, abstractmethod, abstractstaticmethod
+from abc import ABCMeta, abstractmethod, abstractstaticmethod, ABC
 
 from appium.webdriver.common.mobileby import MobileBy
 from selenium.common.exceptions import NoSuchElementException, ElementNotVisibleException, ElementNotSelectableException
@@ -10,11 +10,19 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 
 
-class IAd(metaclass=ABCMeta):
+class IAd(ABC):
 
-    @abstractstaticmethod
-    def adMethod():
-        """ Interface Method """
+    @abstractmethod
+    def find_ads_tree(self, path) -> []:
+        """Find and veryfi a tree node of ads"""
+
+    @abstractmethod
+    def prepere_data(self):
+        """Prepere ad metadata"""
+
+    @abstractmethod
+    def send_data(self):
+        """Sending data to DB"""
 
 class Ad(IAd):
 

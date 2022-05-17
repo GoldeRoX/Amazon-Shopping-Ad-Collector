@@ -60,6 +60,7 @@ class MainActivity:
         for i in range(14):
             try:
                 self.driver.swipe(470, 1100, 470, 50, 400)
+                time.sleep(1)
             except:
                 pass
 
