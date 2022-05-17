@@ -21,6 +21,7 @@ class Search:
         }
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", appium_desc)
 
+    #create interface that will choose id or xpath or other by.
     def if_exist_click(self):
         pass
 
