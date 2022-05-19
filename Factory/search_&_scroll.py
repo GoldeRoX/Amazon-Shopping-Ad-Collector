@@ -21,9 +21,13 @@ class Search:
         }
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", appium_desc)
 
-    #create interface that will choose id or xpath or other by.
-    def if_exist_click(self):
-        pass
+    def click_element(self, by_type, path, time_to_wait=10):
+        try:
+            WebDriverWait(self.driver, time_to_wait).until(
+                EC.presence_of_element_located((by_type, path)))
+        except (NoSuchElementException, TimeoutException):
+            pass
+        self.driver.find_element(by_type, path).click()
 
     def setUp(self) -> None:
         try:

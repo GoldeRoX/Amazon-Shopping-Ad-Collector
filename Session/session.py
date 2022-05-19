@@ -206,6 +206,7 @@ if __name__ == "__main__":
         try:
             Amazon.setUp()
             Amazon.bottom_ad()
+            Amazon.brands_related_to_your_search_Collector()
             Amazon.related_inspiration()
         except Exception as e:
             print(f'Excepion occured : {e}')
