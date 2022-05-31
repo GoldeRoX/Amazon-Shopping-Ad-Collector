@@ -42,11 +42,14 @@ class MainActivity:
             self.driver.find_element(By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[1]/android.widget.LinearLayout/android.widget.TextView').click()
         try:
             WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text")))
-            self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text").send_keys(
+                EC.presence_of_element_located((By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[2]/android.widget.ImageView')))
+                #EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text")))
+            self.driver.find_element(By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[2]/android.widget.ImageView').click()
+            self.driver.find_element(By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[2]/android.widget.ImageView').send_keys(
                 "oculus oculus 2")
             self.driver.press_keycode(66)
         except (NoSuchElementException, TimeoutException):
+            print("nie znalazlo 'search' input")
             try:
                 WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located((By.XPATH, '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]'
