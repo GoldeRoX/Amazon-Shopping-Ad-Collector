@@ -47,7 +47,6 @@ class BaseAd:
         cv2.imwrite(image_path, cropped_image)
 
 
-
 class Search(BaseAd):
 
     def __init__(self):
