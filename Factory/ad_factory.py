@@ -62,6 +62,7 @@ class Search(object):
 
         self.click_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
         Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
+        time.sleep(1)
 
         """search item"""
         Search.click_element(self, By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[1]'
@@ -71,7 +72,7 @@ class Search(object):
             WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text")))
             self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text").send_keys(
-                "oculus oculus 2")
+                "Oculus")
         except (NoSuchElementException, TimeoutException):
             pass
 
