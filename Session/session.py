@@ -45,7 +45,7 @@ class MainActivity:
                 EC.presence_of_element_located((By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[2]/android.widget.ImageView')))
                 #EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text")))
             self.driver.find_element(By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[2]/android.widget.ImageView').click()
-            self.driver.find_element(By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[2]/android.widget.ImageView').send_keys(
+            self.driver.find_element(By.XPATH, 'com.amazon.mShop.android.shopping:id/rs_search_src_text').send_keys(
                 "oculus oculus 2")
             self.driver.press_keycode(66)
         except (NoSuchElementException, TimeoutException):
