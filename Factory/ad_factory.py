@@ -121,11 +121,6 @@ class BrandsRelatedToYourSearch(Search):
 
                     except Exception as e:
                         print(f'Excepion occured : {e}')
-
-            """for ad in ads_meta_data:
-                send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 2)"""
-
-
         except Exception as e:
             print(f'Excepion occured : {e}')
 
