@@ -55,8 +55,9 @@ class Search(object):
         except (NoSuchElementException, TimeoutException):
             pass
 
-    def send_simulated_typing_input(self):
-        pass
+    def send_simulated_typing_input(self, path: str, text_to_send: str):
+        for letter in text_to_send:
+            pass
 
     def setUp(self) -> None:
 
