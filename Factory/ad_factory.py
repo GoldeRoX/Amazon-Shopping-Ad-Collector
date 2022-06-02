@@ -2,6 +2,7 @@ import os.path
 import time
 
 import cv2  # import opencv-python	4.5.5.64
+from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from appium import webdriver  # import Appium-Python-Client 2.2.0
 from selenium.webdriver.support import expected_conditions as EC
@@ -14,7 +15,7 @@ from Session.database_connector import get_last_saved_id_from_db
 from Session.database_connector import send_data_to_db
 
 
-class BaseAd:
+class Search(object):
 
     def __init__(self):
         appium_desc = {
@@ -46,13 +47,7 @@ class BaseAd:
                             "width"]]
         cv2.imwrite(image_path, cropped_image)
 
-
-class Search(BaseAd):
-
-    def __init__(self):
-        super().__init__()
-
-    def click_element(self, by_type, path, time_to_wait=10):
+    def click_element(self, by_type, path: str, time_to_wait=10):
         try:
             WebDriverWait(self.driver, time_to_wait).until(
                 EC.presence_of_element_located((by_type, path)))
@@ -65,7 +60,7 @@ class Search(BaseAd):
 
     def setUp(self) -> None:
 
-        Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
+        self.click_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
         Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
 
         """search item"""
@@ -92,41 +87,50 @@ class Search(BaseAd):
                 pass
 
 
-class BottomAd(BaseAd):
+class BrandsRelatedToYourSearch(Search):
 
     def run_script(self):
         try:
-            sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")
-            ad = []
-            for x in sponsored_ads:
-                elements = x.find_elements(By.XPATH, ".//*[@class='android.view.View']")
-                for element in elements:
-                    if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
-                        ad.append(element)
+            element_node = self.driver.find_element(By.XPATH,
+                                                    "//*[contains(@text, 'Brands related to your search')]/parent::*")
+            elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
 
             ads_meta_data = []
+            for x in range(len(elements)):
+                element = elements[x]
+                if element.get_attribute("clickable") == "true":
+                    print(element)
+                    try:
+                        """informacje do bazy danych"""
+                        width = element.size["width"]
+                        height = element.size["height"]
+                        location_x = element.location["x"]
+                        location_y = element.location["y"]
+                        text = element.get_attribute("text")
+                        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        filename = (self.driver.current_activity + timestamp).replace(".", "_")
 
-            for element in ad:
-                """informacje do bazy danych"""
-                width = element.size["width"]
-                height = element.size["height"]
-                location_x = element.location["x"]
-                location_y = element.location["y"]
-                text = element.get_attribute("text")
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                filename = (self.driver.current_activity + timestamp).replace(".", "_")
+                        ads_meta_data.append([filename, width, height, location_x, location_y, text, timestamp])
 
-                ads_meta_data.append([filename, width, height, location_x, location_y, text, timestamp])
+                        self.save_croped_scr(element)
+                        send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, 2)
 
-                self.save_croped_scr(element)
+                        """scroll through ads"""
+                        action = TouchAction(self.driver)
+                        action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
 
-            for ad in ads_meta_data:
-                send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 1)
+                    except Exception as e:
+                        print(f'Excepion occured : {e}')
 
-        except NoSuchElementException:
-            print("ERROR-bottom_ad")
+            """for ad in ads_meta_data:
+                send_data_to_db(ad[0], ad[1], ad[2], ad[3], ad[4], ad[5], ad[6], 2)"""
+
+
+        except Exception as e:
+            print(f'Excepion occured : {e}')
 
 
 if __name__ == "__main__":
-    test = Search()
-    test.setUp()
+    bottomAd = BrandsRelatedToYourSearch()
+    bottomAd.setUp()
+    bottomAd.run_script()
