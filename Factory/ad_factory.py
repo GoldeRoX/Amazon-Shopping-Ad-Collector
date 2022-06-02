@@ -99,7 +99,6 @@ class BrandsRelatedToYourSearch(Search):
             for x in range(len(elements)):
                 element = elements[x]
                 if element.get_attribute("clickable") == "true":
-                    print(element)
                     try:
                         """informacje do bazy danych"""
                         width = element.size["width"]
