@@ -130,3 +130,4 @@ if __name__ == "__main__":
     bottomAd = BrandsRelatedToYourSearch()
     bottomAd.setUp()
     bottomAd.run_script()
+    bottomAd.driver.close_app()
