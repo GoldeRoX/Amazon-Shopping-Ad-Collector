@@ -17,6 +17,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from database_connector import get_last_saved_id_from_db
 from database_connector import send_data_to_db
 
+
 class Bottom_ad():
 
     def __init__(self, driver):
