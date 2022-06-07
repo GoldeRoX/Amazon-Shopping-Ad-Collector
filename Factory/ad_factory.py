@@ -48,7 +48,7 @@ class Search(object):
                             "width"]]
         cv2.imwrite(image_path, cropped_image)
 
-    def click_element(self, by_type, path: str, time_to_wait=10):
+    def click_element(self, by_type, path: str, time_to_wait=10) -> None:
         try:
             WebDriverWait(self.driver, time_to_wait).until(
                 EC.presence_of_element_located((by_type, path)))
@@ -56,7 +56,7 @@ class Search(object):
         except (NoSuchElementException, TimeoutException):
             pass
 
-    def send_text(self, by_type, path: str, text_to_send: str):
+    def send_text(self, by_type, path: str, text_to_send: str) -> None:
         try:
             WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((by_type, path)))
