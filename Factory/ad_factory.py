@@ -1,18 +1,19 @@
 import os.path
 import time
-
+from datetime import datetime
 import cv2  # import opencv-python	4.5.5.64
+
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from appium import webdriver  # import Appium-Python-Client 2.2.0
 from selenium.webdriver.support import expected_conditions as EC
-
-from datetime import datetime
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
 from Session.database_connector import get_last_saved_id_from_db
 from Session.database_connector import send_data_to_db
+
+from BrandsRelatedToYourSearch import BrandsRelatedToYourSearch
 
 
 class Search(object):
@@ -55,13 +56,17 @@ class Search(object):
         except (NoSuchElementException, TimeoutException):
             pass
 
-    def send_simulated_typing_input(self, path: str, text_to_send: str):
-        for letter in text_to_send:
-            pass
+    def send_text(self, by_type, path: str, text_to_send: str):
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((by_type, path)))
+            self.driver.find_element(by_type, path).send_keys(text_to_send)
+        except (NoSuchElementException, TimeoutException):
+            print("No such Input field")
 
-    def setUp(self) -> None:
+    def set_up(self, phrase_to_search: str) -> None:
 
-        self.click_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
+        Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
         Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
         time.sleep(1)
 
@@ -69,13 +74,7 @@ class Search(object):
         Search.click_element(self, By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[1]'
                                              '/android.widget.LinearLayout/android.widget.TextView')
 
-        try:
-            WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text")))
-            self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text").send_keys(
-                "Oculus")
-        except (NoSuchElementException, TimeoutException):
-            pass
+        Search.send_text(self, By.ID, "com.amazon.mShop.android.shopping:id/rs_search_src_text", phrase_to_search)
 
         """press enter"""
         self.driver.press_keycode(66)
@@ -88,16 +87,12 @@ class Search(object):
             except:
                 pass
 
-
-class BrandsRelatedToYourSearch(Search):
-
-    def run_script(self):
+    def execute_ad_2(self) -> None:
         try:
             element_node = self.driver.find_element(By.XPATH,
                                                     "//*[contains(@text, 'Brands related to your search')]/parent::*")
             elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
 
-            ads_meta_data = []
             for x in range(len(elements)):
                 element = elements[x]
                 if element.get_attribute("clickable") == "true":
@@ -109,12 +104,14 @@ class BrandsRelatedToYourSearch(Search):
                         location_y = element.location["y"]
                         text = element.get_attribute("text")
                         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        filename = (self.driver.current_activity + timestamp).replace(".", "_")
+                        filename = str(get_last_saved_id_from_db() + 1) + ".png"
 
-                        ads_meta_data.append([filename, width, height, location_x, location_y, text, timestamp])
+                        """create an object of ad"""
+                        ad = BrandsRelatedToYourSearch(filename, width, height, location_x, location_y, text, timestamp)
 
                         self.save_croped_scr(element)
-                        send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, 2)
+                        send_data_to_db(ad.filename, ad.width, ad.height, ad.location_x,
+                                        ad.location_y, ad.text, ad.timestamp, 2)
 
                         """scroll through ads"""
                         action = TouchAction(self.driver)
@@ -122,12 +119,13 @@ class BrandsRelatedToYourSearch(Search):
 
                     except Exception as e:
                         print(f'Excepion occured : {e}')
-        except Exception as e:
-            print(f'Excepion occured : {e}')
+
+        except (NoSuchElementException, TimeoutException):
+            pass
 
 
 if __name__ == "__main__":
-    bottomAd = BrandsRelatedToYourSearch()
-    bottomAd.setUp()
-    bottomAd.run_script()
+    bottomAd = Search()
+    bottomAd.set_up("Oculus set")
+    bottomAd.execute_ad_2()
     bottomAd.driver.close_app()
