@@ -72,7 +72,7 @@ def get_last_saved_id_from_db() -> int:
     return int(result[0])
 
 
-#select liczba reklam na dzien
+# select liczba reklam na dzien
 """SELECT COUNT(id) ads, SUBSTRING(ads_meta_data.timestamp, 1, 10) AS date 
 FROM ads_meta_data 
 GROUP BY date;"""
