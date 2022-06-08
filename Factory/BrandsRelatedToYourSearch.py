@@ -10,6 +10,7 @@ class BrandsRelatedToYourSearch(object):
     location_y: int
     text: str
     timestamp: str
+    ad_type: int = 2
 
     def __init__(self, filename: str, width: int, height: int, location_x: int,
                  location_y: int, text: str, timestamp: str):

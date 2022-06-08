@@ -111,7 +111,7 @@ class Search(object):
 
                         self.save_croped_scr(element)
                         send_data_to_db(ad.filename, ad.width, ad.height, ad.location_x,
-                                        ad.location_y, ad.text, ad.timestamp, 2)
+                                        ad.location_y, ad.text, ad.timestamp, ad.ad_type)
 
                         """scroll through ads"""
                         action = TouchAction(self.driver)
