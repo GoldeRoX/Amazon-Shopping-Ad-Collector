@@ -81,7 +81,7 @@ class Search(object):
         self.driver.press_keycode(66)
 
         """scroll through app Y"""
-        for i in range(14):
+        for i in range(16):
             try:
                 self.driver.swipe(470, 1100, 470, 50, 400)
                 time.sleep(1)
@@ -89,10 +89,12 @@ class Search(object):
                 pass
 
     def bottom_ad(self) -> None:
+
         try:
             sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")
             for x in sponsored_ads:
                 elements = x.find_elements(By.XPATH, ".//*[@class='android.view.View']")
+
                 for element in elements:
                     if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
                         """informacje do bazy danych"""
@@ -109,7 +111,7 @@ class Search(object):
                         self.save_croped_scr(element)
                         send_data_to_db(ad.filename, ad.width, ad.height, ad.location_x,
                                         ad.location_y, ad.text, ad.timestamp, ad.ad_type)
-                    break
+                        return
 
         except NoSuchElementException:
             pass

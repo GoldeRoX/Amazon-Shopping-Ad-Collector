@@ -60,7 +60,7 @@ class MainActivity:
                 pass
 
         """scroll through app Y"""
-        for i in range(14):
+        for i in range(16):
             try:
                 self.driver.swipe(470, 1100, 470, 50, 400)
                 time.sleep(1)
