@@ -154,8 +154,11 @@ class Search(object):
 
 
 if __name__ == "__main__":
-    bottomAd = Search()
-    bottomAd.set_up("Lego")
-    bottomAd.bottom_ad()
-    bottomAd.execute_ad_2()
-    bottomAd.driver.close_app()
+    Amazon = Search()
+    Amazon.set_up("Oculus")
+    Amazon.bottom_ad()
+    Amazon.execute_ad_2()
+    Amazon.driver.close_app()
+
+# TODO sprawdzenie w save_croped_scr() czy reklama zawiera same biae/czarne pixele
+# TODO zmodyfikowanie save_croped_scr() by zwracal True/False -> jesli nie zapisze scr == nie wysyla danych do db
