@@ -14,6 +14,7 @@ from Session.database_connector import get_last_saved_id_from_db
 from Session.database_connector import send_data_to_db
 
 from BrandsRelatedToYourSearch import BrandsRelatedToYourSearch
+from BottomAd import BottomAd
 
 
 class Search(object):
@@ -87,6 +88,32 @@ class Search(object):
             except:
                 pass
 
+    def bottom_ad(self) -> None:
+        try:
+            sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")
+            for x in sponsored_ads:
+                elements = x.find_elements(By.XPATH, ".//*[@class='android.view.View']")
+                for element in elements:
+                    if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
+                        """informacje do bazy danych"""
+                        width = element.size["width"]
+                        height = element.size["height"]
+                        location_x = element.location["x"]
+                        location_y = element.location["y"]
+                        text = element.get_attribute("text")
+                        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        filename = str(get_last_saved_id_from_db() + 1) + ".png"
+
+                        ad = BottomAd(filename, width, height, location_x, location_y, text, timestamp)
+
+                        self.save_croped_scr(element)
+                        send_data_to_db(ad.filename, ad.width, ad.height, ad.location_x,
+                                        ad.location_y, ad.text, ad.timestamp, ad.ad_type)
+                    break
+
+        except NoSuchElementException:
+            pass
+
     def execute_ad_2(self) -> None:
         try:
             element_node = self.driver.find_element(By.XPATH,
@@ -126,6 +153,7 @@ class Search(object):
 
 if __name__ == "__main__":
     bottomAd = Search()
-    bottomAd.set_up("Oculus set")
+    bottomAd.set_up("Lego")
+    bottomAd.bottom_ad()
     bottomAd.execute_ad_2()
     bottomAd.driver.close_app()
