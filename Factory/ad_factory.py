@@ -159,6 +159,16 @@ if __name__ == "__main__":
     Amazon.bottom_ad()
     Amazon.execute_ad_2()
     Amazon.driver.close_app()
+    """while True:
+        try:
+            Amazon = Search()
+            Amazon.set_up("Oculus")
+            Amazon.bottom_ad()
+            Amazon.execute_ad_2()
+            Amazon.driver.close_app()
+            time.sleep(4)
+        except:
+            time.sleep(4)"""
 
 # TODO sprawdzenie w save_croped_scr() czy reklama zawiera same biae/czarne pixele
 # TODO zmodyfikowanie save_croped_scr() by zwracal True/False -> jesli nie zapisze scr == nie wysyla danych do db
