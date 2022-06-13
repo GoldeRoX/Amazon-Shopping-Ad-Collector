@@ -67,7 +67,9 @@ class Search(object):
 
     def set_up(self, phrase_to_search: str) -> None:
 
+        time.sleep(3)
         Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
+        time.sleep(3)
         Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
         time.sleep(1)
 
@@ -172,3 +174,9 @@ if __name__ == "__main__":
 
 # TODO sprawdzenie w save_croped_scr() czy reklama zawiera same biae/czarne pixele
 # TODO zmodyfikowanie save_croped_scr() by zwracal True/False -> jesli nie zapisze scr == nie wysyla danych do db
+#fasada! web element na wyjsciu reklama blackbox
+#ukryc tworzenie obiektu
+#oddzie;ic typy reklam od strony
+#w jakim sposobie oddzielic tworzenie reklamy
+#osobno wysylac atrybuty do ukrytej classy
+
