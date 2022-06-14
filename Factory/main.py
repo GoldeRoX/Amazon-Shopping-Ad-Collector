@@ -15,20 +15,29 @@ from Session.database_connector import send_data_to_db
 
 from BrandsRelatedToYourSearch import BrandsRelatedToYourSearch
 from BottomAd import _BottomAd
-
+#4723
 
 class Search(object):
 
     def __init__(self):
-        appium_desc = {
+        __desired_caps = {
             "platformName": "Android",
             "appium:platformVersion": "9",
             "appium:automationName": "UiAutomator2",
             "appium:appPackage": "com.amazon.mShop.android.shopping",
             "appium:appActivity": "com.amazon.mShop.home.HomeActivity",
-            "appium:deviceName": "emulator-5554"
+            "appium:deviceName": "emulator-5554",
+            "uiautomator2ServerLaunchTimeout": "40000",
+            "'wdaStartupRetries": "40",
+            "iosInstallPause": "8000",
+            "wdaStartupRetryInterval": "20000",
+            "newCommandTimeout": "20000",
+            "skipDeviceInitialization": "False",
+            "skipServerInstallation": "False",
+            "noReset": "False"
         }
-        self.driver = webdriver.Remote("http://localhost:4723/wd/hub", appium_desc)
+
+        self.driver = webdriver.Remote("http://localhost:4723/wd/hub", __desired_caps)
 
     def save_croped_scr(self, object_to_save) -> None:
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
