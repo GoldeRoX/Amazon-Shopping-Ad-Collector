@@ -14,7 +14,7 @@ from Session.database_connector import get_last_saved_id_from_db
 from Session.database_connector import send_data_to_db
 
 from BrandsRelatedToYourSearch import BrandsRelatedToYourSearch
-from BottomAd import BottomAd
+from BottomAd import _BottomAd
 
 
 class Search(object):
@@ -100,19 +100,28 @@ class Search(object):
                 for element in elements:
                     if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
                         """informacje do bazy danych"""
-                        width = element.size["width"]
-                        height = element.size["height"]
-                        location_x = element.location["x"]
-                        location_y = element.location["y"]
-                        text = element.get_attribute("text")
-                        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        filename = str(get_last_saved_id_from_db() + 1) + ".png"
+                        bottom_ad_meta_data = {
+                            "width": element.size["width"],
+                            "height": element.size["height"],
+                            "location_x": element.location["x"],
+                            "location_y": element.location["y"],
+                            "text": element.get_attribute("text"),
+                            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "filename": str(get_last_saved_id_from_db() + 1) + ".png"
+                        }
 
-                        ad = BottomAd(filename, width, height, location_x, location_y, text, timestamp)
+                        ad = _BottomAd(bottom_ad_meta_data["filename"],
+                                       bottom_ad_meta_data["width"],
+                                       bottom_ad_meta_data["height"],
+                                       bottom_ad_meta_data["location_x"],
+                                       bottom_ad_meta_data["location_y"],
+                                       bottom_ad_meta_data["text"],
+                                       bottom_ad_meta_data["timestamp"])
 
                         self.save_croped_scr(element)
                         send_data_to_db(ad.filename, ad.width, ad.height, ad.location_x,
                                         ad.location_y, ad.text, ad.timestamp, ad.ad_type)
+
                         return
 
         except NoSuchElementException:
@@ -129,16 +138,24 @@ class Search(object):
                 if element.get_attribute("clickable") == "true":
                     try:
                         """informacje do bazy danych"""
-                        width = element.size["width"]
-                        height = element.size["height"]
-                        location_x = element.location["x"]
-                        location_y = element.location["y"]
-                        text = element.get_attribute("text")
-                        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        filename = str(get_last_saved_id_from_db() + 1) + ".png"
+                        brandsRelatedToYourSearch_meta_data = {
+                            "width": element.size["width"],
+                            "height": element.size["height"],
+                            "location_x": element.location["x"],
+                            "location_y": element.location["y"],
+                            "text": element.get_attribute("text"),
+                            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "filename": str(get_last_saved_id_from_db() + 1) + ".png"
+                        }
 
                         """create an object of ad"""
-                        ad = BrandsRelatedToYourSearch(filename, width, height, location_x, location_y, text, timestamp)
+                        ad = BrandsRelatedToYourSearch(brandsRelatedToYourSearch_meta_data["filename"],
+                                                       brandsRelatedToYourSearch_meta_data["width"],
+                                                       brandsRelatedToYourSearch_meta_data["height"],
+                                                       brandsRelatedToYourSearch_meta_data["location_x"],
+                                                       brandsRelatedToYourSearch_meta_data["location_y"],
+                                                       brandsRelatedToYourSearch_meta_data["text"],
+                                                       brandsRelatedToYourSearch_meta_data["timestamp"])
 
                         self.save_croped_scr(element)
                         send_data_to_db(ad.filename, ad.width, ad.height, ad.location_x,
@@ -161,7 +178,7 @@ if __name__ == "__main__":
     Amazon.bottom_ad()
     Amazon.execute_ad_2()
     Amazon.driver.close_app()
-    """while True:
+    while True:
         try:
             Amazon = Search()
             Amazon.set_up("Oculus")
@@ -170,13 +187,12 @@ if __name__ == "__main__":
             Amazon.driver.close_app()
             time.sleep(4)
         except:
-            time.sleep(4)"""
+            time.sleep(4)
 
 # TODO sprawdzenie w save_croped_scr() czy reklama zawiera same biae/czarne pixele
 # TODO zmodyfikowanie save_croped_scr() by zwracal True/False -> jesli nie zapisze scr == nie wysyla danych do db
-#fasada! web element na wyjsciu reklama blackbox
-#ukryc tworzenie obiektu
-#oddzie;ic typy reklam od strony
-#w jakim sposobie oddzielic tworzenie reklamy
-#osobno wysylac atrybuty do ukrytej classy
-
+# fasada! web element na wyjsciu reklama blackbox
+# ukryc tworzenie obiektu
+# oddzie;ic typy reklam od strony
+# w jakim sposobie oddzielic tworzenie reklamy
+# osobno syllabic atrybuty do ukrytej classy
