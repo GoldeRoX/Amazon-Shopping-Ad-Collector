@@ -108,6 +108,7 @@ class Search(object):
 
                 for element in elements:
                     if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
+                        print(element[0] + " and " + element[1])
                         """informacje do bazy danych"""
                         bottom_ad_meta_data = {
                             "width": element.size["width"],
@@ -186,14 +187,11 @@ if __name__ == "__main__":
     Amazon.set_up("Oculus")
     Amazon.bottom_ad()
     Amazon.execute_ad_2()
-    Amazon.driver.close_app()
     while True:
         try:
-            Amazon = Search()
             Amazon.set_up("Oculus")
             Amazon.bottom_ad()
             Amazon.execute_ad_2()
-            Amazon.driver.close_app()
             time.sleep(4)
         except:
             time.sleep(4)
