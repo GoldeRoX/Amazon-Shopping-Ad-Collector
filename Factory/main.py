@@ -58,7 +58,7 @@ class Search(object):
                             "width"]]
         cv2.imwrite(image_path, cropped_image)
 
-    def click_element(self, by_type, path: str, time_to_wait=10) -> None:
+    def click_element(self, by_type, path: str, time_to_wait=5) -> None:
         try:
             WebDriverWait(self.driver, time_to_wait).until(
                 EC.presence_of_element_located((by_type, path)))
@@ -102,13 +102,13 @@ class Search(object):
     def bottom_ad(self) -> None:
 
         try:
-            sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Sponsored']/parent::*")
+            sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']"
+                                                                "/parent::*/following-sibling::*")
             for x in sponsored_ads:
                 elements = x.find_elements(By.XPATH, ".//*[@class='android.view.View']")
 
                 for element in elements:
                     if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
-                        print(element[0] + " and " + element[1])
                         """informacje do bazy danych"""
                         bottom_ad_meta_data = {
                             "width": element.size["width"],
@@ -132,7 +132,7 @@ class Search(object):
                         send_data_to_db(ad.filename, ad.width, ad.height, ad.location_x,
                                         ad.location_y, ad.text, ad.timestamp, ad.ad_type)
 
-                        return
+
 
         except NoSuchElementException:
             pass
@@ -192,9 +192,9 @@ if __name__ == "__main__":
             Amazon.set_up("Oculus")
             Amazon.bottom_ad()
             Amazon.execute_ad_2()
-            time.sleep(4)
+            time.sleep(3)
         except:
-            time.sleep(4)
+            time.sleep(3)
 
 # TODO sprawdzenie w save_croped_scr() czy reklama zawiera same biae/czarne pixele
 # TODO zmodyfikowanie save_croped_scr() by zwracal True/False -> jesli nie zapisze scr == nie wysyla danych do db
