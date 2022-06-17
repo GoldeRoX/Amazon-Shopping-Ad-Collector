@@ -1,4 +1,5 @@
 import os.path
+import random
 import time
 from datetime import datetime
 import cv2  # import opencv-python	4.5.5.64
@@ -15,7 +16,7 @@ from Session.database_connector import send_data_to_db
 
 from BrandsRelatedToYourSearch import BrandsRelatedToYourSearch
 from BottomAd import _BottomAd
-#4723
+
 
 class Search(object):
 
@@ -32,14 +33,14 @@ class Search(object):
             "iosInstallPause": "8000",
             "wdaStartupRetryInterval": "20000",
             "newCommandTimeout": "20000",
-            "skipDeviceInitialization": "False",
-            "skipServerInstallation": "False",
-            "noReset": "False"
+            "skipDeviceInitialization": "True",
+            "skipServerInstallation": "True",
+            "noReset": "True"
         }
 
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", __desired_caps)
 
-    def save_croped_scr(self, object_to_save) -> None:
+    def save_cropped_scr(self, object_to_save) -> None:
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
         if not os.path.exists(f"../Screenshots/{date_folder_name}"):
@@ -102,37 +103,32 @@ class Search(object):
     def bottom_ad(self) -> None:
 
         try:
-            sponsored_ads = self.driver.find_elements(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']"
-                                                                "/parent::*/following-sibling::*")
-            for x in sponsored_ads:
-                elements = x.find_elements(By.XPATH, ".//*[@class='android.view.View']")
+            element = self.driver.find_element(By.XPATH, "//*[@text='Leave feedback on Sponsored ad']"
+                                                         "/parent::*/following-sibling::*/child::*")
 
-                for element in elements:
-                    if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
-                        """informacje do bazy danych"""
-                        bottom_ad_meta_data = {
-                            "width": element.size["width"],
-                            "height": element.size["height"],
-                            "location_x": element.location["x"],
-                            "location_y": element.location["y"],
-                            "text": element.get_attribute("text"),
-                            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                            "filename": str(get_last_saved_id_from_db() + 1) + ".png"
-                        }
+            if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
+                """meta_data for db"""
+                bottom_ad_meta_data = {
+                    "width": element.size["width"],
+                    "height": element.size["height"],
+                    "location_x": element.location["x"],
+                    "location_y": element.location["y"],
+                    "text": element.get_attribute("text"),
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "filename": str(get_last_saved_id_from_db() + 1) + ".png"
+                }
 
-                        ad = _BottomAd(bottom_ad_meta_data["filename"],
-                                       bottom_ad_meta_data["width"],
-                                       bottom_ad_meta_data["height"],
-                                       bottom_ad_meta_data["location_x"],
-                                       bottom_ad_meta_data["location_y"],
-                                       bottom_ad_meta_data["text"],
-                                       bottom_ad_meta_data["timestamp"])
+                ad = _BottomAd(bottom_ad_meta_data["filename"],
+                               bottom_ad_meta_data["width"],
+                               bottom_ad_meta_data["height"],
+                               bottom_ad_meta_data["location_x"],
+                               bottom_ad_meta_data["location_y"],
+                               bottom_ad_meta_data["text"],
+                               bottom_ad_meta_data["timestamp"])
 
-                        self.save_croped_scr(element)
-                        send_data_to_db(ad.filename, ad.width, ad.height, ad.location_x,
-                                        ad.location_y, ad.text, ad.timestamp, ad.ad_type)
-
-
+                self.save_cropped_scr(element)
+                send_data_to_db(ad.filename, ad.width, ad.height, ad.location_x,
+                                ad.location_y, ad.text, ad.timestamp, ad.ad_type)
 
         except NoSuchElementException:
             pass
@@ -147,7 +143,7 @@ class Search(object):
                 element = elements[x]
                 if element.get_attribute("clickable") == "true":
                     try:
-                        """informacje do bazy danych"""
+                        """meta_data for db"""
                         brandsRelatedToYourSearch_meta_data = {
                             "width": element.size["width"],
                             "height": element.size["height"],
@@ -167,7 +163,7 @@ class Search(object):
                                                        brandsRelatedToYourSearch_meta_data["text"],
                                                        brandsRelatedToYourSearch_meta_data["timestamp"])
 
-                        self.save_croped_scr(element)
+                        self.save_cropped_scr(element)
                         send_data_to_db(ad.filename, ad.width, ad.height, ad.location_x,
                                         ad.location_y, ad.text, ad.timestamp, ad.ad_type)
 
@@ -176,7 +172,7 @@ class Search(object):
                         action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
 
                     except Exception as e:
-                        print(f'Excepion occured : {e}')
+                        print(f'Exception occurred : {e}')
 
         except (NoSuchElementException, TimeoutException):
             pass
@@ -189,17 +185,12 @@ if __name__ == "__main__":
     Amazon.execute_ad_2()
     while True:
         try:
-            Amazon.set_up("Oculus")
+            Amazon = Search()
+            list_of_brands = ["Oculus", "Hp", "Laptops", "Monitors"]
+            Amazon.set_up(list_of_brands[random.randint(0, len(list_of_brands)-1)])
             Amazon.bottom_ad()
             Amazon.execute_ad_2()
             time.sleep(3)
-        except:
+        except Exception as e:
+            print(e)
             time.sleep(3)
-
-# TODO sprawdzenie w save_croped_scr() czy reklama zawiera same biae/czarne pixele
-# TODO zmodyfikowanie save_croped_scr() by zwracal True/False -> jesli nie zapisze scr == nie wysyla danych do db
-# fasada! web element na wyjsciu reklama blackbox
-# ukryc tworzenie obiektu
-# oddzie;ic typy reklam od strony
-# w jakim sposobie oddzielic tworzenie reklamy
-# osobno syllabic atrybuty do ukrytej classy
