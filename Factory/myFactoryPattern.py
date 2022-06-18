@@ -1,40 +1,38 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
+from appium.webdriver.webelement import WebElement
+from Session.database_connector import get_last_saved_id_from_db
 
 
-class AdExporter(ABC):
+class IAd(ABC):
 
     @abstractmethod
     def prepere_export(self, element):
         """Prepares seprate ad data for exporting."""
 
-    @abstractmethod
-    def do_export_to_db(self):
-        """sends ad to db"""
 
-    @abstractmethod
-    def extract_element_width(self, element):
-        """extract size width"""
+class BottomAd(IAd):
 
-    @abstractmethod
-    def extract_element_height(self, element):
-        """extract size height"""
+    """"width": element.size["width"],
+    "height": element.size["height"],
+    "location_x": element.location["x"],
+    "location_y": element.location["y"],
+    "text": element.get_attribute("text"),
+    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    "filename": str(get_last_saved_id_from_db() + 1) + ".png"""
 
-    @abstractmethod
-    def extract_element_location_x(self, element):
-        """extract location_x"""
-
-    @abstractmethod
-    def extract_element_location_y(self, element):
-        """extract location_y"""
-
-    @abstractmethod
-    def extract_element_text(self, element):
-        """extract text"""
+    def __init__(self, element: WebElement):
+        self.width = element.size["width"]
+        self.height = element.size["height"]
+        self.location_x = element.location["x"]
+        self.location_y = element.location["y"]
+        self.text = element.get_attribute("text")
+        self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.filename = str(get_last_saved_id_from_db() + 1) + ".png"""
 
 
-class BottomAd(AdExporter):
-    def prepere_export(self, element):
-        print("wywolywanie meta_danych")
+
+
 
 
 
