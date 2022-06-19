@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from appium.webdriver.webelement import WebElement
-from Session.database_connector import get_last_saved_id_from_db
-from Session.database_connector import send_data_to_db
+from Factory.database_connector import get_last_saved_id_from_db
+from Factory.database_connector import send_data_to_db
 from dataclasses import dataclass
-
 
 
 class IAd(ABC):
@@ -12,6 +11,7 @@ class IAd(ABC):
     @abstractmethod
     def send_to_db(self):
         """Prepares separate ad data for exporting."""
+
 
 @dataclass
 class BottomAd(IAd):
@@ -22,7 +22,7 @@ class BottomAd(IAd):
     location_y: int
     text: str
     timestamp: str
-    ad_type: int = 2
+    ad_type: int = 1
 
     def __init__(self, element: WebElement):
         self.width = element.size["width"]
@@ -37,6 +37,7 @@ class BottomAd(IAd):
     def send_to_db(self):
         send_data_to_db(self.filename, self.width, self.height, self.location_x,
                         self.location_y, self.text, self.timestamp, self.ad_type)
+
 
 @dataclass
 class BrandsRelatedToYourSearch(IAd):

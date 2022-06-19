@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
-from Session.database_connector import get_last_saved_id_from_db
+from Factory.database_connector import get_last_saved_id_from_db
 
 from myFactoryPattern import BrandsRelatedToYourSearch, BottomAd, IAd
 
@@ -27,7 +27,6 @@ class Search(object):
             "appium:appActivity": "com.amazon.mShop.home.HomeActivity",
             "appium:deviceName": "emulator-5554",
             "uiautomator2ServerLaunchTimeout": "40000",
-            "'wdaStartupRetries": "40",
             "iosInstallPause": "8000",
             "wdaStartupRetryInterval": "20000",
             "newCommandTimeout": "20000",
@@ -110,7 +109,6 @@ class Search(object):
                 ad = BottomAd(element)
                 self.save_cropped_scr(element)
                 ad.send_to_db()
-
         except NoSuchElementException:
             pass
 
