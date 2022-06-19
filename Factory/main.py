@@ -12,11 +12,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
 from Session.database_connector import get_last_saved_id_from_db
-from Session.database_connector import send_data_to_db
 
-from BottomAd import _BottomAd
-
-from myFactoryPattern import *
+from myFactoryPattern import BrandsRelatedToYourSearch, BottomAd, IAd
 
 
 class Search(object):
@@ -108,28 +105,11 @@ class Search(object):
                                                          "/parent::*/following-sibling::*/child::*")
 
             if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
-                """meta_data for db"""
-                bottom_ad_meta_data = {
-                    "width": element.size["width"],
-                    "height": element.size["height"],
-                    "location_x": element.location["x"],
-                    "location_y": element.location["y"],
-                    "text": element.get_attribute("text"),
-                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "filename": str(get_last_saved_id_from_db() + 1) + ".png"
-                }
-
-                ad = _BottomAd(bottom_ad_meta_data["filename"],
-                               bottom_ad_meta_data["width"],
-                               bottom_ad_meta_data["height"],
-                               bottom_ad_meta_data["location_x"],
-                               bottom_ad_meta_data["location_y"],
-                               bottom_ad_meta_data["text"],
-                               bottom_ad_meta_data["timestamp"])
-
+                """create an object of ad"""
+                ad: IAd
+                ad = BottomAd(element)
                 self.save_cropped_scr(element)
-                send_data_to_db(ad.filename, ad.width, ad.height, ad.location_x,
-                                ad.location_y, ad.text, ad.timestamp, ad.ad_type)
+                ad.send_to_db()
 
         except NoSuchElementException:
             pass
