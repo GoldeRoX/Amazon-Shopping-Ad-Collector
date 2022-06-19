@@ -13,7 +13,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from Factory.database_connector import get_last_saved_id_from_db
 
-from myFactoryPattern import BrandsRelatedToYourSearch, BottomAd, IAd
+from AdFactory import BrandsRelatedToYourSearch, BottomAd, IAd
 
 
 class Search(object):
