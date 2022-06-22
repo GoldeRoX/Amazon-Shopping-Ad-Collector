@@ -74,11 +74,11 @@ class Search(object):
 
     def set_up(self, phrase_to_search: str) -> None:
 
-        time.sleep(3)
-        Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
-        time.sleep(3)
-        Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
-        time.sleep(1)
+        #time.sleep(3)
+        #Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
+        #time.sleep(3)
+        #Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
+        #time.sleep(1)
 
         """search item"""
         Search.click_element(self, By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[1]'
@@ -152,7 +152,5 @@ if __name__ == "__main__":
             Amazon.set_up(list_of_brands[random.randint(0, len(list_of_brands)-1)])
             Amazon.bottom_ad()
             Amazon.execute_ad_2()
-            time.sleep(3)
         except Exception as e:
             print(e)
-            time.sleep(3)
