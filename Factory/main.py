@@ -16,8 +16,17 @@ from Factory.database_connector import get_last_saved_id_from_db
 from AdFactory import BrandsRelatedToYourSearch, BottomAd, IAd
 
 
-class Search(object):
+class WebDriverMeta(type):
+    _instances = {}
 
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
+
+
+class WebDriver(metaclass=WebDriverMeta):
     def __init__(self):
         __desired_caps = {
             "platformName": "Android",
@@ -36,6 +45,11 @@ class Search(object):
         }
 
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", __desired_caps)
+
+
+class Search(object):
+
+    driver = WebDriver().driver
 
     def save_cropped_scr(self, object_to_save) -> None:
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
@@ -74,11 +88,11 @@ class Search(object):
 
     def set_up(self, phrase_to_search: str) -> None:
 
-        #time.sleep(3)
-        #Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
-        #time.sleep(3)
-        #Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
-        #time.sleep(1)
+        # time.sleep(3)
+        # Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
+        # time.sleep(3)
+        # Search.click_element(self, By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
+        # time.sleep(1)
 
         """search item"""
         Search.click_element(self, By.XPATH, '(//android.widget.LinearLayout[@content-desc="Search"])[1]'
@@ -149,7 +163,7 @@ if __name__ == "__main__":
         try:
             Amazon = Search()
             list_of_brands = ["Oculus", "Hp", "Laptops", "Monitors"]
-            Amazon.set_up(list_of_brands[random.randint(0, len(list_of_brands)-1)])
+            Amazon.set_up(list_of_brands[random.randint(0, len(list_of_brands) - 1)])
             Amazon.bottom_ad()
             Amazon.execute_ad_2()
         except Exception as e:
