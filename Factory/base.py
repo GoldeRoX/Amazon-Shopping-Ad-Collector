@@ -1,7 +1,10 @@
 from appium import webdriver  # import Appium-Python-Client 2.2.0
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
-class Base(object):
+class WebDriver(object):
     __platformName = "Android"
     __platformVersion = "9"
     __automationName = "UiAutomator2"
@@ -39,3 +42,17 @@ class Base(object):
         }
 
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", __desired_caps)
+
+
+class Base(object):
+
+    def send_text(self, by_type, path: str, text_to_send: str) -> None:
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((by_type, path)))
+            self.driver.find_element(by_type, path).send_keys(text_to_send)
+        except (NoSuchElementException, TimeoutException):
+            print("No such Input field")
+
+
+driver = WebDriver().driver

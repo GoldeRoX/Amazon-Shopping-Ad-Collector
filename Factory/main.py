@@ -17,7 +17,7 @@ from Factory.database_connector import get_last_saved_id_from_db
 
 from Ad import Ad
 
-from base import Base
+from Factory.base import driver
 
 """class WebDriverMeta(type):
     _instances = {}
@@ -56,7 +56,7 @@ class WebDriver(metaclass=WebDriverMeta):
 
 class Search(object):
 
-    driver = Base().driver
+    driver = driver
 
     def save_cropped_scr(self, object_to_save) -> None:
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
