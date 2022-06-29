@@ -45,7 +45,7 @@ def bottom_ad(driver) -> None:
         if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
             """create an object of ad"""
             ad = Ad(element, 1)
-            save_cropped_scr(driver, element)
+            save_cropped_scr(driver, ad)
             ad.send_to_db()
 
     except NoSuchElementException:
@@ -76,7 +76,7 @@ def execute_ad_2(driver) -> None:
 
                 # reklamy_tet.append(ad)
 
-                save_cropped_scr(driver, web_element)
+                save_cropped_scr(driver, ad)
                 ad.send_to_db()
                 # TODO remake scroll
                 """scroll through web_elements ads"""
@@ -85,10 +85,36 @@ def execute_ad_2(driver) -> None:
 
             except Exception as e:
                 print(f'Exception occurred : {e}')
-        # print(reklamy_tet)
 
     except (NoSuchElementException, TimeoutException):
         pass
+
+
+def collect_ads_1(driver) -> [Ad]:
+    try:
+        ads = []
+        elements = driver.find_elements(By.XPATH, LocatorsData.BOTTOM_AD)
+
+        for element in elements:
+            if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
+                """create an object of ad"""
+                ad = Ad(element, 1)
+                ads.append(ad)
+        return ads
+    except NoSuchElementException:
+        pass
+
+
+def collect_ads_2(driver) -> [Ad]:
+    ads = []
+    ads_webelements = get_webelements_ads_2(driver)
+    for x in range(len(ads_webelements)):
+        web_element = ads_webelements[x]
+        """create an object of ad"""
+        ad = Ad(web_element, 2)
+        ads.append(ad)
+
+    return ads
 
 
 if __name__ == "__main__":
@@ -99,8 +125,10 @@ if __name__ == "__main__":
         try:
             list_of_brands = ["Oculus", "Hp", "Laptops", "Monitors"]
             set_up(_driver, list_of_brands[random.randint(0, len(list_of_brands) - 1)])
-            bottom_ad(_driver)
-            execute_ad_2(_driver)
+            print(collect_ads_1(_driver))
+            print(collect_ads_2(_driver))
+            #bottom_ad(_driver)
+            #execute_ad_2(_driver)
         except:
             pass
         """finally:
