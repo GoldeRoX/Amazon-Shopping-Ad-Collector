@@ -2,7 +2,7 @@ import random
 import time
 
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException, WebDriverException
 
 from Factory.locators_data import LocatorsData
 from base import *
@@ -23,7 +23,7 @@ def set_up(driver, phrase_to_search: str) -> None:
         try:
             driver.swipe(470, 1100, 470, 50, 400)
             time.sleep(1)
-        except:
+        except WebDriverException:
             pass
 
 
@@ -102,5 +102,5 @@ if __name__ == "__main__":
             set_up(_driver, list_of_brands[random.randint(0, len(list_of_brands) - 1)])
             execute_ad_1(_driver)
             execute_ad_2(_driver)
-        except:
+        except WebDriverException:
             pass
