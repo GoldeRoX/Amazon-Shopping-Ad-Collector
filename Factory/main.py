@@ -1,5 +1,4 @@
 import random
-import time
 
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException, WebDriverException
@@ -19,10 +18,9 @@ def set_up(driver, phrase_to_search: str) -> None:
     driver.press_keycode(66)
 
     """scroll through app Y"""
-    for i in range(16):
+    for i in range(14):
         try:
             driver.swipe(470, 1100, 470, 50, 400)
-            time.sleep(1)
         except WebDriverException:
             pass
 
@@ -57,7 +55,7 @@ def execute_ad_2(driver) -> None:
             ad = Ad(web_element, 2)
             save_cropped_scr(driver, ad)
             ad.send_to_db()
-            # TODO remake scroll
+            # TODO remake scroll [powinna byc weryfikacja kazdej reklamy + oznaczenie na jakiej reklamie jest scroll]
             """scroll through web_elements ads"""
             action = TouchAction(driver)
             action.press(web_element).move_to(x=-web_element.size["width"] / 2, y=0).release().perform()
