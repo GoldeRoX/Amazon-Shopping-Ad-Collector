@@ -2,6 +2,7 @@ import random
 import time
 
 from appium.webdriver.common.touch_action import TouchAction
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from appium.webdriver.webelement import WebElement
 
@@ -14,7 +15,6 @@ from Ad import Ad
 def set_up(driver, phrase_to_search: str) -> None:
     """search item"""
     driver.find_element(By.XPATH, LocatorsData.search_icon).click()
-    #click_element(driver, By.XPATH, LocatorsData.search_icon)
     send_text(driver, By.ID, LocatorsData.search_input, phrase_to_search)
 
     """press enter"""
@@ -27,6 +27,15 @@ def set_up(driver, phrase_to_search: str) -> None:
             time.sleep(1)
         except:
             pass
+
+
+"""def get_ads_1(driver) -> [WebElement]:
+    elements = driver.find_elements(By.XPATH, LocatorsData.BOTTOM_AD)
+    ads = []
+    for element in elements:
+        if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
+            ads.append(element)
+    return ads"""
 
 
 def bottom_ad(driver) -> None:
@@ -43,7 +52,7 @@ def bottom_ad(driver) -> None:
         pass
 
 
-def get_ads_2(driver):
+def get_webelements_ads_2(driver):
     element_node = driver.find_element(By.XPATH, LocatorsData.brands_related_to_your_search_element_node)
     elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
     ads = []
@@ -56,31 +65,27 @@ def get_ads_2(driver):
 
 def execute_ad_2(driver) -> None:
     try:
-        ads = get_ads_2(driver)
+        ads_webelements = get_webelements_ads_2(driver)
 
-        for x in range(len(ads)):
-            element = ads[x]
+        # reklamy_tet = []
+        for x in range(len(ads_webelements)):
+            web_element = ads_webelements[x]
             try:
                 """create an object of ad"""
-                ad = Ad(element, 2)
+                ad = Ad(web_element, 2)
 
-                save_cropped_scr(driver, element)
+                # reklamy_tet.append(ad)
+
+                save_cropped_scr(driver, web_element)
                 ad.send_to_db()
                 # TODO remake scroll
-                """scroll through ads"""
-
-                """first_ad = element
-                print(f" z {x} = {element}")
-                next_ad = ads[x+1]
-                print(f"do {x+1} = {ads[x+1]}")
-                driver.scroll(first_ad, next_ad)"""
-
-                """scroll through ads"""
+                """scroll through web_elements ads"""
                 action = TouchAction(driver)
-                action.press(element).move_to(x=-element.size["width"] / 2, y=0).release().perform()
+                action.press(web_element).move_to(x=-web_element.size["width"] / 2, y=0).release().perform()
 
             except Exception as e:
                 print(f'Exception occurred : {e}')
+        # print(reklamy_tet)
 
     except (NoSuchElementException, TimeoutException):
         pass
@@ -97,6 +102,6 @@ if __name__ == "__main__":
             bottom_ad(_driver)
             execute_ad_2(_driver)
         except:
-            _driver.close()
+            pass
         """finally:
             _driver.close()"""
