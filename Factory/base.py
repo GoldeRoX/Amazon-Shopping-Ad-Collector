@@ -4,10 +4,8 @@ from appium import webdriver  # import Appium-Python-Client 2.2.0
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-from appium.webdriver.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
-import time
 import cv2  # import opencv-python	4.5.5.64
 from Factory.Ad import Ad
 
@@ -54,9 +52,9 @@ def save_cropped_scr(driver, ad: Ad) -> None:
     img = cv2.imread(image_path)
 
     cropped_image = img[
-        ad.location_y:ad.location_y + ad.height,
-        ad.location_x:ad.location_x + ad.width
-    ]
+                    ad.location_y:ad.location_y + ad.height,
+                    ad.location_x:ad.location_x + ad.width
+                    ]
 
     cv2.imwrite(image_path, cropped_image)
 
@@ -75,10 +73,15 @@ def send_text(driver, by_type, path: str, text_to_send: str) -> None:
 
 
 def first_launch(driver) -> None:
-
-
-    time.sleep(3)
-    if driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").is_displayed():
-        driver.click_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
-    if driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").is_displayed():
-        driver.click_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
+    try:
+        WebDriverWait(driver, 7).until(
+            EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")))
+        driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
+    except (NoSuchElementException, TimeoutException):
+        pass
+    try:
+        WebDriverWait(driver, 7).until(
+            EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")))
+        driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
+    except (NoSuchElementException, TimeoutException):
+        pass
