@@ -31,7 +31,7 @@ def execute_ad_1(driver) -> None:
         for ad in ads_list:
             save_cropped_scr(driver, ad)
             ad.send_to_db()
-    except (NoSuchElementException, TimeoutException):
+    except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
         pass
 
 
@@ -39,27 +39,30 @@ def get_webelements_ads_2(driver):
     element_node = driver.find_element(By.XPATH, LocatorsData.brands_related_to_your_search_element_node)
     elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
     webelements = []
-    for x in range(len(elements)):
-        if elements[x].get_attribute("clickable") == "true" and elements[x].get_attribute("text").startswith(
+    for element in elements:
+        if element.get_attribute("clickable") == "true" and element.get_attribute("text").startswith(
                 "Sponsored ad from"):
-            webelements.append(elements[x])
+            webelements.append(element)
     return webelements
 
 
 def execute_ad_2(driver) -> None:
     try:
         ads_webelements = get_webelements_ads_2(driver)
-
-        for web_element in ads_webelements:
-            """create an object of ad"""
-            ad = Ad(web_element, 2)
-            save_cropped_scr(driver, ad)
-            ad.send_to_db()
-            # TODO remake scroll [powinna byc weryfikacja kazdej reklamy + oznaczenie na jakiej reklamie jest scroll]
-            """scroll through web_elements ads"""
-            action = TouchAction(driver)
-            action.press(web_element).move_to(x=-web_element.size["width"] / 2, y=0).release().perform()
-
+        action = TouchAction(driver)
+        for i, web_element in enumerate(ads_webelements):
+            try:
+                """scroll through web_elements ads"""
+                if i == 0:
+                    pass
+                else:
+                    action.press(ads_webelements[i]).move_to(ads_webelements[i-1]).wait(ms=500).release().perform()
+                """create an object of ad"""
+                ad = Ad(web_element, 2)
+                save_cropped_scr(driver, ad)
+                ad.send_to_db()
+            except (NoSuchElementException, StaleElementReferenceException, IndexError):
+                pass
     except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
         pass
 
@@ -75,7 +78,7 @@ def collect_ads_1(driver) -> [Ad]:
                 ad = Ad(element, 1)
                 ads.append(ad)
         return ads
-    except NoSuchElementException:
+    except (NoSuchElementException, StaleElementReferenceException):
         pass
 
 
@@ -89,16 +92,22 @@ def collect_ads_2(driver) -> [Ad]:
     return ads
 
 
-if __name__ == "__main__":
+def main():
     session = MyDriver()
 
     _driver = session.driver
-    first_launch(_driver)
-    while True:
-        try:
-            list_of_brands = ["Oculus", "Hp", "Laptops", "Monitors"]
-            set_up(_driver, list_of_brands[random.randint(0, len(list_of_brands) - 1)])
-            execute_ad_1(_driver)
-            execute_ad_2(_driver)
-        except WebDriverException:
-            pass
+    try:
+        first_launch(_driver)
+
+        list_of_brands = ["Oculus", "Hp", "Laptops", "Monitors"]
+        set_up(_driver, list_of_brands[random.randint(0, len(list_of_brands) - 1)])
+        execute_ad_1(_driver)
+        execute_ad_2(_driver)
+    except KeyboardInterrupt:
+        _driver.close_app()
+        _driver.close()
+        raise
+
+
+if __name__ == "__main__":
+    main()

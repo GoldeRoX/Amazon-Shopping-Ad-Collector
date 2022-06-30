@@ -55,7 +55,6 @@ def save_cropped_scr(driver, ad: Ad) -> None:
                     ad.location_y:ad.location_y + ad.height,
                     ad.location_x:ad.location_x + ad.width
                     ]
-
     cv2.imwrite(image_path, cropped_image)
 
 
@@ -74,14 +73,16 @@ def send_text(driver, by_type, path: str, text_to_send: str) -> None:
 
 def first_launch(driver) -> None:
     try:
-        WebDriverWait(driver, 7).until(
+        WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")))
         driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
     except (NoSuchElementException, TimeoutException):
         pass
     try:
-        WebDriverWait(driver, 7).until(
+        WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")))
         driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
     except (NoSuchElementException, TimeoutException):
         pass
+
+# dodac id sesji (auto_increment z DB) / pobieram ostatnie id z db i inkrementuje
