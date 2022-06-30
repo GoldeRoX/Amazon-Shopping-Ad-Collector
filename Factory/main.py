@@ -1,6 +1,8 @@
 import sys
 import random
 
+
+from selenium.webdriver.common.by import By
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException, WebDriverException
 from selenium.webdriver.common.keys import Keys
