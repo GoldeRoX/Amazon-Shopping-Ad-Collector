@@ -1,7 +1,9 @@
+import sys
 import random
 
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException, WebDriverException
+from selenium.webdriver.common.keys import Keys
 
 from Factory.locators_data import LocatorsData
 from base import *
@@ -16,6 +18,7 @@ def set_up(driver, phrase_to_search: str) -> None:
 
     """press enter"""
     driver.press_keycode(66)
+    # driver.press_keycode(Keys.ENTER)
 
     """scroll through app Y"""
     for i in range(14):
@@ -47,39 +50,31 @@ def get_webelements_ads_2(driver):
 
 
 def execute_ad_2(driver) -> None:
-    try:
-        ads_webelements = get_webelements_ads_2(driver)
-        action = TouchAction(driver)
-        for i, web_element in enumerate(ads_webelements):
-            try:
-                """scroll through web_elements ads"""
-                if i == 0:
-                    pass
-                else:
-                    action.press(ads_webelements[i]).move_to(ads_webelements[i-1]).wait(ms=500).release().perform()
-                """create an object of ad"""
-                ad = Ad(web_element, 2)
-                save_cropped_scr(driver, ad)
-                ad.send_to_db()
-            except (NoSuchElementException, StaleElementReferenceException, IndexError):
+    ads_webelements = get_webelements_ads_2(driver)
+    action = TouchAction(driver)
+    for i, web_element in enumerate(ads_webelements):
+            """scroll through web_elements ads"""
+            if i == 0:
                 pass
-    except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
-        pass
+            else:
+                action.press(ads_webelements[i]).move_to(ads_webelements[i-1]).wait(ms=500).release().perform()
+            """create an object of ad"""
+            ad = Ad(web_element, 2)
+            save_cropped_scr(driver, ad)
+            ad.send_to_db()
 
 
 def collect_ads_1(driver) -> [Ad]:
-    try:
-        ads = []
-        elements = driver.find_elements(By.XPATH, LocatorsData.BOTTOM_AD)
+    ads = []
+    elements = driver.find_elements(By.XPATH, LocatorsData.BOTTOM_AD)
 
-        for element in elements:
-            if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
-                """create an object of ad"""
-                ad = Ad(element, 1)
-                ads.append(ad)
-        return ads
-    except (NoSuchElementException, StaleElementReferenceException):
-        pass
+    for element in elements:
+        if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
+            """create an object of ad"""
+            ad = Ad(element, 1)
+            ads.append(ad)
+    return ads
+
 
 
 def collect_ads_2(driver) -> [Ad]:
@@ -97,17 +92,21 @@ def main():
 
     _driver = session.driver
     try:
-        first_launch(_driver)
+        # first_launch(_driver)
 
         list_of_brands = ["Oculus", "Hp", "Laptops", "Monitors"]
         set_up(_driver, list_of_brands[random.randint(0, len(list_of_brands) - 1)])
         execute_ad_1(_driver)
         execute_ad_2(_driver)
     except KeyboardInterrupt:
+        sys.exit()
+    finally:
         _driver.close_app()
         _driver.close()
-        raise
 
 
 if __name__ == "__main__":
     main()
+
+# configi drivera
+# zrobic klase ktora bd miec metody zbierania reklam 1 (ktorki w celu rozpoznania typu reklam)i reklam 2 osobno, potem osobna metoda sklejania

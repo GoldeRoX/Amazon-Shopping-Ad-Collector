@@ -71,7 +71,9 @@ def send_text(driver, by_type, path: str, text_to_send: str) -> None:
         print("No such Input field")
 
 
-def first_launch(driver) -> None:
+# TODO create logic, that will NOT wait 10s in case of not locating elements
+
+"""def first_launch(driver) -> None:
     try:
         WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")))
@@ -83,6 +85,4 @@ def first_launch(driver) -> None:
             EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")))
         driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
     except (NoSuchElementException, TimeoutException):
-        pass
-
-# dodac id sesji (auto_increment z DB) / pobieram ostatnie id z db i inkrementuje
+        pass"""
