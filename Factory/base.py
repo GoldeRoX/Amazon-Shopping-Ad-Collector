@@ -1,7 +1,9 @@
 import os
+import time
 
 from appium import webdriver  # import Appium-Python-Client 2.2.0
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
@@ -16,10 +18,10 @@ class MyDriver(object):
     def __init__(self, platform_name="Android", platform_version="9",
                  automation_name="UiAutomator2", app_package="com.amazon.mShop.android.shopping",
                  app_activity="com.amazon.mShop.home.HomeActivity", device_name="emulator-5554",
-                 uiautomator_2_server_launch_timeout="40000", ios_install_pause="8000",
-                 wda_startup_retry_interval="20000", new_command_timeout="20000", skip_device_initialization="True",
-                 skip_server_installation="True", no_reset="True"):
-        __desired_caps = {
+                 uiautomator_2_server_launch_timeout=40000, ios_install_pause=8000,
+                 wda_startup_retry_interval=20000, new_command_timeout=20000, skip_device_initialization=True,
+                 skip_server_installation=True, no_reset=True):
+        desired_caps = {
             "platformName": platform_name,
             "appium:platformVersion": platform_version,
             "appium:automationName": automation_name,
@@ -35,18 +37,19 @@ class MyDriver(object):
             "noReset": no_reset
         }
 
-        self.driver = webdriver.Remote("http://localhost:4723/wd/hub", __desired_caps)
+        # self.driver = webdriver.Remote("http://85.214.87.200:3128/wd/hub", desired_caps)
+        self.driver = webdriver.Remote("http://localhost:4723/wd/hub", desired_caps)
 
 
 def save_cropped_scr(driver, ad: Ad) -> None:
     date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
-    if not os.path.exists(f"/nfs/Screenshots/{date_folder_name}"):
-        os.mkdir(f"/nfs/Screenshots/{date_folder_name}")
+    if not os.path.exists(f"/nfsshare/Screenshots/{date_folder_name}"):
+        os.mkdir(f"/nfsshare/Screenshots/{date_folder_name}")
 
     img_name = int(get_last_saved_id_from_db()) + 1
 
-    image_path = f"/nfs/Screenshots/{date_folder_name}/{str(img_name)}.png"
+    image_path = f"/nfsshare/Screenshots/{date_folder_name}/{str(img_name)}.png"
     driver.save_screenshot(image_path)
     img = cv2.imread(image_path)
 
@@ -72,16 +75,17 @@ def send_text(driver, by_type, path: str, text_to_send: str) -> None:
 
 # TODO create logic, that will NOT wait 10s in case of not locating elements
 
-"""def first_launch(driver) -> None:
+def first_launch(driver) -> None:
     try:
         WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")))
         driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
     except (NoSuchElementException, TimeoutException):
         pass
+    time.sleep(5)
     try:
         WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")))
         driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
     except (NoSuchElementException, TimeoutException):
-        pass"""
+        pass
