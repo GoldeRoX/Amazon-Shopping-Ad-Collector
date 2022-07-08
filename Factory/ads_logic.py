@@ -104,6 +104,8 @@ def execute_ad_4(driver):
                 # TODO upgrade scroll
                 # (possible solution = change moving elements to next element by moving by width)
                 action.press(ads_webelements[i]).move_to(ads_webelements[i - 1]).wait(ms=2000).release().perform()
+                """if i == len(ads_webelements) - 2:
+                    action.press(ads_webelements[i]).move_to(ads_webelements[i - 1]).wait(ms=2000).release().perform()"""
 
             """create an object of ad"""
             ad = Ad(web_element, 4)

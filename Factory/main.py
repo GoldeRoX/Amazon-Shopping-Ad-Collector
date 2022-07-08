@@ -40,6 +40,7 @@ def main():
     try:
         """list of keywords will be added externally"""
         list_of_keywords = ["Oculus", "Hp", "Laptops", "Monitors"]
+        list_of_keywords = ["Monitors"]
         try:
             get_page(_driver, list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
         except NoSuchElementException:
