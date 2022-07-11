@@ -59,6 +59,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    while True:
+        main()
 
 # TODO after adding ad_type_5 give every session an ID (+DB)
