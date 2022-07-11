@@ -39,7 +39,7 @@ def main():
     _driver = session.driver
     try:
         """list of keywords will be added externally"""
-        list_of_keywords = ["Oculus", "Hp", "Laptops", "Monitors"]
+        list_of_keywords = ["Oculus", "Hp", "Laptops"]  # "Monitors"]
         try:
             get_page(_driver, list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
         except NoSuchElementException:
@@ -59,7 +59,6 @@ def main():
 
 
 if __name__ == "__main__":
-    while True:
-        main()
+    main()
 
 # TODO after adding ad_type_5 give every session an ID (+DB)
