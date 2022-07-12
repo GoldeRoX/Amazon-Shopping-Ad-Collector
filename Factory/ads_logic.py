@@ -65,9 +65,9 @@ def collect_ads_1(driver) -> [Ad]:
 
     webelements = get_webelements_ads_1(driver)
 
-    for element in webelements:
+    for webElement in webelements:
         """create an object of ad"""
-        ad = Ad(element, 1)
+        ad = Ad(webElement, 1)
         ads.append(ad)
     return ads
 
@@ -83,9 +83,8 @@ def collect_ads_2(driver) -> [Ad]:
 
 
 # TODO
-def get_webelements_ads_4(driver) -> [Ad]:
+def get_webelements_ads_4_5(driver) -> [WebElement]:
     try:
-
         elements = driver.find_elements(By.XPATH, LocatorsData.ad_4_node_ENG)
         return elements
     except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
@@ -94,7 +93,7 @@ def get_webelements_ads_4(driver) -> [Ad]:
 
 def execute_ad_4(driver):
     try:
-        ads_webelements = get_webelements_ads_4(driver)
+        ads_webelements = get_webelements_ads_4_5(driver)
         action = TouchAction(driver)
         for i, web_element in enumerate(ads_webelements):
             """scroll through web_elements ads"""
@@ -115,3 +114,24 @@ def execute_ad_4(driver):
             time.sleep(1.5)
     except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
         pass
+
+
+def execute_ad_5(driver, ad_text_filter: [str]):
+    try:
+        ads_webelements = get_webelements_ads_4_5(driver)
+        for webElement in ads_webelements:
+            text_path = ".//child::*"+3*"/following-sibling::*"
+            text = webElement.find_element(By.XPATH, text_path).get_attribute("text")
+            price_path = ".//child::*"+4*"/following-sibling::*"
+            price = webElement.find_element(By.XPATH, price_path).get_attribute("text")
+            if text not in ad_text_filter:
+                """create ad"""
+                ad_text_filter.append(text)
+                ad = Ad(webElement, 5)
+                ad.text = text
+                ad.price = price
+                save_cropped_scr(driver, ad)
+                ad.send_to_db()
+
+    except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
+        print("error ad5")

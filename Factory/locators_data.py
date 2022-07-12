@@ -13,3 +13,5 @@ class LocatorsData:
     # brands_related_to_your_search_element_node_DE = "//*[contains(@text, 'Marken verwandt mit Ihrer Suche')]/parent::*"
 
     ad_4_node_ENG = "//*[starts-with(@text,'Sponsored Ad -')]/parent::*"
+
+    ad_5_node_ENG = "//*[starts-with(@text,'Sponsored Ad -')]/parent::*"

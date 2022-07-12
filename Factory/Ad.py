@@ -15,6 +15,7 @@ class Ad(object):
     text: str
     timestamp: str
     ad_type: int
+    price: str = None
 
     def __init__(self, element: WebElement, ad_type: int):
         self.width = element.size["width"]
@@ -28,4 +29,4 @@ class Ad(object):
 
     def send_to_db(self):
         send_data_to_db(self.filename, self.width, self.height, self.location_x,
-                        self.location_y, self.text, self.timestamp, self.ad_type)
+                        self.location_y, self.text, self.timestamp, self.ad_type, self.price)

@@ -17,41 +17,47 @@ def get_page(driver, phrase_to_search: str) -> None:
     driver.press_keycode(66)
 
 
-def scroll_to_bottom_and_collect_ads(driver):
+def scroll_down(driver):
 
     """scroll down through app Y"""
-    for i in range(25):
-        try:
-            driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=500, duration=400)
-            webelements_list = get_webelements_ads_4(driver)
-
-            for element in webelements_list:
-                if element.size["height"] > 870:
-                    execute_ad_4(driver)
-                    break
-        except WebDriverException:
-            pass
+    try:
+        driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=500, duration=400)
+    except WebDriverException:
+        pass
 
 
 def main():
     session = MyDriver()
-
     _driver = session.driver
+
+    ad_text_filter = []
+
     try:
         """list of keywords will be added externally"""
-        list_of_keywords = ["Oculus", "Hp", "Laptops"]  # "Monitors"]
+        list_of_keywords = ["Laptops"]  # "Monitors"]
         try:
             get_page(_driver, list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
         except NoSuchElementException:
             first_launch(_driver)
             get_page(_driver, list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
 
-        """scroll down through app Y"""
-        scroll_to_bottom_and_collect_ads(_driver)
+        """scroll down through app Y and collect ads"""
+        for i in range(25):
+            scroll_down(_driver)
+            webelements_list = get_webelements_ads_4_5(_driver)
+            execute_ad_5(_driver, ad_text_filter)
+
+            try:
+                for element in webelements_list:
+                    if element.size["height"] > 870:
+                        execute_ad_4(_driver)
+                        break
+            except StaleElementReferenceException:
+                pass
 
         execute_ad_1(_driver)
         execute_ad_2(_driver)
-
+        ad_text_filter.clear()
     except KeyboardInterrupt:
         sys.exit()
     finally:
@@ -59,6 +65,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    while True:
+        main()
 
 # TODO after adding ad_type_5 give every session an ID (+DB)
