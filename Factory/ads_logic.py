@@ -19,7 +19,7 @@ def execute_ad_1(driver, ad_text_filter: [str]) -> None:
             ad.send_to_db()
             if ad.text.strip() is not None:
                 ad_text_filter.append(ad.text)
-    except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
+    except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
         pass
 
 
@@ -51,7 +51,7 @@ def execute_ad_2(driver, ad_text_filter: [str]) -> None:
             ad.send_to_db()
             if ad.text.strip() is not None:
                 ad_text_filter.append(ad.text)
-    except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
+    except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
         pass
 
 
@@ -136,50 +136,22 @@ def execute_ad_4(driver, ad_text_filter: [str]):
         pass
 
 
-"""def execute_ad_5(driver, ad_text_filter: [str]):
-    try:
-        ads_webelements = get_webelements_ads_5(driver)
-        for webElement in ads_webelements:
-            if webElement.get_attribute("text").startswith('Sponsored Ad -'):
-                continue
-            print("ad type 5 in view")
-            text_path = ".//child::*" + 3 * "/following-sibling::*"
-            text = webElement.find_element(By.XPATH, text_path).get_attribute("text")
-            price_path = ".//child::*" + 4 * "/following-sibling::*"
-            price = webElement.find_element(By.XPATH, price_path).get_attribute("text")
-            if text not in ad_text_filter:
-                # create ad
-                ad = Ad(webElement, 5)
-                ad.text = text
-                ad.price = price
-                save_cropped_scr(driver, ad)
-                ad.send_to_db()
-                if ad.text.strip() is not None:
-                    ad_text_filter.append(ad.text)
-
-    except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
-        print("error ad5")"""
-
-
 def execute_ad_5(driver, ad_text_filter: [str]):
     try:
         ads_webelements = get_webelements_ads_5(driver)
         for webElement in ads_webelements:
             if webElement.size["height"] > 450:
                 elements = webElement.find_elements(By.XPATH, ".//*[@class='android.view.View']")
-                for element in elements:
-                    if element.get_attribute("text") == "product-detail":
-                        print("ad 5 findd")
-                        result_text = elements[4].get_attribute("text")
-                        if result_text.startswith("Sponsored"):
-                            """create ad object"""
-                            print("ad 5 find")
-                            ad = Ad(webElement, 5)
-                            save_cropped_scr(driver, ad)
-
-                            ad.text = result_text
-                            ad.send_to_db()
-                            if ad.text is not None:
-                                ad_text_filter.append(ad.text)
-    except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
+                result_text = elements[4].get_attribute("text")
+                var1 = result_text.startswith("Sponsored")
+                var2 = elements[6].get_attribute("text") == "product-detail"
+                if var1 and var2 and result_text not in ad_text_filter:
+                    """create ad object"""
+                    ad = Ad(webElement, 5)
+                    save_cropped_scr(driver, ad)
+                    ad.text = result_text
+                    ad.send_to_db()
+                    if ad.text is not None:
+                        ad_text_filter.append(ad.text)
+    except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException, IndexError):
         pass
