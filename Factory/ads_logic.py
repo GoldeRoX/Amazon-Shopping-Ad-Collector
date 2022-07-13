@@ -2,7 +2,8 @@ import time
 
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
-from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, TimeoutException
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, TimeoutException, \
+    InvalidElementStateException
 from selenium.webdriver.common.by import By
 
 from Ad import Ad
@@ -82,8 +83,7 @@ def collect_ads_2(driver) -> [Ad]:
     return ads
 
 
-# TODO
-def get_webelements_ads_4_5(driver) -> [WebElement]:
+def get_webelements_ads_4(driver) -> [WebElement]:
     try:
         elements = driver.find_elements(By.XPATH, LocatorsData.ad_4_node_ENG)
         return elements
@@ -91,47 +91,64 @@ def get_webelements_ads_4_5(driver) -> [WebElement]:
         return []
 
 
-def execute_ad_4(driver):
+def get_webelements_ads_5(driver) -> [WebElement]:
     try:
-        ads_webelements = get_webelements_ads_4_5(driver)
-        action = TouchAction(driver)
-        for i, web_element in enumerate(ads_webelements):
-            """scroll through web_elements ads"""
-            if i == 0:
-                pass
-            else:
-                # TODO upgrade scroll
-                # (possible solution = change moving elements to next element by moving by width)
-                action.press(ads_webelements[i]).move_to(ads_webelements[i - 1]).wait(ms=2000).release().perform()
-
-            """create an object of ad"""
-            ad = Ad(web_element, 4)
-            save_cropped_scr(driver, ad)
-            path = ".//child::*/following-sibling::*/following-sibling::*"
-            text = web_element.find_element(By.XPATH, path).get_attribute("text")
-            ad.text = text
-            ad.send_to_db()
-            time.sleep(1.5)
+        elements = driver.find_elements(By.XPATH, LocatorsData.ad_5_node_ENG)
+        return elements
     except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
+        return []
+
+
+def execute_ad_4(driver, ads_text_filer: [str]):
+    try:
+        ads_webelements = get_webelements_ads_4(driver)
+        for element in ads_webelements:
+            if element.size["height"] > 870:
+                action = TouchAction(driver)
+                for i, web_element in enumerate(ads_webelements):
+                    path = ".//child::*" + 2 * "/following-sibling::*"
+                    text = web_element.find_element(By.XPATH, path).get_attribute("text")
+                    if text not in ads_text_filer:
+                        """scroll through web_elements ads"""
+                        if i == 0:
+                            pass
+                        else:
+                            par = (ads_webelements[i].size["width"] - ads_webelements[i].size["width"] / 2)
+                            action.press(ads_webelements[i]).move_to(ads_webelements[i - 1], x=par, y=0).wait(
+                                ms=2000).release().perform()
+
+                        """create an object of ad"""
+                        ad = Ad(web_element, 4)
+                        save_cropped_scr(driver, ad)
+
+                        ad.text = text
+                        ad.send_to_db()
+                        time.sleep(1.5)
+                        ads_text_filer.append(text)
+                break
+    except (NoSuchElementException, TimeoutException, StaleElementReferenceException, InvalidElementStateException):
         pass
 
 
 def execute_ad_5(driver, ad_text_filter: [str]):
     try:
-        ads_webelements = get_webelements_ads_4_5(driver)
+        ads_webelements = get_webelements_ads_5(driver)
         for webElement in ads_webelements:
-            text_path = ".//child::*"+3*"/following-sibling::*"
+            if webElement.get_attribute("text").startswith('Sponsored Ad -'):
+                continue
+            print("ad type 5 in view")
+            text_path = ".//child::*" + 3 * "/following-sibling::*"
             text = webElement.find_element(By.XPATH, text_path).get_attribute("text")
-            price_path = ".//child::*"+4*"/following-sibling::*"
+            price_path = ".//child::*" + 4 * "/following-sibling::*"
             price = webElement.find_element(By.XPATH, price_path).get_attribute("text")
             if text not in ad_text_filter:
                 """create ad"""
-                ad_text_filter.append(text)
                 ad = Ad(webElement, 5)
                 ad.text = text
                 ad.price = price
                 save_cropped_scr(driver, ad)
                 ad.send_to_db()
+                ad_text_filter.append(ad.text)
 
     except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
         print("error ad5")

@@ -34,7 +34,7 @@ def main():
 
     try:
         """list of keywords will be added externally"""
-        list_of_keywords = ["Laptops"]  # "Monitors"]
+        list_of_keywords = ["Laptops", "Monitors"]
         try:
             get_page(_driver, list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
         except NoSuchElementException:
@@ -42,18 +42,13 @@ def main():
             get_page(_driver, list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
 
         """scroll down through app Y and collect ads"""
-        for i in range(25):
-            scroll_down(_driver)
-            webelements_list = get_webelements_ads_4_5(_driver)
-            execute_ad_5(_driver, ad_text_filter)
-
-            try:
-                for element in webelements_list:
-                    if element.size["height"] > 870:
-                        execute_ad_4(_driver)
-                        break
-            except StaleElementReferenceException:
+        for i in range(26):
+            if i == 0:
                 pass
+            else:
+                scroll_down(_driver)
+
+            execute_ad_4(_driver, ad_text_filter)
 
         execute_ad_1(_driver)
         execute_ad_2(_driver)

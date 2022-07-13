@@ -14,4 +14,4 @@ class LocatorsData:
 
     ad_4_node_ENG = "//*[starts-with(@text,'Sponsored Ad -')]/parent::*"
 
-    ad_5_node_ENG = "//*[starts-with(@text,'Sponsored Ad -')]/parent::*"
+    ad_5_node_ENG = "//*[starts-with(@text,'Sponsored')]/parent::*"
