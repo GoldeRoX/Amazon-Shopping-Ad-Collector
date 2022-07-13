@@ -20,7 +20,7 @@ class MyDriver(object):
                  app_activity="com.amazon.mShop.home.HomeActivity", device_name="emulator-5554",
                  uiautomator_2_server_launch_timeout=40000, ios_install_pause=8000,
                  wda_startup_retry_interval=20000, new_command_timeout=20000, skip_device_initialization=True,
-                 skip_server_installation=True, no_reset=True):
+                 skip_server_installation=True, no_reset=True, normalize_tag_names=True):
         desired_caps = {
             "platformName": platform_name,
             "appium:platformVersion": platform_version,
@@ -34,7 +34,8 @@ class MyDriver(object):
             "newCommandTimeout": new_command_timeout,
             "skipDeviceInitialization": skip_device_initialization,
             "skipServerInstallation": skip_server_installation,
-            "noReset": no_reset
+            "noReset": no_reset,
+            "normalizeTagNames": normalize_tag_names
         }
 
         # self.driver = webdriver.Remote("http://85.214.87.200:3128/wd/hub", desired_caps)

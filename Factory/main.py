@@ -34,7 +34,7 @@ def main():
 
     try:
         """list of keywords will be added externally"""
-        list_of_keywords = ["Laptops", "Monitors"]
+        list_of_keywords = ["Laptops", "Monitors", "LG"]
         try:
             get_page(_driver, list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
         except NoSuchElementException:
@@ -44,15 +44,19 @@ def main():
         """scroll down through app Y and collect ads"""
         for i in range(26):
             if i == 0:
+                time.sleep(2)
                 pass
             else:
                 scroll_down(_driver)
 
             execute_ad_4(_driver, ad_text_filter)
+            execute_ad_5(_driver, ad_text_filter)
 
-        execute_ad_1(_driver)
-        execute_ad_2(_driver)
+        execute_ad_1(_driver, ad_text_filter)
+        execute_ad_2(_driver, ad_text_filter)
+        print(ad_text_filter)
         ad_text_filter.clear()
+        print(ad_text_filter)
     except KeyboardInterrupt:
         sys.exit()
     finally:
