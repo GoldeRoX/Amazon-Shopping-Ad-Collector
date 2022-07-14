@@ -11,12 +11,12 @@ from locators_data import LocatorsData
 from base import save_cropped_scr
 
 
-def execute_ad_1(driver, ad_text_filter: [str]) -> None:
+def execute_ad_1(driver, ad_text_filter: [str], session_id: int) -> None:
     try:
         ads_list = collect_ads_1(driver)
         for ad in ads_list:
             save_cropped_scr(driver, ad)
-            ad.send_to_db()
+            ad.send_to_db(session_id)
             if ad.text.strip() is not None:
                 ad_text_filter.append(ad.text)
     except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
@@ -34,7 +34,7 @@ def get_webelements_ads_2(driver) -> [WebElement]:
     return webelements
 
 
-def execute_ad_2(driver, ad_text_filter: [str]) -> None:
+def execute_ad_2(driver, ad_text_filter: [str], session_id: int) -> None:
     try:
         ads_webelements = get_webelements_ads_2(driver)
         action = TouchAction(driver)
@@ -48,7 +48,7 @@ def execute_ad_2(driver, ad_text_filter: [str]) -> None:
             """create an object of ad"""
             ad = Ad(web_element, 2)
             save_cropped_scr(driver, ad)
-            ad.send_to_db()
+            ad.send_to_db(session_id)
             if ad.text.strip() is not None:
                 ad_text_filter.append(ad.text)
     except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
@@ -103,7 +103,7 @@ def get_webelements_ads_5(driver) -> [WebElement]:
         return []
 
 
-def execute_ad_4(driver, ad_text_filter: [str]):
+def execute_ad_4(driver, ad_text_filter: [str], session_id: int):
     try:
         ads_webelements = get_webelements_ads_4(driver)
         for element in ads_webelements:
@@ -126,7 +126,7 @@ def execute_ad_4(driver, ad_text_filter: [str]):
                         save_cropped_scr(driver, ad)
 
                         ad.text = text
-                        ad.send_to_db()
+                        ad.send_to_db(session_id)
                         time.sleep(1.5)
                         if ad.text is not None:
                             ad_text_filter.append(ad.text)
@@ -136,7 +136,7 @@ def execute_ad_4(driver, ad_text_filter: [str]):
         pass
 
 
-def execute_ad_5(driver, ad_text_filter: [str]):
+def execute_ad_5(driver, ad_text_filter: [str], session_id: int):
     try:
         ads_webelements = get_webelements_ads_5(driver)
         for webElement in ads_webelements:
@@ -150,7 +150,7 @@ def execute_ad_5(driver, ad_text_filter: [str]):
                     ad = Ad(webElement, 5)
                     save_cropped_scr(driver, ad)
                     ad.text = result_text
-                    ad.send_to_db()
+                    ad.send_to_db(session_id)
                     if ad.text is not None:
                         ad_text_filter.append(ad.text)
     except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException, IndexError):

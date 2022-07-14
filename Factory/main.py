@@ -1,10 +1,10 @@
 import sys
 import random
 
-from selenium.common.exceptions import WebDriverException
+from database_connector import get_last_saved_session_id_from_db
 from ads_logic import *
 
-from Factory.locators_data import LocatorsData
+from locators_data import LocatorsData
 from base import *
 
 
@@ -30,6 +30,8 @@ def main():
     session = MyDriver()
     _driver = session.driver
 
+    session_id = get_last_saved_session_id_from_db()+1
+
     ad_text_filter = []
 
     try:
@@ -49,22 +51,20 @@ def main():
             else:
                 scroll_down(_driver)
 
-            execute_ad_4(_driver, ad_text_filter)
-            execute_ad_5(_driver, ad_text_filter)
+            execute_ad_4(_driver, ad_text_filter, session_id)
+            execute_ad_5(_driver, ad_text_filter, session_id)
 
-        execute_ad_1(_driver, ad_text_filter)
-        execute_ad_2(_driver, ad_text_filter)
-        print(ad_text_filter)
+        execute_ad_1(_driver, ad_text_filter, session_id)
+        execute_ad_2(_driver, ad_text_filter, session_id)
         ad_text_filter.clear()
-        print(ad_text_filter)
     except KeyboardInterrupt:
+        print("KeyboardInterrupt exception")
         sys.exit()
     finally:
+        print("end of a session")
         _driver.close_app()
 
 
 if __name__ == "__main__":
     while True:
         main()
-
-# TODO after adding ad_type_5 give every session an ID (+DB)

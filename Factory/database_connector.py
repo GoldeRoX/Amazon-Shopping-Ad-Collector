@@ -41,13 +41,13 @@ db_credentials = {
 }
 
 
-def send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, id_ad_type, price):
+def send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, price):
     query = """
             INSERT INTO 
                 ads_meta_data
-                (filename, width, height, location_x, location_y, text, timestamp, id_ad_type, price)
+                (filename, width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, price)
             VALUES
-                (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ;"""
 
     with cursor(**db_credentials) as c:
@@ -56,12 +56,24 @@ def send_data_to_db(filename, width, height, location_x, location_y, text, times
 
         c.execute(
             query,
-            (filename, width, height, location_x, location_y, text, timestamp, id_ad_type, price)
+            (filename, width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, price)
         )
 
 
 def get_last_saved_id_from_db() -> int:
     query = "SELECT MAX(id) FROM ads_meta_data;"
+
+    with cursor(**db_credentials) as c:
+        c.execute(query)
+        result = c.fetchone()
+
+    if result[0] is None:
+        return 0
+    return int(result[0])
+
+
+def get_last_saved_session_id_from_db() -> int:
+    query = "SELECT MAX(id_session) FROM ads_meta_data;"
 
     with cursor(**db_credentials) as c:
         c.execute(query)
