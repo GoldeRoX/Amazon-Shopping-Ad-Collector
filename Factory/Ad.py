@@ -27,7 +27,7 @@ class Ad(object):
         self.filename = str(get_last_saved_id_from_db() + 1) + ".png"""
         self.ad_type = ad_type
 
-    def send_to_db(self, session_id: int):
+    def send_to_db(self, session_id: int) -> None:
         send_data_to_db(self.filename, self.width, self.height, self.location_x,
                         self.location_y, self.text, self.timestamp, self.ad_type,
                         session_id, self.price)

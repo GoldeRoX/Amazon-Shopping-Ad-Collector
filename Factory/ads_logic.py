@@ -103,7 +103,7 @@ def get_webelements_ads_5(driver) -> [WebElement]:
         return []
 
 
-def execute_ad_4(driver, ad_text_filter: [str], session_id: int):
+def execute_ad_4(driver, ad_text_filter: [str], session_id: int) -> None:
     try:
         ads_webelements = get_webelements_ads_4(driver)
         for element in ads_webelements:
@@ -136,7 +136,7 @@ def execute_ad_4(driver, ad_text_filter: [str], session_id: int):
         pass
 
 
-def execute_ad_5(driver, ad_text_filter: [str], session_id: int):
+def execute_ad_5(driver, ad_text_filter: [str], session_id: int) -> None:
     try:
         ads_webelements = get_webelements_ads_5(driver)
         for webElement in ads_webelements:

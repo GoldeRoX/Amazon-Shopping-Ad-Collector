@@ -17,7 +17,7 @@ def get_page(driver, phrase_to_search: str) -> None:
     driver.press_keycode(66)
 
 
-def scroll_down(driver):
+def scroll_down(driver) -> None:
 
     """scroll down through app Y"""
     try:
@@ -36,7 +36,7 @@ def main():
 
     try:
         """list of keywords will be added externally"""
-        list_of_keywords = ["Laptops", "Monitors", "LG"]
+        list_of_keywords = ["Laptops", "Monitors", "LG", "Oculus", "Meta", "Games", "Warhammer"]
         try:
             get_page(_driver, list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
         except NoSuchElementException:
@@ -61,7 +61,7 @@ def main():
         print("KeyboardInterrupt exception")
         sys.exit()
     finally:
-        print("end of a session")
+        print(f"end of session {session_id} : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         _driver.close_app()
 
 
