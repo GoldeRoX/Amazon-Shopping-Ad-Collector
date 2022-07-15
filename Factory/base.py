@@ -8,9 +8,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 import cv2  # import opencv-python	4.5.5.64
-from Factory.Ad import Ad
+from Ad import Ad
 
-from Factory.database_connector import get_last_saved_id_from_db
+from database_connector import get_last_saved_id_from_db
+from locators_data import LocatorsData
 
 
 class MyDriver(object):
@@ -38,55 +39,60 @@ class MyDriver(object):
             "normalizeTagNames": normalize_tag_names
         }
 
-        # self.driver = webdriver.Remote("http://85.214.87.200:3128/wd/hub", desired_caps)
+        # self.driver = webdriver.Remote("http://149.154.159.160:3128/wd/hub", desired_caps)
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", desired_caps)
 
+    @staticmethod
+    def save_cropped_scr(driver, ad: Ad) -> None:
+        date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
-def save_cropped_scr(driver, ad: Ad) -> None:
-    date_folder_name = datetime.now().strftime("%Y-%m-%d")
+        if not os.path.exists(f"/nfsshare/Screenshots/{date_folder_name}"):
+            os.mkdir(f"/nfsshare/Screenshots/{date_folder_name}")
 
-    if not os.path.exists(f"/nfsshare/Screenshots/{date_folder_name}"):
-        os.mkdir(f"/nfsshare/Screenshots/{date_folder_name}")
+        img_name = int(get_last_saved_id_from_db()) + 1
 
-    img_name = int(get_last_saved_id_from_db()) + 1
+        image_path = f"/nfsshare/Screenshots/{date_folder_name}/{str(img_name)}.png"
+        driver.save_screenshot(image_path)
+        img = cv2.imread(image_path)
 
-    image_path = f"/nfsshare/Screenshots/{date_folder_name}/{str(img_name)}.png"
-    driver.save_screenshot(image_path)
-    img = cv2.imread(image_path)
+        cropped_image = img[
+                        ad.location_y:ad.location_y + ad.height,
+                        ad.location_x:ad.location_x + ad.width
+                        ]
+        cv2.imwrite(image_path, cropped_image)
 
-    cropped_image = img[
-                    ad.location_y:ad.location_y + ad.height,
-                    ad.location_x:ad.location_x + ad.width
-                    ]
-    cv2.imwrite(image_path, cropped_image)
-
-
-def wait_for_element(driver, by_type, path) -> None:
-    WebDriverWait(driver, 5).until(
-        EC.presence_of_element_located((by_type, path)))
-
-
-def send_text(driver, by_type, path: str, text_to_send: str) -> None:
-    try:
-        wait_for_element(driver, by_type, path)
-        driver.find_element(by_type, path).send_keys(text_to_send)
-    except (NoSuchElementException, TimeoutException):
-        print("No such Input field")
-
-
-# TODO create logic, that will NOT wait 10s in case of not locating elements
-
-def first_launch(driver) -> None:
-    try:
+    @staticmethod
+    def wait_for_element(driver, by_type, path) -> None:
         WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")))
-        driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
-    except (NoSuchElementException, TimeoutException):
-        pass
-    time.sleep(5)
-    try:
-        WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")))
-        driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
-    except (NoSuchElementException, TimeoutException):
-        pass
+            EC.presence_of_element_located((by_type, path)))
+
+    def send_text(self, driver, by_type, path: str, text_to_send: str) -> None:
+        try:
+            self.wait_for_element(driver, by_type, path)
+            driver.find_element(by_type, path).send_keys(text_to_send)
+        except (NoSuchElementException, TimeoutException):
+            print("No such Input field")
+
+    @staticmethod
+    def first_launch(driver) -> None:
+        try:
+            WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")))
+            driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
+        except (NoSuchElementException, TimeoutException):
+            pass
+        time.sleep(5)
+        try:
+            WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")))
+            driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
+        except (NoSuchElementException, TimeoutException):
+            pass
+
+    def get_page(self, driver, phrase_to_search: str) -> None:
+        """search item"""
+        driver.find_element(By.XPATH, LocatorsData.search_icon_ENG).click()
+        self.send_text(driver, By.ID, LocatorsData.search_input_ENG, phrase_to_search)
+
+        """press enter"""
+        driver.press_keycode(66)
