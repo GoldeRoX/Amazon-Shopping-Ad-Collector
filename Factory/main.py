@@ -31,16 +31,16 @@ def main():
 
     ad_text_filter = []
 
-    ad_handler = AdHandler()
+    ad_handler = AdHandler(session.driver)
 
     try:
         """list of keywords will be added externally"""
         list_of_keywords = ["Laptops", "Monitors", "LG", "Oculus", "Meta"]
         try:
-            session.get_page(_driver, list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
+            session.get_page(list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
         except NoSuchElementException:
-            session.first_launch(_driver)
-            session.get_page(_driver, list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
+            session.first_launch()
+            session.get_page(list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
 
         """scroll down through app Y and collect ads"""
         for i in range(26):
@@ -49,11 +49,11 @@ def main():
             else:
                 scroll_down(_driver)
 
-            ad_handler.execute_ad_4(_driver, ad_text_filter, session_id)
-            ad_handler.execute_ad_5(_driver, ad_text_filter, session_id)
+            ad_handler.execute_ad_4(ad_text_filter, session_id)
+            ad_handler.execute_ad_5(ad_text_filter, session_id)
 
-        ad_handler.execute_ad_1(_driver, ad_text_filter, session_id)
-        ad_handler.execute_ad_2(_driver, ad_text_filter, session_id)
+        ad_handler.execute_ad_1(ad_text_filter, session_id)
+        ad_handler.execute_ad_2(ad_text_filter, session_id)
         ad_text_filter.clear()
     except KeyboardInterrupt:
         print("KeyboardInterrupt exception")

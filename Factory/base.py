@@ -61,38 +61,37 @@ class MyDriver(object):
                         ]
         cv2.imwrite(image_path, cropped_image)
 
-    @staticmethod
-    def wait_for_element(driver, by_type, path) -> None:
-        WebDriverWait(driver, 5).until(
+    def wait_for_element(self, by_type, path) -> None:
+        WebDriverWait(self.driver, 5).until(
             EC.presence_of_element_located((by_type, path)))
 
-    def send_text(self, driver, by_type, path: str, text_to_send: str) -> None:
+    def send_text(self, by_type, path: str, text_to_send: str) -> None:
         try:
-            self.wait_for_element(driver, by_type, path)
-            driver.find_element(by_type, path).send_keys(text_to_send)
+            self.wait_for_element(by_type, path)
+            self.driver.find_element(by_type, path).send_keys(text_to_send)
         except (NoSuchElementException, TimeoutException):
             print("No such Input field")
 
-    @staticmethod
-    def first_launch(driver) -> None:
+    # TODO refactor this method
+    def first_launch(self) -> None:
         try:
-            WebDriverWait(driver, 5).until(
+            WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")))
-            driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
+            self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
         except (NoSuchElementException, TimeoutException):
             pass
         time.sleep(5)
         try:
-            WebDriverWait(driver, 5).until(
+            WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")))
-            driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
+            self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
         except (NoSuchElementException, TimeoutException):
             pass
 
-    def get_page(self, driver, phrase_to_search: str) -> None:
+    def get_page(self, phrase_to_search: str) -> None:
         """search item"""
-        driver.find_element(By.XPATH, LocatorsData.search_icon_ENG).click()
-        self.send_text(driver, By.ID, LocatorsData.search_input_ENG, phrase_to_search)
+        self.driver.find_element(By.XPATH, LocatorsData.search_icon_ENG).click()
+        self.send_text(By.ID, LocatorsData.search_input_ENG, phrase_to_search)
 
         """press enter"""
-        driver.press_keycode(66)
+        self.driver.press_keycode(66)
