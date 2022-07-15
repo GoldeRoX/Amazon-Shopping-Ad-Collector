@@ -73,6 +73,7 @@ class MyDriver(object):
 
     # TODO refactor this method
     def first_launch(self) -> None:
+        """this method will be executed when the emulator had reset his"""
         try:
             self.wait_for_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
             self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
@@ -86,19 +87,12 @@ class MyDriver(object):
             pass
 
     def get_page(self, phrase_to_search: str) -> None:
-        """search item"""
+        """search item on the app"""
         self.driver.find_element(By.XPATH, LocatorsData.search_icon_ENG).click()
         self.send_text(By.ID, LocatorsData.search_input_ENG, phrase_to_search)
 
         """press enter"""
         self.driver.press_keycode(66)
-
-    # TODO implement that tactic
-    """
-    could query the current list of visible elements in between each swipe, 
-    then compare the current list against the last list. If the list is the same, 
-    the swipe had no effect, and app is at the bottom
-    """
 
     def scroll_down(self) -> None:
         """scroll down through app Y"""
@@ -106,13 +100,3 @@ class MyDriver(object):
             self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=500, duration=400)
         except WebDriverException:
             pass
-
-    def is_bottom(self) -> bool:
-        end_of_page = False
-        previous_page_source = self.driver.page_source
-
-        while not end_of_page:
-            self.scroll_down()
-            end_of_page = previous_page_source == self.driver.page_source
-            previous_page_source = self.driver.page_source
-        return True

@@ -104,7 +104,6 @@ class AdHandler(object):
         try:
             ads_webelements = self.get_webelements_ads_4()
             for element in ads_webelements:
-                # TODO check if height can be replaced with other valid.
                 if element.size["height"] > 870:
                     action = TouchAction(self.driver)
                     for i, web_element in enumerate(ads_webelements):
@@ -133,7 +132,6 @@ class AdHandler(object):
                 StaleElementReferenceException, InvalidElementStateException):
             pass
 
-    # TODO create a solution that will automate verification
     def execute_ad_5(self, ad_text_filter: [str], session_id: int):
         try:
             ads_webelements = self.get_webelements_ads_5()

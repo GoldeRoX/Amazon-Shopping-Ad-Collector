@@ -48,6 +48,7 @@ def main():
         print(f"end of session {session_id} : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("--- %s seconds running---" % (time.time() - start_time))
         _driver.close_app()
+        _driver.quit()
 
 
 if __name__ == "__main__":
