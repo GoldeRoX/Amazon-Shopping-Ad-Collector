@@ -38,7 +38,6 @@ class MyDriver(object):
             "noReset": no_reset,
             "normalizeTagNames": normalize_tag_names
         }
-
         # self.driver = webdriver.Remote("http://149.154.159.160:3128/wd/hub", desired_caps)
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", desired_caps)
 
