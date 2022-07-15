@@ -2,7 +2,7 @@ import os
 import time
 
 from appium import webdriver  # import Appium-Python-Client 2.2.0
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -95,3 +95,16 @@ class MyDriver(object):
 
         """press enter"""
         self.driver.press_keycode(66)
+
+    # TODO implement that tactic
+    """
+    could query the current list of visible elements in between each swipe, 
+    then compare the current list against the last list. If the list is the same, 
+    the swipe had no effect, and app is at the bottom
+    """
+    def scroll_down(self) -> None:
+        """scroll down through app Y"""
+        try:
+            self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=500, duration=400)
+        except WebDriverException:
+            pass

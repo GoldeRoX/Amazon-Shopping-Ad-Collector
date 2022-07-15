@@ -7,22 +7,6 @@ from ads_logic import *
 from base import *
 
 
-# TODO implement that tactic
-"""
-could query the current list of visible elements in between each swipe, 
-then compare the current list against the last list. If the list is the same, 
-the swipe had no effect, and app is at the bottom
-"""
-
-
-def scroll_down(driver) -> None:
-    """scroll down through app Y"""
-    try:
-        driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=500, duration=400)
-    except WebDriverException:
-        pass
-
-
 def main():
     session = MyDriver()
     _driver = session.driver
@@ -47,7 +31,7 @@ def main():
             if i == 0:
                 time.sleep(2)
             else:
-                scroll_down(_driver)
+                session.scroll_down()
 
             ad_handler.execute_ad_4(ad_text_filter, session_id)
             ad_handler.execute_ad_5(ad_text_filter, session_id)
