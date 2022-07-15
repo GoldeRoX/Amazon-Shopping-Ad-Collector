@@ -75,15 +75,13 @@ class MyDriver(object):
     # TODO refactor this method
     def first_launch(self) -> None:
         try:
-            WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")))
+            self.wait_for_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
             self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
         except (NoSuchElementException, TimeoutException):
             pass
         time.sleep(5)
         try:
-            WebDriverWait(self.driver, 5).until(
-                EC.presence_of_element_located((By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")))
+            self.wait_for_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
             self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
         except (NoSuchElementException, TimeoutException):
             pass
@@ -102,9 +100,20 @@ class MyDriver(object):
     then compare the current list against the last list. If the list is the same, 
     the swipe had no effect, and app is at the bottom
     """
+
     def scroll_down(self) -> None:
         """scroll down through app Y"""
         try:
             self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=500, duration=400)
         except WebDriverException:
             pass
+
+    def is_bottom(self) -> bool:
+        end_of_page = False
+        previous_page_source = self.driver.page_source
+
+        while not end_of_page:
+            self.scroll_down()
+            end_of_page = previous_page_source == self.driver.page_source
+            previous_page_source = self.driver.page_source
+        return True

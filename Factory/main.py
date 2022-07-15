@@ -27,14 +27,15 @@ def main():
             session.get_page(list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
 
         """scroll down through app Y and collect ads"""
-        for i in range(26):
-            if i == 0:
-                time.sleep(2)
-            else:
-                session.scroll_down()
+        end_of_page = False
+        previous_page_source = _driver.page_source
 
-            ad_handler.execute_ad_4(ad_text_filter, session_id)
+        while not end_of_page:
             ad_handler.execute_ad_5(ad_text_filter, session_id)
+            ad_handler.execute_ad_4(ad_text_filter, session_id)
+            session.scroll_down()
+            end_of_page = previous_page_source == _driver.page_source
+            previous_page_source = _driver.page_source
 
         ad_handler.execute_ad_1(ad_text_filter, session_id)
         ad_handler.execute_ad_2(ad_text_filter, session_id)
