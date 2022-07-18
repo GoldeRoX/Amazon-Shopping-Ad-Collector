@@ -33,12 +33,20 @@ def cursor(*args, **kwargs) -> ContextManager[Cursor]:
 
 
 db_credentials = {
+    'host': '10.10.10.19',
+    'database': 'amazon_krzysiek',
+    'user': 'krzysiek',
+    'password': 'ndXs5RzCCPot90Se',
+    'charset': 'utf8mb4'
+}
+
+"""db_credentials = {
     'host': '127.0.0.1',
     'database': 'Amazon_ads',
     'user': 'root',
     'password': '',
     'charset': 'utf8mb4'
-}
+}"""
 
 
 def send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, price):
