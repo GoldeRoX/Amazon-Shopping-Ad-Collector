@@ -62,7 +62,7 @@ class AdHandler(object):
         elements = self.driver.find_elements(By.XPATH, LocatorsData.BOTTOM_AD_ENG)
 
         for element in elements:
-            if element.size["height"] > 100 and element.get_attribute("scrollable") == "true":
+            if element.size["height"] > 100: # and element.get_attribute("scrollable") == "false":
                 webelements.append(element)
         return webelements
 

@@ -45,12 +45,12 @@ class MyDriver(object):
     def save_cropped_scr(driver, ad: Ad) -> None:
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
-        if not os.path.exists(f"/nfsshare/Screenshots/{date_folder_name}"):
-            os.mkdir(f"/nfsshare/Screenshots/{date_folder_name}")
+        if not os.path.exists(f"/nfs/Screenshots/{date_folder_name}"):
+            os.mkdir(f"/nfs/Screenshots/{date_folder_name}")
 
         img_name = int(get_last_saved_id_from_db()) + 1
 
-        image_path = f"/nfsshare/Screenshots/{date_folder_name}/{str(img_name)}.png"
+        image_path = f"/nfs/Screenshots/{date_folder_name}/{str(img_name)}.png"
         driver.save_screenshot(image_path)
         img = cv2.imread(image_path)
 
