@@ -11,7 +11,7 @@ import cv2  # import opencv-python	4.5.5.64
 from Ad import Ad
 
 from database_connector import get_last_saved_id_from_db
-from locators_data import LocatorsData
+from locators_data import LocatorsDataENG
 
 
 class MyDriver(object):
@@ -45,12 +45,12 @@ class MyDriver(object):
     def save_cropped_scr(driver, ad: Ad) -> None:
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
-        if not os.path.exists(f"/nfs/Screenshots/{date_folder_name}"):
-            os.mkdir(f"/nfs/Screenshots/{date_folder_name}")
+        if not os.path.exists(f"/nfsshare/Screenshots/{date_folder_name}"):
+            os.mkdir(f"/nfsshare/Screenshots/{date_folder_name}")
 
         img_name = int(get_last_saved_id_from_db()) + 1
 
-        image_path = f"/nfs/Screenshots/{date_folder_name}/{str(img_name)}.png"
+        image_path = f"/nfsshare/Screenshots/{date_folder_name}/{str(img_name)}.png"
         driver.save_screenshot(image_path)
         img = cv2.imread(image_path)
 
@@ -88,8 +88,8 @@ class MyDriver(object):
 
     def get_page(self, phrase_to_search: str) -> None:
         """search item on the app"""
-        self.driver.find_element(By.XPATH, LocatorsData.search_icon_ENG).click()
-        self.send_text(By.ID, LocatorsData.search_input_ENG, phrase_to_search)
+        self.driver.find_element(By.XPATH, LocatorsDataENG.search_icon).click()
+        self.send_text(By.ID, LocatorsDataENG.search_input, phrase_to_search)
 
         """press enter"""
         self.driver.press_keycode(66)

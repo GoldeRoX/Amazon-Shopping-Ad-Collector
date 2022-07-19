@@ -7,7 +7,8 @@ from selenium.common.exceptions import StaleElementReferenceException, NoSuchEle
 from selenium.webdriver.common.by import By
 
 from Ad import Ad
-from locators_data import LocatorsData
+from locators_data import LocatorsDataENG
+from locators_data import LocatorsDataDE
 from base import MyDriver
 
 
@@ -20,15 +21,16 @@ class AdHandler(object):
         try:
             ads_list = self.collect_ads_1()
             for ad in ads_list:
-                MyDriver.save_cropped_scr(self.driver, ad)
-                ad.send_to_db(session_id)
-                if ad.text.strip() is not None:
-                    ad_text_filter.append(ad.text)
+                if ad.height != 261:
+                    MyDriver.save_cropped_scr(self.driver, ad)
+                    ad.send_to_db(session_id)
+                    if ad.text.strip() is not None:
+                        ad_text_filter.append(ad.text)
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
 
     def get_webelements_ads_2(self) -> [WebElement]:
-        element_node = self.driver.find_element(By.XPATH, LocatorsData.brands_related_to_your_search_element_node_ENG)
+        element_node = self.driver.find_element(By.XPATH, LocatorsDataENG.brands_related_to_your_search_element_node)
         elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
         webelements = []
         for element in elements:
@@ -59,10 +61,10 @@ class AdHandler(object):
 
     def get_webelements_ads_1(self) -> [WebElement]:
         webelements = []
-        elements = self.driver.find_elements(By.XPATH, LocatorsData.BOTTOM_AD_ENG)
+        elements = self.driver.find_elements(By.XPATH, LocatorsDataENG.BOTTOM_AD)
 
         for element in elements:
-            if element.size["height"] > 100: # and element.get_attribute("scrollable") == "false":
+            if element.size["height"] > 100:
                 webelements.append(element)
         return webelements
 
@@ -88,14 +90,14 @@ class AdHandler(object):
 
     def get_webelements_ads_4(self) -> [WebElement]:
         try:
-            elements = self.driver.find_elements(By.XPATH, LocatorsData.ad_4_node_ENG)
+            elements = self.driver.find_elements(By.XPATH, LocatorsDataENG.ad_4_node)
             return elements
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
             return []
 
     def get_webelements_ads_5(self) -> [WebElement]:
         try:
-            elements = self.driver.find_elements(By.XPATH, LocatorsData.ad_5_node_ENG)
+            elements = self.driver.find_elements(By.XPATH, LocatorsDataENG.ad_5_node)
             return elements
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
             return []
@@ -139,7 +141,7 @@ class AdHandler(object):
                 if webElement.size["height"] > 450:
                     elements = webElement.find_elements(By.XPATH, ".//*[@class='android.view.View']")
                     result_text = elements[4].get_attribute("text")
-                    var1 = result_text.startswith("Sponsored")
+                    var1 = result_text.startswith("Sponsored") 
                     var2 = elements[7].get_attribute("text") == "product-detail"
                     if var1 and var2 and result_text not in ad_text_filter:
                         """create ad object"""
@@ -153,5 +155,3 @@ class AdHandler(object):
                 NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException,
                 IndexError):
             pass
-
-# for ads_with recording, for height(crop) add y of element_text + y of element with text "Sponsored"
