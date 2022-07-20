@@ -11,7 +11,7 @@ import cv2  # import opencv-python	4.5.5.64
 from Ad import Ad
 
 from database_connector import get_last_saved_id_from_db
-from locators_data import LocatorsDataENG
+from locators_data import *
 
 
 class MyDriver(object):
@@ -22,6 +22,13 @@ class MyDriver(object):
                  uiautomator_2_server_launch_timeout=40000, ios_install_pause=8000,
                  wda_startup_retry_interval=20000, new_command_timeout=20000, skip_device_initialization=True,
                  skip_server_installation=True, no_reset=True, normalize_tag_names=True):
+        """
+        ustawic auto config przy pierwszym uruchomieniu by
+        skip_device_initialization: False
+        skip_server_installation: False
+        no_reset: False
+        """
+
         desired_caps = {
             "platformName": platform_name,
             "appium:platformVersion": platform_version,
@@ -38,7 +45,6 @@ class MyDriver(object):
             "noReset": no_reset,
             "normalizeTagNames": normalize_tag_names
         }
-        # self.driver = webdriver.Remote("http://149.154.159.160:3128/wd/hub", desired_caps)
         self.driver = webdriver.Remote("http://localhost:4723/wd/hub", desired_caps)
 
     @staticmethod
@@ -69,7 +75,7 @@ class MyDriver(object):
             self.wait_for_element(by_type, path)
             self.driver.find_element(by_type, path).send_keys(text_to_send)
         except (NoSuchElementException, TimeoutException):
-            print("No such Input field")
+            print('No "Search Input" field')
 
     # TODO refactor this method
     def first_launch(self) -> None:
@@ -88,8 +94,11 @@ class MyDriver(object):
 
     def get_page(self, phrase_to_search: str) -> None:
         """search item on the app"""
-        self.driver.find_element(By.XPATH, LocatorsDataENG.search_icon).click()
-        self.send_text(By.ID, LocatorsDataENG.search_input, phrase_to_search)
+        try:
+            self.driver.find_element(By.XPATH, DE.search_icon).click()
+        except NoSuchElementException:
+            self.driver.find_element(By.XPATH, ENG.search_icon).click()
+        self.send_text(By.ID, 'com.amazon.mShop.android.shopping:id/rs_search_src_text', phrase_to_search)
 
         """press enter"""
         self.driver.press_keycode(66)

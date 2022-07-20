@@ -1,6 +1,5 @@
 import sys
 import random
-import time
 
 from database_connector import get_last_saved_session_id_from_db
 from ads_logic import *
@@ -17,7 +16,7 @@ def main():
 
     ad_text_filter = []
 
-    ad_handler = AdHandler(session.driver)
+    ad_handler = AdHandler(session.driver, lang=DE)
 
     try:
         """list of keywords will be added externally"""
@@ -39,6 +38,7 @@ def main():
             is_end_of_page = previous_page_source == _driver.page_source
 
             previous_page_source = _driver.page_source
+
         ad_handler.execute_ad_1(ad_text_filter, session_id)
         ad_handler.execute_ad_2(ad_text_filter, session_id)
         ad_text_filter.clear()

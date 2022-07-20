@@ -1,5 +1,3 @@
-import time
-
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, TimeoutException, \
@@ -7,39 +5,39 @@ from selenium.common.exceptions import StaleElementReferenceException, NoSuchEle
 from selenium.webdriver.common.by import By
 
 from Ad import Ad
-from locators_data import LocatorsDataENG
-from locators_data import LocatorsDataDE
 from base import MyDriver
 
 
 class AdHandler(object):
 
-    def __init__(self, driver):
+    def __init__(self, driver, lang):
         self.driver = driver
+        self.lang = lang
 
     def execute_ad_1(self, ad_text_filter: [str], session_id: int) -> None:
+        """Create, send to DB and save scr of ad"""
         try:
             ads_list = self.collect_ads_1()
             for ad in ads_list:
-                if ad.height != 261:
-                    MyDriver.save_cropped_scr(self.driver, ad)
-                    ad.send_to_db(session_id)
-                    if ad.text.strip() is not None:
-                        ad_text_filter.append(ad.text)
+                MyDriver.save_cropped_scr(self.driver, ad)
+                ad.send_to_db(session_id)
+                if ad.text.strip() is not None:
+                    ad_text_filter.append(ad.text)
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
 
     def get_webelements_ads_2(self) -> [WebElement]:
-        element_node = self.driver.find_element(By.XPATH, LocatorsDataENG.brands_related_to_your_search_element_node)
+        element_node = self.driver.find_element(By.XPATH, self.lang.brands_related_to_your_search_element_node)
         elements = element_node.find_elements(By.XPATH, ".//*[@class='android.view.View']")
         webelements = []
         for element in elements:
             if element.get_attribute("clickable") == "true" and element.get_attribute("text").startswith(
-                    "Sponsored ad from"):  # Sponsored ad from # Gesponserte Werbeanzeige von
+                    self.lang.ad_2_starts_with):
                 webelements.append(element)
         return webelements
 
     def execute_ad_2(self, ad_text_filter: [str], session_id: int) -> None:
+        """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_2()
             action = TouchAction(self.driver)
@@ -61,10 +59,10 @@ class AdHandler(object):
 
     def get_webelements_ads_1(self) -> [WebElement]:
         webelements = []
-        elements = self.driver.find_elements(By.XPATH, LocatorsDataENG.BOTTOM_AD)
+        elements = self.driver.find_elements(By.XPATH, self.lang.BOTTOM_AD)
 
         for element in elements:
-            if element.size["height"] > 100:
+            if element.size["height"] > 300:
                 webelements.append(element)
         return webelements
 
@@ -90,19 +88,20 @@ class AdHandler(object):
 
     def get_webelements_ads_4(self) -> [WebElement]:
         try:
-            elements = self.driver.find_elements(By.XPATH, LocatorsDataENG.ad_4_node)
+            elements = self.driver.find_elements(By.XPATH, self.lang.ad_4_node)
             return elements
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
             return []
 
     def get_webelements_ads_5(self) -> [WebElement]:
         try:
-            elements = self.driver.find_elements(By.XPATH, LocatorsDataENG.ad_5_node)
+            elements = self.driver.find_elements(By.XPATH, self.lang.ad_5_node)
             return elements
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
             return []
 
     def execute_ad_4(self, ad_text_filter: [str], session_id: int):
+        """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_4()
             for element in ads_webelements:
@@ -126,7 +125,6 @@ class AdHandler(object):
 
                             ad.text = text
                             ad.send_to_db(session_id)
-                            time.sleep(1.5)
                             if ad.text is not None:
                                 ad_text_filter.append(ad.text)
                     break
@@ -135,13 +133,14 @@ class AdHandler(object):
             pass
 
     def execute_ad_5(self, ad_text_filter: [str], session_id: int):
+        """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_5()
             for webElement in ads_webelements:
                 if webElement.size["height"] > 450:
                     elements = webElement.find_elements(By.XPATH, ".//*[@class='android.view.View']")
                     result_text = elements[4].get_attribute("text")
-                    var1 = result_text.startswith("Sponsored") 
+                    var1 = result_text.startswith(self.lang.ad_5_starts_with)
                     var2 = elements[7].get_attribute("text") == "product-detail"
                     if var1 and var2 and result_text not in ad_text_filter:
                         """create ad object"""
