@@ -1,11 +1,9 @@
 APP:
-  ENVIRONMENT: test
-  DEBUG: True
-  # Only accept True or False
+  LANG: DE # options: DE / ENG
 
 DATABASE:
-  USERNAME: xiaoxu
-  PASSWORD: xiaoxu
-  HOST: 127.0.0.1
-  PORT: 5432
-  DB: xiaoxu_database
+  USERNAME: "root"
+  PASSWORD: ""
+  HOST: "127.0.0.1"
+  DB: "Amazon_ads"
+  CHARSET: 'utf8mb4'

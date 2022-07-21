@@ -23,7 +23,7 @@ def main():
         list_of_keywords = ["Laptops", "Monitors", "LG", "Oculus", "Meta"]
         try:
             session.get_page(list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
-        except NoSuchElementException:
+        except (NoSuchElementException, StaleElementReferenceException):
             session.first_launch()
             session.get_page(list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
 
@@ -32,8 +32,8 @@ def main():
         previous_page_source = _driver.page_source
 
         while not is_end_of_page:
-            ad_handler.execute_ad_5(ad_text_filter, session_id)
             ad_handler.execute_ad_4(ad_text_filter, session_id)
+            ad_handler.execute_ad_5(ad_text_filter, session_id)
             session.scroll_down()
             is_end_of_page = previous_page_source == _driver.page_source
 

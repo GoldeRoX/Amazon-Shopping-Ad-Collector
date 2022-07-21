@@ -2,3 +2,4 @@ pip install opencv-python==4.5.5.64
 pip install Appium-Python-Client==2.2.0
 pip install mysqlclient==2.0.3
 sudo apt-get install python-dev libmysqlclient-dev
+pip install PyYAML==6.0
