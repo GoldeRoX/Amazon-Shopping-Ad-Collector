@@ -68,7 +68,6 @@ class AdHandler(object):
 
     def collect_ads_1(self) -> [Ad]:
         ads = []
-
         webelements = self.get_webelements_ads_1()
 
         for webElement in webelements:

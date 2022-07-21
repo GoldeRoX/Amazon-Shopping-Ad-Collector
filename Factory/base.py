@@ -45,7 +45,8 @@ class MyDriver(object):
             "noReset": no_reset,
             "normalizeTagNames": normalize_tag_names
         }
-        self.driver = webdriver.Remote("http://localhost:4723/wd/hub", desired_caps)
+        self.driver = webdriver.Remote(command_executor="http://localhost:4723/wd/hub",
+                                       desired_capabilities=desired_caps)
 
     @staticmethod
     def save_cropped_scr(driver, ad: Ad) -> None:
@@ -79,7 +80,7 @@ class MyDriver(object):
 
     # TODO refactor this method
     def first_launch(self) -> None:
-        """this method will be executed when the emulator had reset his"""
+        """this method will be executed when the emulator had a reset or is a new one"""
         try:
             self.wait_for_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
             self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
