@@ -11,6 +11,7 @@ def main():
     start_time = time.time()
     session = MyDriver()
 
+
     session_id = get_last_saved_session_id_from_db() + 1
 
     ad_handler = AdHandler(lang=DE)
