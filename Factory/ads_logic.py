@@ -10,11 +10,19 @@ from base import MyDriver
 
 class AdHandler(object):
 
-    def __init__(self, driver, lang):
-        self.driver = driver
+    def __init__(self, lang):
+        self.driver = MyDriver().driver
+        self.ad_text_filter = []
         self.lang = lang
 
-    def execute_ad_1(self, ad_text_filter: [str], session_id: int) -> None:
+    def is_ad_used(self, ad: Ad) -> bool:
+        text = ad.text.strip()
+        if text not in self.ad_text_filter:
+            return False
+        else:
+            return True
+
+    def execute_ad_1(self, session_id: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
             ads_list = self.collect_ads_1()
@@ -22,7 +30,7 @@ class AdHandler(object):
                 MyDriver.save_cropped_scr(self.driver, ad)
                 ad.send_to_db(session_id)
                 if ad.text.strip() is not None:
-                    ad_text_filter.append(ad.text)
+                    self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
 
@@ -36,7 +44,7 @@ class AdHandler(object):
                 webelements.append(element)
         return webelements
 
-    def execute_ad_2(self, ad_text_filter: [str], session_id: int) -> None:
+    def execute_ad_2(self, session_id: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_2()
@@ -53,7 +61,7 @@ class AdHandler(object):
                 MyDriver.save_cropped_scr(self.driver, ad)
                 ad.send_to_db(session_id)
                 if ad.text.strip() is not None:
-                    ad_text_filter.append(ad.text)
+                    self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
 
@@ -99,7 +107,7 @@ class AdHandler(object):
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
             return []
 
-    def execute_ad_4(self, ad_text_filter: [str], session_id: int):
+    def execute_ad_4(self, session_id: int):
         """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_4()
@@ -109,7 +117,7 @@ class AdHandler(object):
                     for i, web_element in enumerate(ads_webelements):
                         path = ".//child::*" + 3 * "/following-sibling::*"
                         text = web_element.find_element(By.XPATH, path).get_attribute("text")
-                        if text not in ad_text_filter:
+                        if text not in self.ad_text_filter:
                             """scroll through web_elements ads"""
                             if i == 0:
                                 pass
@@ -125,13 +133,13 @@ class AdHandler(object):
                             ad.text = text
                             ad.send_to_db(session_id)
                             if ad.text is not None:
-                                ad_text_filter.append(ad.text)
+                                self.ad_text_filter.append(ad.text)
                     break
         except (NoSuchElementException, TimeoutException, WebDriverException,
                 StaleElementReferenceException, InvalidElementStateException):
             pass
 
-    def execute_ad_5(self, ad_text_filter: [str], session_id: int):
+    def execute_ad_5(self, session_id: int):
         """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_5()
@@ -141,14 +149,14 @@ class AdHandler(object):
                     result_text = elements[4].get_attribute("text")
                     var1 = result_text.startswith(self.lang.ad_5_starts_with)
                     var2 = elements[7].get_attribute("text") == "product-detail"
-                    if var1 and var2 and result_text not in ad_text_filter:
+                    if var1 and var2 and result_text not in self.ad_text_filter:
                         """create ad object"""
                         ad = Ad(webElement, 5)
                         MyDriver.save_cropped_scr(self.driver, ad)
                         ad.text = result_text
                         ad.send_to_db(session_id)
                         if ad.text is not None:
-                            ad_text_filter.append(ad.text)
+                            self.ad_text_filter.append(ad.text)
         except (
                 NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException,
                 IndexError):
