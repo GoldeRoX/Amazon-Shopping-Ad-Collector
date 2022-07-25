@@ -13,7 +13,7 @@ def main():
 
     session_id = get_last_saved_session_id_from_db() + 1
 
-    ad_handler = AdHandler(lang=DE)
+    ad_handler = AdHandler(session.driver, lang=DE)
 
     try:
         """list of keywords will be added externally"""

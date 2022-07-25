@@ -10,12 +10,12 @@ from base import MyDriver
 
 class AdHandler(object):
 
-    def __init__(self, lang):
-        self.driver = MyDriver().driver
+    def __init__(self, driver, lang):
+        self.driver = driver
         self.ad_text_filter = []
         self.lang = lang
 
-    def is_ad_used(self, ad: Ad) -> bool:
+    def is_ad_used(self, ad) -> bool:
         text = ad.text.strip()
         if text not in self.ad_text_filter:
             return False
