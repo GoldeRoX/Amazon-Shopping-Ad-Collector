@@ -9,13 +9,19 @@ from base import *
 
 def main():
     start_time = time.time()
-    session = MyDriver()
+    try:
+        session = MyDriver()
+    except WebDriverException:
+        session = MyDriver(skip_device_initialization=False, skip_server_installation=False, no_reset=False)
 
     session_id = get_last_saved_session_id_from_db() + 1
 
     ad_handler = AdHandler(session.driver, lang=DE)
 
     try:
+        session.config_start()
+
+        session.cookies_click()
         """list of keywords will be added externally"""
         list_of_keywords = ["Laptops", "Monitors", "LG", "Oculus", "Meta"]
         try:

@@ -2,7 +2,9 @@ import os
 import time
 
 from appium import webdriver  # import Appium-Python-Client 2.2.0
-from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
+from appium.webdriver.common.touch_action import TouchAction
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException, \
+    StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -22,12 +24,6 @@ class MyDriver(object):
                  uiautomator_2_server_launch_timeout=40000, ios_install_pause=8000,
                  wda_startup_retry_interval=20000, new_command_timeout=20000, skip_device_initialization=True,
                  skip_server_installation=True, no_reset=True, normalize_tag_names=True):
-        """
-        ustawic auto config przy pierwszym uruchomieniu by
-        skip_device_initialization: False
-        skip_server_installation: False
-        no_reset: False
-        """
 
         desired_caps = {
             "platformName": platform_name,
@@ -50,6 +46,7 @@ class MyDriver(object):
 
     @staticmethod
     def save_cropped_scr(driver, ad: Ad) -> None:
+        # self.create_scr_folders_if_not_exist()
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
         if not os.path.exists(f"/nfsshare/Screenshots/{date_folder_name}"):
@@ -66,6 +63,11 @@ class MyDriver(object):
                         ad.location_x:ad.location_x + ad.width
                         ]
         cv2.imwrite(image_path, cropped_image)
+
+    @staticmethod
+    def create_scr_folders_if_not_exist():
+        if not os.path.exists("/nfs/Screenshots"):
+            os.makedirs("/nfs/Screenshots")
 
     def wait_for_element(self, by_type, path) -> None:
         WebDriverWait(self.driver, 5).until(
@@ -110,3 +112,32 @@ class MyDriver(object):
             self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=500, duration=400)
         except WebDriverException:
             pass
+
+    def config_start(self) -> None:
+        xpath = "//*[@text='Land/Region: Vereinigte Staaten (United States)']"
+        try:
+            self.wait_for_element(By.XPATH, xpath)
+            self.driver.find_element(By.XPATH, xpath).click()
+
+            TouchAction(self.driver).tap(None, 500, 500, 1).perform()
+
+            xpath_button = "//*[@text='Fertig']"
+            self.driver.find_element(By.XPATH, xpath_button).click()
+
+        except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
+            pass
+
+    def cookies_click(self) -> None:
+        try:
+            xpath = "//*[@text='Cookies akzeptieren']"
+            self.driver.find_element(By.XPATH, xpath).click()
+
+        except NoSuchElementException:
+            try:
+                web_elements2 = self.driver.find_elements(By.XPATH, "//*[starts-with(@text, 'Cookie')]")
+                for element in web_elements2:
+                    print(element.text)
+
+                web_elements2[-2].click()
+            except (NoSuchElementException, IndexError):
+                pass
