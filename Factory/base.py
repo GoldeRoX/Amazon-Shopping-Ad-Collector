@@ -80,7 +80,7 @@ class MyDriver(object):
         except (NoSuchElementException, TimeoutException):
             print('No "Search Input" field')
 
-    # TODO refactor this method
+    # TODO change xpath for multi lang (config)
     def first_launch(self) -> None:
         """this method will be executed when the emulator had a reset or is a new one"""
         try:
@@ -114,6 +114,7 @@ class MyDriver(object):
             pass
 
     def config_start(self) -> None:
+        # TODO change xpath for multi lang (config)
         xpath = "//*[@text='Land/Region: Vereinigte Staaten (United States)']"
         try:
             self.wait_for_element(By.XPATH, xpath)
