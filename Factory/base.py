@@ -104,9 +104,9 @@ class MyDriver(object):
         self.driver.press_keycode(66)
 
     def scroll_down(self, y=600) -> None:
-        """scroll down through app Y
+        """scroll down through app Y axis
 
-        *
+        *default value is y=600
         """
         try:
             self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=1100-y, duration=400)
@@ -145,6 +145,7 @@ class MyDriver(object):
                 pass
 
 
+# From the project perspective, this doesn't matter. Project DO NOT do this
 def create_scr_folders_if_not_exist(user: str) -> None:
     if not os.path.exists(f"/home/{user}/nfs"):
         os.chdir(f"/home/{user}")
