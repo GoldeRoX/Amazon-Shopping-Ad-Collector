@@ -13,22 +13,19 @@ def main():
         session = MyDriver()
     except WebDriverException:
         session = MyDriver(skip_device_initialization=False, skip_server_installation=False, no_reset=False)
+        session.config_start()
+        session.first_launch()
+        time.sleep(10)
+        session.cookies_click()
 
     session_id = get_last_saved_session_id_from_db() + 1
 
     ad_handler = AdHandler(session.driver, lang=DE)
 
     try:
-        session.config_start()
-
-        session.cookies_click()
         """list of keywords will be added externally"""
         list_of_keywords = ["Laptops", "Monitors", "LG", "Oculus", "Meta"]
-        try:
-            session.get_page(list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
-        except (NoSuchElementException, StaleElementReferenceException):
-            session.first_launch()
-            session.get_page(list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
+        session.get_page(list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
 
         """scroll down through app Y and collect ads"""
         is_end_of_page = False

@@ -46,15 +46,16 @@ class MyDriver(object):
 
     @staticmethod
     def save_cropped_scr(driver, ad: Ad) -> None:
-        # self.create_scr_folders_if_not_exist()
+        user = "krzysztof"
+        create_scr_folders_if_not_exist(user=user)
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
-        if not os.path.exists(f"/nfsshare/Screenshots/{date_folder_name}"):
-            os.mkdir(f"/nfsshare/Screenshots/{date_folder_name}")
+        if not os.path.exists(f"/home/{user}/nfs/Screenshots/{date_folder_name}"):
+            os.mkdir(f"/home/{user}/nfs/Screenshots/{date_folder_name}")
 
         img_name = int(get_last_saved_id_from_db()) + 1
 
-        image_path = f"/nfsshare/Screenshots/{date_folder_name}/{str(img_name)}.png"
+        image_path = f"/home/{user}/nfs/Screenshots/{date_folder_name}/{str(img_name)}.png"
         driver.save_screenshot(image_path)
         img = cv2.imread(image_path)
 
@@ -63,11 +64,6 @@ class MyDriver(object):
                         ad.location_x:ad.location_x + ad.width
                         ]
         cv2.imwrite(image_path, cropped_image)
-
-    @staticmethod
-    def create_scr_folders_if_not_exist():
-        if not os.path.exists("/nfs/Screenshots"):
-            os.makedirs("/nfs/Screenshots")
 
     def wait_for_element(self, by_type, path) -> None:
         WebDriverWait(self.driver, 5).until(
@@ -92,6 +88,7 @@ class MyDriver(object):
         try:
             self.wait_for_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
             self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
+            time.sleep(5)
         except (NoSuchElementException, TimeoutException):
             pass
 
@@ -106,22 +103,26 @@ class MyDriver(object):
         """press enter"""
         self.driver.press_keycode(66)
 
-    def scroll_down(self) -> None:
-        """scroll down through app Y"""
+    def scroll_down(self, y=600) -> None:
+        """scroll down through app Y
+
+        *
+        """
         try:
-            self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=500, duration=400)
+            self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=1100-y, duration=400)
         except WebDriverException:
             pass
 
     def config_start(self) -> None:
+        time.sleep(10)
         # TODO change xpath for multi lang (config)
         xpath = "//*[@text='Land/Region: Vereinigte Staaten (United States)']"
         try:
             self.wait_for_element(By.XPATH, xpath)
             self.driver.find_element(By.XPATH, xpath).click()
-
+            time.sleep(4)
             TouchAction(self.driver).tap(None, 500, 500, 1).perform()
-
+            time.sleep(3)
             xpath_button = "//*[@text='Fertig']"
             self.driver.find_element(By.XPATH, xpath_button).click()
 
@@ -142,3 +143,11 @@ class MyDriver(object):
                 web_elements2[-2].click()
             except (NoSuchElementException, IndexError):
                 pass
+
+
+def create_scr_folders_if_not_exist(user: str) -> None:
+    if not os.path.exists(f"/home/{user}/nfs"):
+        os.chdir(f"/home/{user}")
+        os.system("mkdir -m 777 nfs")
+        os.system("cd nfs")
+        os.system("mkdir nfs/Screenshots")

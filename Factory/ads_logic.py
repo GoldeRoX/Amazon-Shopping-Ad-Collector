@@ -1,3 +1,5 @@
+import time
+
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, TimeoutException, \
@@ -15,12 +17,21 @@ class AdHandler(object):
         self.ad_text_filter = []
         self.lang = lang
 
+    # TODO
     def is_ad_used(self, ad) -> bool:
         text = ad.text.strip()
         if text not in self.ad_text_filter:
             return False
         else:
             return True
+
+    def match_ad_visibility(self, web_element: WebElement):
+        if web_element.size["height"] > 2:
+            pre_height = web_element.size["height"]
+            self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=1000, duration=400)
+            next_height = web_element.size["height"]
+            if pre_height == next_height and web_element != 2:
+                return
 
     def execute_ad_1(self, session_id: int) -> None:
         """Create, send to DB and save scr of ad"""
@@ -55,6 +66,7 @@ class AdHandler(object):
                     pass
                 else:
                     action.press(ads_webelements[i]).move_to(ads_webelements[i - 1]).wait(ms=2000).release().perform()
+                    time.sleep(2)
 
                 """create an object of ad"""
                 ad = Ad(web_element, 2)
@@ -144,13 +156,14 @@ class AdHandler(object):
         try:
             ads_webelements = self.get_webelements_ads_5()
             for webElement in ads_webelements:
-                if webElement.size["height"] > 450:
+                if webElement.size["height"] > 400:
                     elements = webElement.find_elements(By.XPATH, ".//*[@class='android.view.View']")
                     result_text = elements[4].get_attribute("text")
                     var1 = result_text.startswith(self.lang.ad_5_starts_with)
                     var2 = elements[7].get_attribute("text") == "product-detail"
                     if var1 and var2 and result_text not in self.ad_text_filter:
                         """create ad object"""
+                        self.match_ad_visibility(webElement)
                         ad = Ad(webElement, 5)
                         MyDriver.save_cropped_scr(self.driver, ad)
                         ad.text = result_text
