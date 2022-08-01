@@ -30,8 +30,20 @@ class AdHandler(object):
             pre_height = web_element.size["height"]
             self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=1000, duration=400)
             next_height = web_element.size["height"]
-            if pre_height == next_height and web_element != 2:
-                return
+            while True:
+
+                if next_height < pre_height:
+                    pre_height = web_element.size["height"]
+                    self.driver.swipe(start_x=470, start_y=1000, end_x=470, end_y=1100, duration=400)
+                    next_height = web_element.size["height"]
+
+                if next_height > pre_height:
+                    pre_height = web_element.size["height"]
+                    self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=1000, duration=400)
+                    next_height = web_element.size["height"]
+
+                if pre_height == next_height and web_element != 2:
+                    return
 
     def execute_ad_1(self, session_id: int) -> None:
         """Create, send to DB and save scr of ad"""
@@ -163,7 +175,7 @@ class AdHandler(object):
                     var2 = elements[7].get_attribute("text") == "product-detail"
                     if var1 and var2 and result_text not in self.ad_text_filter:
                         """create ad object"""
-                        self.match_ad_visibility(webElement)
+                        #self.match_ad_visibility(webElement)
                         ad = Ad(webElement, 5)
                         MyDriver.save_cropped_scr(self.driver, ad)
                         ad.text = result_text
