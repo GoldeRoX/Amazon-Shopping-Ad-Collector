@@ -31,6 +31,7 @@ def main():
         previous_page_source = session.driver.page_source
 
         while not is_end_of_page:
+            session.cookies_click()
             ad_handler.execute_ad_4(session_id)
             ad_handler.execute_ad_5(session_id)
             session.scroll_down()
