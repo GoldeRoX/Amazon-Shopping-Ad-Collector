@@ -71,7 +71,7 @@ class MyDriver(object):
             pass
 
     def get_page(self, phrase_to_search: str) -> None:
-        """search item on the app"""
+        """search item phrase on the app"""
         try:
             self.driver.find_element(By.XPATH, DE.search_icon).click()
         except NoSuchElementException:
@@ -101,6 +101,7 @@ class MyDriver(object):
             time.sleep(4)
             TouchAction(self.driver).tap(None, 500, 500, 1).perform()
             time.sleep(3)
+            # TODO change xpath for multi lang (config)
             xpath_button = "//*[@text='Fertig']"
             self.driver.find_element(By.XPATH, xpath_button).click()
 
@@ -144,6 +145,7 @@ def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
     cv2.imwrite(image_path, cropped_image)
 
 
+# TODO ask PM for possible solution/take
 # From the project perspective, this doesn't matter. Project DO NOT do this
 def create_scr_folders_if_not_exist(user: str) -> None:
     if not os.path.exists(f"/home/{user}/nfs"):

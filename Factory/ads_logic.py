@@ -25,7 +25,7 @@ class AdHandler(object):
                                 ad.ad_type, session_id, ad.price)
         save_cropped_scr(driver, ad, str(Manager.get_last_saved_id_from_db())+".png")
 
-    # TODO
+    # TODO test and use
     def is_ad_used(self, ad) -> bool:
         text = ad.text.strip()
         if text not in self.ad_text_filter:

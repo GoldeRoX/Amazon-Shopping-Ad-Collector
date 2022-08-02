@@ -5,6 +5,8 @@ from ads_logic import *
 
 from base import *
 
+"""adb shell settings put global http_proxy 151.236.15.140:3128"""
+
 
 def main():
     start_time = time.time()
