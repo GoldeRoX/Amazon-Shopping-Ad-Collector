@@ -1,7 +1,6 @@
 import sys
 import random
 
-from database_connector import get_last_saved_session_id_from_db
 from ads_logic import *
 
 from base import *
@@ -18,7 +17,7 @@ def main():
         time.sleep(10)
         session.cookies_click()
 
-    session_id = get_last_saved_session_id_from_db() + 1
+    session_id = SQLAdManager().get_last_saved_session_id_from_db() + 1
 
     ad_handler = AdHandler(session.driver, lang=DE)
 

@@ -49,44 +49,66 @@ db_credentials = {
 }
 
 
-def send_data_to_db(filename, width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, price):
-    query = """
-            INSERT INTO 
-                ads_meta_data
-                (filename, width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, price)
-            VALUES
-                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            ;"""
+class SQLAdManager(object):
 
-    with cursor(**db_credentials) as c:
-        if not text:
-            text = None
+    def __init__(self):
+        self.data_set_id = None
 
-        c.execute(
-            query,
-            (filename, width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, price)
-        )
+    def insert_query(self):
+        query_insert = """
+                        INSERT INTO 
+                            ads_meta_data
+                            (filename, width, height, location_x, location_y, text, 
+                            timestamp, id_ad_type, id_session, price)
+                        VALUES
+                            (0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                        """
 
+        with cursor(**db_credentials) as c:
+            c.execute(query_insert)
+        self.data_set_id = str(c.lastrowid)
 
-def get_last_saved_id_from_db() -> int:
-    query = "SELECT MAX(id) FROM ads_meta_data;"
+    def update_query(self, width: int, height: int, location_x: int, location_y: int, text: str,
+                     timestamp: str, id_ad_type: int, id_session: int, price: str):
+        query_update = f"""
+                UPDATE ads_meta_data
+                SET filename = '{self.data_set_id + ".png"}', 
+                width = %s, 
+                height = %s, 
+                location_x = %s, 
+                location_y = %s,
+                text = %s, 
+                timestamp = %s, 
+                id_ad_type = %s, 
+                id_session = %s, 
+                price = %s
+                WHERE id = {self.data_set_id};
+                """
+        with cursor(**db_credentials) as c:
+            if not text:
+                text = None
 
-    with cursor(**db_credentials) as c:
-        c.execute(query)
-        result = c.fetchone()
+            c.execute(
+                query_update,
+                (width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, price)
+            )
 
-    if result[0] is None:
-        return 0
-    return int(result[0])
+    def send_data_to_db(self, width, height, location_x, location_y, text, timestamp, ad_type, id_session, price):
+        self.insert_query()
+        self.update_query(width, height, location_x, location_y, text, timestamp, ad_type, id_session, price)
 
+    def get_last_saved_id_from_db(self) -> int:
+        return self.data_set_id
 
-def get_last_saved_session_id_from_db() -> int:
-    query = "SELECT MAX(id_session) FROM ads_meta_data;"
+    @staticmethod
+    def get_last_saved_session_id_from_db() -> int:
+        query = "SELECT MAX(id_session) FROM ads_meta_data;"
 
-    with cursor(**db_credentials) as c:
-        c.execute(query)
-        result = c.fetchone()
+        with cursor(**db_credentials) as c:
+            c.execute(query)
+            result = c.fetchone()
 
-    if result[0] is None:
-        return 0
-    return int(result[0])
+        if result[0] is None:
+            return 0
+        return int(result[0])
+

@@ -7,7 +7,8 @@ from selenium.common.exceptions import StaleElementReferenceException, NoSuchEle
 from selenium.webdriver.common.by import By
 
 from Ad import Ad
-from base import MyDriver
+from base import save_cropped_scr
+from database_connector import SQLAdManager
 
 
 class AdHandler(object):
@@ -16,6 +17,13 @@ class AdHandler(object):
         self.driver = driver
         self.ad_text_filter = []
         self.lang = lang
+
+    @staticmethod
+    def save_ad(driver, session_id: int, ad: Ad):
+        Manager = SQLAdManager()
+        Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
+                                ad.ad_type, session_id, ad.price)
+        save_cropped_scr(driver, ad, str(Manager.get_last_saved_id_from_db())+".png")
 
     # TODO
     def is_ad_used(self, ad) -> bool:
@@ -50,8 +58,7 @@ class AdHandler(object):
         try:
             ads_list = self.collect_ads_1()
             for ad in ads_list:
-                MyDriver.save_cropped_scr(self.driver, ad)
-                ad.send_to_db(session_id)
+                self.save_ad(self.driver, session_id, ad)
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
@@ -82,8 +89,7 @@ class AdHandler(object):
 
                 """create an object of ad"""
                 ad = Ad(web_element, 2)
-                MyDriver.save_cropped_scr(self.driver, ad)
-                ad.send_to_db(session_id)
+                self.save_ad(self.driver, session_id, ad)
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
@@ -152,10 +158,8 @@ class AdHandler(object):
 
                             """create an object of ad"""
                             ad = Ad(web_element, 4)
-                            MyDriver.save_cropped_scr(self.driver, ad)
-
                             ad.text = text
-                            ad.send_to_db(session_id)
+                            self.save_ad(self.driver, session_id, ad)
                             if ad.text is not None:
                                 self.ad_text_filter.append(ad.text)
                     break
@@ -175,11 +179,10 @@ class AdHandler(object):
                     var2 = elements[7].get_attribute("text") == "product-detail"
                     if var1 and var2 and result_text not in self.ad_text_filter:
                         """create ad object"""
-                        #self.match_ad_visibility(webElement)
+                        # self.match_ad_visibility(webElement)
                         ad = Ad(webElement, 5)
-                        MyDriver.save_cropped_scr(self.driver, ad)
                         ad.text = result_text
-                        ad.send_to_db(session_id)
+                        self.save_ad(self.driver, session_id, ad)
                         if ad.text is not None:
                             self.ad_text_filter.append(ad.text)
         except (

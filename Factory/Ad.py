@@ -1,7 +1,6 @@
 from datetime import datetime
 from appium.webdriver.webelement import WebElement
-from database_connector import get_last_saved_id_from_db
-from database_connector import send_data_to_db
+
 from dataclasses import dataclass
 
 
@@ -24,10 +23,5 @@ class Ad(object):
         self.location_y = element.location["y"]
         self.text = element.get_attribute("text")
         self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.filename = str(get_last_saved_id_from_db() + 1) + ".png"""
         self.ad_type = ad_type
 
-    def send_to_db(self, session_id: int) -> None:
-        send_data_to_db(self.filename, self.width, self.height, self.location_x,
-                        self.location_y, self.text, self.timestamp, self.ad_type,
-                        session_id, self.price)

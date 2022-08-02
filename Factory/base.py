@@ -10,9 +10,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 import cv2  # import opencv-python	4.5.5.64
-from Ad import Ad
+from Factory.Ad import Ad
 
-from database_connector import get_last_saved_id_from_db
 from locators_data import *
 
 
@@ -43,27 +42,6 @@ class MyDriver(object):
         }
         self.driver = webdriver.Remote(command_executor="http://localhost:4723/wd/hub",
                                        desired_capabilities=desired_caps)
-
-    @staticmethod
-    def save_cropped_scr(driver, ad: Ad) -> None:
-        user = "krzysztof"
-        create_scr_folders_if_not_exist(user=user)
-        date_folder_name = datetime.now().strftime("%Y-%m-%d")
-
-        if not os.path.exists(f"/home/{user}/nfs/Screenshots/{date_folder_name}"):
-            os.mkdir(f"/home/{user}/nfs/Screenshots/{date_folder_name}")
-
-        img_name = int(get_last_saved_id_from_db()) + 1
-
-        image_path = f"/home/{user}/nfs/Screenshots/{date_folder_name}/{str(img_name)}.png"
-        driver.save_screenshot(image_path)
-        img = cv2.imread(image_path)
-
-        cropped_image = img[
-                        ad.location_y:ad.location_y + ad.height,
-                        ad.location_x:ad.location_x + ad.width
-                        ]
-        cv2.imwrite(image_path, cropped_image)
 
     def wait_for_element(self, by_type, path) -> None:
         WebDriverWait(self.driver, 5).until(
@@ -143,6 +121,27 @@ class MyDriver(object):
                 web_elements2[-2].click()
             except (NoSuchElementException, IndexError):
                 pass
+
+
+def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
+    user = "krzysztof"
+    create_scr_folders_if_not_exist(user=user)
+    date_folder_name = datetime.now().strftime("%Y-%m-%d")
+
+    if not os.path.exists(f"/home/{user}/nfs/Screenshots/{date_folder_name}"):
+        os.mkdir(f"/home/{user}/nfs/Screenshots/{date_folder_name}")
+
+    img_name = filename
+
+    image_path = f"/home/{user}/nfs/Screenshots/{date_folder_name}/{str(img_name)}.png"
+    driver.save_screenshot(image_path)
+    img = cv2.imread(image_path)
+
+    cropped_image = img[
+                    ad.location_y:ad.location_y + ad.height,
+                    ad.location_x:ad.location_x + ad.width
+                    ]
+    cv2.imwrite(image_path, cropped_image)
 
 
 # From the project perspective, this doesn't matter. Project DO NOT do this
