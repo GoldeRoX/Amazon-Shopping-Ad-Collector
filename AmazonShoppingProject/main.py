@@ -2,6 +2,7 @@ import sys
 import random
 
 from ads_logic import *
+from database_connector import get_random_keyword
 
 from base import *
 
@@ -24,9 +25,12 @@ def main():
     ad_handler = AdHandler(session.driver, lang=DE)
 
     try:
-        """list of keywords will be added externally"""
-        list_of_keywords = ["Laptops", "Monitors", "LG", "Oculus", "Meta"]
-        session.get_page(list_of_keywords[random.randint(0, len(list_of_keywords) - 1)])
+        keyword = get_random_keyword()
+        # TODO add to db column keyword_id
+        # keyword_id = keyword["id"]
+
+        # session.get_page(keyword["keyword"])
+        session.get_page("Monitors")
 
         """scroll down through app Y and collect ads"""
         is_end_of_page = False

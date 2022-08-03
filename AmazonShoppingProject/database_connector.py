@@ -112,3 +112,27 @@ class SQLAdManager(object):
             return 0
         return int(result[0])
 
+
+def get_random_keyword() -> {}:
+    """get random keyword and id of this keyword form database
+
+    Returns:
+        returns a dictionary (id, keyword) of random keyword from database
+    """
+
+    query = """
+        SELECT id, keyword FROM keywords
+        ORDER BY RAND()
+        LIMIT 1;
+        """
+
+    with cursor(**db_credentials) as c:
+        c.execute(query)
+        result_of_query = c.fetchone()
+
+    result = {
+        "id": int(result_of_query[0]),
+        "keyword": str(result_of_query[1])
+    }
+
+    return result

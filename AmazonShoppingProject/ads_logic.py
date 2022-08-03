@@ -35,23 +35,23 @@ class AdHandler(object):
 
     def match_ad_visibility(self, web_element: WebElement):
         if web_element.size["height"] > 2:
-            pre_height = web_element.size["height"]
-            self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=1000, duration=400)
+            previous_height = web_element.size["height"]
+            self.driver.swipe(start_x=470, start_y=1050, end_x=470, end_y=1000, duration=400)
             next_height = web_element.size["height"]
             while True:
 
-                if next_height < pre_height:
-                    pre_height = web_element.size["height"]
-                    self.driver.swipe(start_x=470, start_y=1000, end_x=470, end_y=1100, duration=400)
-                    next_height = web_element.size["height"]
-
-                if next_height > pre_height:
-                    pre_height = web_element.size["height"]
-                    self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=1000, duration=400)
-                    next_height = web_element.size["height"]
-
-                if pre_height == next_height and web_element != 2:
+                if previous_height == next_height and web_element.size["height"] > 100:
                     return
+
+                if next_height > previous_height:
+                    previous_height = web_element.size["height"]
+                    self.driver.swipe(start_x=470, start_y=1050, end_x=470, end_y=1000, duration=400)
+                    next_height = web_element.size["height"]
+
+                if next_height < previous_height:
+                    previous_height = web_element.size["height"]
+                    self.driver.swipe(start_x=470, start_y=1000, end_x=470, end_y=1050, duration=400)
+                    next_height = web_element.size["height"]
 
     def execute_ad_1(self, session_id: int) -> None:
         """Create, send to DB and save scr of ad"""
@@ -88,6 +88,7 @@ class AdHandler(object):
                     time.sleep(2)
 
                 """create an object of ad"""
+                self.driver.execute_script("arguments[0].scrollIntoView();", web_element)
                 ad = Ad(web_element, 2)
                 self.save_ad(self.driver, session_id, ad)
                 if ad.text.strip() is not None:
@@ -157,6 +158,7 @@ class AdHandler(object):
                                     ms=2000).release().perform()
 
                             """create an object of ad"""
+                            self.driver.execute_script("arguments[0].scrollIntoView();", web_element)
                             ad = Ad(web_element, 4)
                             ad.text = text
                             self.save_ad(self.driver, session_id, ad)
@@ -179,6 +181,7 @@ class AdHandler(object):
                     var2 = elements[7].get_attribute("text") == "product-detail"
                     if var1 and var2 and result_text not in self.ad_text_filter:
                         """create ad object"""
+                        # self.driver.execute_script("arguments[0].scrollIntoView();", webElement)
                         # self.match_ad_visibility(webElement)
                         ad = Ad(webElement, 5)
                         ad.text = result_text

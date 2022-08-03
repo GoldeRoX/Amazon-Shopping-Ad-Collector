@@ -10,7 +10,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 import cv2  # import opencv-python	4.5.5.64
-from Factory.Ad import Ad
+from AmazonShoppingProject.Ad import Ad
 
 from locators_data import *
 
