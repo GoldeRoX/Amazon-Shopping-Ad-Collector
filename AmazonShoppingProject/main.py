@@ -1,5 +1,4 @@
 import sys
-import random
 
 from ads_logic import *
 from database_connector import get_random_keyword

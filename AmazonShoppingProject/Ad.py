@@ -24,4 +24,3 @@ class Ad(object):
         self.text = element.get_attribute("text")
         self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.ad_type = ad_type
-
