@@ -29,8 +29,7 @@ def main():
         # TODO add to db column keyword_id
         # keyword_id = keyword["id"]
 
-        # session.get_page(keyword["keyword"])
-        session.get_page("Monitors")
+        session.get_page(keyword["keyword"])
 
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
