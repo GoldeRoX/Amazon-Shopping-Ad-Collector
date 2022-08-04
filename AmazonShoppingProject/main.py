@@ -1,3 +1,4 @@
+import random
 import sys
 
 from ads_logic import *
@@ -28,7 +29,8 @@ def main():
         # TODO add to db column keyword_id
         # keyword_id = keyword["id"]
 
-        session.get_page(keyword["keyword"])
+        # session.get_page(keyword["keyword"])
+        session.get_page(random.choice(list(open('keywords_test.txt'))))
 
         """scroll down through app Y and collect ads"""
         is_end_of_page = False

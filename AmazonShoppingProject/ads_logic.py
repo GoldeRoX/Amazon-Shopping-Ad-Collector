@@ -34,31 +34,6 @@ class AdHandler(object):
         else:
             return True
 
-    def match_ad_visibility(self, web_element: WebElement):
-        if web_element.size["height"] > 10 and web_element.size["width"] > 10:
-            while True:
-                previous_height: int = web_element.size["height"]
-                self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=1000, duration=400)
-                next_height: int = web_element.size["height"]
-                print(f"pre_h = {previous_height}, next_h = {next_height}")
-
-                if math.isclose(previous_height, next_height, abs_tol=1) and web_element.size["height"] > 100:
-                    return
-
-                if next_height > previous_height:
-                    """case if element is on the bottom"""
-                    previous_height = web_element.size["height"]
-                    self.driver.swipe(start_x=470, start_y=1100, end_x=470, end_y=1000, duration=400)
-                    next_height = web_element.size["height"]
-                    print(f"after scrolling up: pre_h = {previous_height}, next_h = {next_height}")
-
-                else:
-                    """case if element is on the top"""
-                    previous_height = web_element.size["height"]
-                    self.driver.swipe(start_x=470, start_y=1000, end_x=470, end_y=1100, duration=400)
-                    next_height = web_element.size["height"]
-                    print(f"after scrolling down: pre_h = {previous_height}, next_h = {next_height}")
-
     def execute_ad_1(self, session_id: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
@@ -149,7 +124,7 @@ class AdHandler(object):
             ads_webelements = self.get_webelements_ads_4()
             for element in ads_webelements:
                 if element.size["height"] > 50:
-                    self.match_ad_visibility(element)
+                    AdjustAd(self.driver).match_ad_visibility(element)
                     action = TouchAction(self.driver)
                     for i, web_element in enumerate(ads_webelements):
                         path = ".//child::*" + 3 * "/following-sibling::*"
@@ -185,7 +160,7 @@ class AdHandler(object):
                     var2 = elements[7].get_attribute("text") == "product-detail"
                     if var1 and var2 and result_text not in self.ad_text_filter:
                         """create ad object"""
-                        self.match_ad_visibility(webElement)
+                        AdjustAd(self.driver).match_ad_visibility(webElement)
                         ad = Ad(webElement, 5)
                         ad.text = result_text
                         self.save_ad(self.driver, session_id, ad)
@@ -195,3 +170,37 @@ class AdHandler(object):
                 NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException,
                 IndexError):
             pass
+
+
+class AdjustAd(object):
+
+    def __init__(self, driver):
+        self.driver = driver
+
+    def match_ad_visibility(self, web_element: WebElement):
+        if web_element.size["height"] > 10 and web_element.size["width"] > 10:
+            while True:
+                previous_height: int = web_element.size["height"]
+                self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
+                next_height: int = web_element.size["height"]
+                # print(f"pre_h = {previous_height}, next_h = {next_height}")
+
+                if math.isclose(previous_height, next_height, abs_tol=1) and web_element.size["height"] > 100:
+                    return
+
+                if next_height > previous_height:
+                    """case if element is on the bottom"""
+                    previous_height = web_element.size["height"]
+                    self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
+                    next_height = web_element.size["height"]
+                    # print(f"after scrolling up: pre_h = {previous_height}, next_h = {next_height}")
+
+                else:
+                    """case if element is on the top"""
+                    previous_height = web_element.size["height"]
+                    self.driver.swipe(start_x=10, start_y=1000, end_x=10, end_y=1100, duration=400)
+                    next_height = web_element.size["height"]
+                    # print(f"after scrolling down: pre_h = {previous_height}, next_h = {next_height}")
+
+    def return_to_start_position(self):
+        pass
