@@ -174,15 +174,16 @@ class AdHandler(object):
 
 class AdjustAd(object):
 
+
     def __init__(self, driver):
         self.driver = driver
 
     def match_ad_visibility(self, web_element: WebElement):
         if web_element.size["height"] > 10 and web_element.size["width"] > 10:
+            previous_height: int = web_element.size["height"]
+            self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
+            next_height: int = web_element.size["height"]
             while True:
-                previous_height: int = web_element.size["height"]
-                self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
-                next_height: int = web_element.size["height"]
                 # print(f"pre_h = {previous_height}, next_h = {next_height}")
 
                 if math.isclose(previous_height, next_height, abs_tol=1) and web_element.size["height"] > 100:
@@ -198,7 +199,7 @@ class AdjustAd(object):
                 else:
                     """case if element is on the top"""
                     previous_height = web_element.size["height"]
-                    self.driver.swipe(start_x=10, start_y=1000, end_x=10, end_y=1100, duration=400)
+                    self.driver.swipe(start_x=10, start_y=1000, end_x=10, end_y=1500, duration=400)
                     next_height = web_element.size["height"]
                     # print(f"after scrolling down: pre_h = {previous_height}, next_h = {next_height}")
 

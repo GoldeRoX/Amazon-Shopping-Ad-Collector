@@ -54,7 +54,7 @@ class SQLAdManager(object):
     def __init__(self):
         self.data_set_id = None
 
-    def insert_query(self):
+    def insert_empty_query(self):
         query_insert = """
                         INSERT INTO 
                             ads_meta_data
@@ -94,7 +94,7 @@ class SQLAdManager(object):
             )
 
     def send_data_to_db(self, width, height, location_x, location_y, text, timestamp, ad_type, id_session, price):
-        self.insert_query()
+        self.insert_empty_query()
         self.update_query(width, height, location_x, location_y, text, timestamp, ad_type, id_session, price)
 
     def get_last_saved_id_from_db(self) -> int:
