@@ -6,6 +6,7 @@ import contextlib
 from typing import (
     ContextManager,
 )
+import yaml
 
 
 @contextlib.contextmanager
@@ -32,20 +33,15 @@ def cursor(*args, **kwargs) -> ContextManager[Cursor]:
             cur.close()
 
 
-"""db_credentials = {
-    'host': '10.10.10.19',
-    'database': 'amazon_krzysiek',
-    'user': 'krzysiek',
-    'password': 'ndXs5RzCCPot90Se',
-    'charset': 'utf8mb4'
-}"""
+with open("../data/config.yaml", "r") as file:
+    config = yaml.safe_load(file)
 
 db_credentials = {
-    'host': '127.0.0.1',
-    'database': 'Amazon_ads',
-    'user': 'root',
-    'password': '',
-    'charset': 'utf8mb4'
+    'host': config["DATABASE"]["HOST"],
+    'database': config["DATABASE"]["DB"],
+    'user': config["DATABASE"]["USERNAME"],
+    'password': config["DATABASE"]["PASSWORD"],
+    'charset': config["DATABASE"]["CHARSET"]
 }
 
 

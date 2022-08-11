@@ -10,7 +10,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 import cv2  # import opencv-python	4.5.5.64
-from AmazonShoppingProject.Ad import Ad
+from Ad import Ad
 
 from locators_data import *
 
@@ -54,7 +54,6 @@ class MyDriver(object):
         except (NoSuchElementException, TimeoutException):
             print('No "Search Input" field')
 
-    # TODO change xpath for multi lang (config)
     def first_launch(self) -> None:
         """this method will be executed when the emulator had a reset or is a new one"""
         try:
@@ -62,11 +61,9 @@ class MyDriver(object):
             self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
         except (NoSuchElementException, TimeoutException):
             pass
-        time.sleep(5)
         try:
             self.wait_for_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
             self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
-            time.sleep(5)
         except (NoSuchElementException, TimeoutException):
             pass
 
@@ -120,7 +117,7 @@ class MyDriver(object):
                     print(element.text)
 
                 web_elements2[-2].click()
-            except (NoSuchElementException, IndexError):
+            except (NoSuchElementException, IndexError, WebDriverException):
                 pass
 
 

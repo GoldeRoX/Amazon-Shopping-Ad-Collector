@@ -18,3 +18,6 @@ class DE:
     ad_5_node = "//*[starts-with(@text,'Gesponsert')]/parent::*"
     ad_5_starts_with = "Gesponsert"
     ad_2_starts_with = "Gesponserte Werbeanzeige von"
+
+
+

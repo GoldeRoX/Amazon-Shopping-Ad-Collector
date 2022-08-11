@@ -1,5 +1,5 @@
 APP:
-  LANG: DE # options: DE / ENG
+  LANG: "DE" # options: DE / ENG
 
 DATABASE:
   USERNAME: "root"
@@ -7,3 +7,14 @@ DATABASE:
   HOST: "127.0.0.1"
   DB: "Amazon_ads"
   CHARSET: 'utf8mb4'
+
+#db_credentials = {
+#    'host': '10.10.10.19',
+#    'database': 'amazon_krzysiek',
+#    'user': 'krzysiek',
+#    'password': 'ndXs5RzCCPot90Se',
+#    'charset': 'utf8mb4'
+#}
+
+COMPUTER:
+  IP: ""

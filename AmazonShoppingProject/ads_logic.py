@@ -3,6 +3,7 @@ import time
 
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
+from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, TimeoutException, \
     InvalidElementStateException, WebDriverException
 from selenium.webdriver.common.by import By
@@ -15,7 +16,7 @@ from database_connector import SQLAdManager
 class AdHandler(object):
 
     def __init__(self, driver, lang):
-        self.driver = driver
+        self.driver: WebDriver = driver
         self.ad_text_filter = []
         self.lang = lang
 
@@ -24,7 +25,7 @@ class AdHandler(object):
         Manager = SQLAdManager()
         Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
                                 ad.ad_type, session_id, ad.price)
-        save_cropped_scr(driver, ad, str(Manager.get_last_saved_id_from_db())+".png")
+        save_cropped_scr(driver, ad, str(Manager.get_last_saved_id_from_db()) + ".png")
 
     # TODO test and use
     def is_ad_used(self, ad) -> bool:
@@ -124,7 +125,6 @@ class AdHandler(object):
             ads_webelements = self.get_webelements_ads_4()
             for element in ads_webelements:
                 if element.size["height"] > 50:
-                    AdjustAd(self.driver).match_ad_visibility(element)
                     action = TouchAction(self.driver)
                     for i, web_element in enumerate(ads_webelements):
                         path = ".//child::*" + 3 * "/following-sibling::*"
@@ -132,11 +132,12 @@ class AdHandler(object):
                         if text not in self.ad_text_filter:
                             """scroll through web_elements ads"""
                             if i == 0:
-                                pass
+                                AdjustAd(self.driver).match_ad_visibility(element)
                             else:
                                 par = (ads_webelements[i].size["width"] - ads_webelements[i].size["width"] / 2)
                                 action.press(ads_webelements[i]).move_to(ads_webelements[i - 1], x=par, y=0).wait(
                                     ms=2000).release().perform()
+                                AdjustAd(self.driver).match_ad_visibility(element)
                             """create an object of ad"""
                             ad = Ad(web_element, 4)
                             ad.text = text
@@ -171,9 +172,25 @@ class AdHandler(object):
                 IndexError):
             pass
 
+        # TODO webElement.id zamiast weryfikacji txt
+
+    def video_ad(self):
+        try:
+            video_ad_web_element = self.driver.find_element(By.XPATH, "//*[starts-with(@text,'Gesponsertes Video')]")
+            if video_ad_web_element.size["height"] > 10:
+                AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
+                print("original: " + video_ad_web_element.id)
+                #  print("original: " + video_ad_web_element.accessible_name)
+                # print("original: " + str(video_ad_web_element.location_once_scrolled_into_view))
+
+        except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
+            pass
+
+    """def test_ad_6(self, session_id):
+        self.driver.find_element(By.XPATH, "//*[@resource-id='CardInstanceLemEBC_75Kagg6_LWE2ZOA']/child::*/following-sibling::*/child::*/following-sibling::*")"""
+
 
 class AdjustAd(object):
-
 
     def __init__(self, driver):
         self.driver = driver
@@ -183,8 +200,10 @@ class AdjustAd(object):
             previous_height: int = web_element.size["height"]
             self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
             next_height: int = web_element.size["height"]
+            print("scroll: " + web_element.id)
+            # print("scroll: " + web_element.accessible_name)
+            # print("scroll: " + str(web_element.location_once_scrolled_into_view))
             while True:
-                # print(f"pre_h = {previous_height}, next_h = {next_height}")
 
                 if math.isclose(previous_height, next_height, abs_tol=1) and web_element.size["height"] > 100:
                     return
@@ -194,14 +213,12 @@ class AdjustAd(object):
                     previous_height = web_element.size["height"]
                     self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
                     next_height = web_element.size["height"]
-                    # print(f"after scrolling up: pre_h = {previous_height}, next_h = {next_height}")
 
                 else:
                     """case if element is on the top"""
                     previous_height = web_element.size["height"]
                     self.driver.swipe(start_x=10, start_y=1000, end_x=10, end_y=1500, duration=400)
                     next_height = web_element.size["height"]
-                    # print(f"after scrolling down: pre_h = {previous_height}, next_h = {next_height}")
 
     def return_to_start_position(self):
         pass
