@@ -1,4 +1,6 @@
+import base64
 import math
+import os
 import time
 
 from appium.webdriver import WebElement
@@ -176,18 +178,22 @@ class AdHandler(object):
 
     def video_ad(self):
         try:
-            video_ad_web_element = self.driver.find_element(By.XPATH, "//*[starts-with(@text,'Gesponsertes Video')]")
+            video_ad_web_element = self.driver.find_element(By.XPATH, self.lang.ad_video)
             if video_ad_web_element.size["height"] > 10:
                 AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
+                self.driver.start_recording_screen()
+                time.sleep(30)
+                video_rawdata = self.driver.stop_recording_screen()
+                video_name = self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")
+                filepath = os.path.join("/home/krzysztof", video_name + ".mp4")
+
+                with open(filepath, "wb+") as vd:
+                    vd.write(base64.b64decode(video_rawdata))
+
                 print("original: " + video_ad_web_element.id)
-                #  print("original: " + video_ad_web_element.accessible_name)
-                # print("original: " + str(video_ad_web_element.location_once_scrolled_into_view))
 
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
-
-    """def test_ad_6(self, session_id):
-        self.driver.find_element(By.XPATH, "//*[@resource-id='CardInstanceLemEBC_75Kagg6_LWE2ZOA']/child::*/following-sibling::*/child::*/following-sibling::*")"""
 
 
 class AdjustAd(object):
@@ -201,8 +207,7 @@ class AdjustAd(object):
             self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
             next_height: int = web_element.size["height"]
             print("scroll: " + web_element.id)
-            # print("scroll: " + web_element.accessible_name)
-            # print("scroll: " + str(web_element.location_once_scrolled_into_view))
+
             while True:
 
                 if math.isclose(previous_height, next_height, abs_tol=1) and web_element.size["height"] > 100:

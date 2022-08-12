@@ -7,6 +7,7 @@ class ENG:
     ad_5_node = "//*[starts-with(@text,'Sponsored')]/parent::*"
     ad_5_starts_with = "Sponsored"
     ad_2_starts_with = "Sponsored ad from"
+    # ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]"
 
 
 class DE:
@@ -18,6 +19,7 @@ class DE:
     ad_5_node = "//*[starts-with(@text,'Gesponsert')]/parent::*"
     ad_5_starts_with = "Gesponsert"
     ad_2_starts_with = "Gesponserte Werbeanzeige von"
+    ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]/parent::*/parent::*"
 
 
 

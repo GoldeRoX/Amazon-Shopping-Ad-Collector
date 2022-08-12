@@ -39,7 +39,7 @@ def main():
         # session.get_page(keyword["keyword"])
         # time.sleep(5)
         # session.get_page(random.choice(list(open('keywords_test.txt'))))
-        session.get_page("Lego")
+        session.get_page("Bosch")
 
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
