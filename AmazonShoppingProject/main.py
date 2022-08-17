@@ -38,8 +38,8 @@ def main():
 
         # session.get_page(keyword["keyword"])
         # time.sleep(5)
-        # session.get_page(random.choice(list(open('keywords_test.txt'))))
-        session.get_page("Bosch")
+        session.get_page(random.choice(list(open('keywords_test.txt'))))
+        # session.get_page("Bosch")
 
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
@@ -48,15 +48,15 @@ def main():
         while not is_end_of_page:
             session.cookies_click()
             ad_handler.video_ad()
-            # ad_handler.execute_ad_4(session_id)
-            # ad_handler.execute_ad_5(session_id)
+            ad_handler.collect_ad_type_4(session_id)
+            ad_handler.collect_ad_type_5(session_id)
             session.scroll_down()
             is_end_of_page = previous_page_source == session.driver.page_source
 
             previous_page_source = session.driver.page_source
 
-        ad_handler.execute_ad_1(session_id)
-        ad_handler.execute_ad_2(session_id)
+        ad_handler.collect_ad_type_1(session_id)
+        ad_handler.collect_ad_type_2(session_id)
     except KeyboardInterrupt:
         print("KeyboardInterrupt exception")
         sys.exit()
@@ -69,3 +69,5 @@ def main():
 if __name__ == "__main__":
     while True:
         main()
+
+# TODO Disable gps location on first lunch to save settings .... the rest of runs, enable gps to secure session

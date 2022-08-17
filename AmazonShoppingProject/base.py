@@ -1,6 +1,7 @@
 import os
 import time
 
+import yaml
 from appium import webdriver  # import Appium-Python-Client 2.2.0
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException, \
@@ -67,12 +68,25 @@ class MyDriver(object):
         except (NoSuchElementException, TimeoutException):
             pass
 
+    def change_lang_if_must(self):
+        self.wait_for_element(By.XPATH,
+                              '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, shop by department, programs and features, settings, and customer service Tab 4 of 4"]')
+        self.driver.find_element(By.XPATH,
+                                 '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, shop by department, programs and features, settings, and customer service Tab 4 of 4"]').click()
+
     def get_page(self, phrase_to_search: str) -> None:
         """search item phrase on the app"""
         try:
+            self.wait_for_element(By.XPATH, DE.search_icon)
             self.driver.find_element(By.XPATH, DE.search_icon).click()
         except NoSuchElementException:
-            self.driver.find_element(By.XPATH, ENG.search_icon).click()
+            try:
+                self.wait_for_element(By.XPATH, ENG.search_icon)
+                self.driver.find_element(By.XPATH, ENG.search_icon).click()
+            except NoSuchElementException:
+                self.wait_for_element(By.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
+                self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
+
         self.send_text(By.ID, 'com.amazon.mShop.android.shopping:id/rs_search_src_text', phrase_to_search)
 
         """press enter"""
@@ -84,7 +98,7 @@ class MyDriver(object):
         *default value is y=600
         """
         try:
-            self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1100-y, duration=400)
+            self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1100 - y, duration=400)
         except WebDriverException:
             pass
 
@@ -100,6 +114,7 @@ class MyDriver(object):
             time.sleep(3)
             # TODO change xpath for multi lang (config)
             xpath_button = "//*[@text='Fertig']"
+            self.wait_for_element(By.XPATH, xpath_button)
             self.driver.find_element(By.XPATH, xpath_button).click()
 
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
@@ -122,16 +137,17 @@ class MyDriver(object):
 
 
 def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
-    user = "krzysztof"
-    create_scr_folders_if_not_exist(user=user)
+    with open("../data/config.yaml", "r") as file:
+        config = yaml.safe_load(file)
     date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
-    if not os.path.exists(f"/home/{user}/nfs/Screenshots/{date_folder_name}"):
-        os.mkdir(f"/home/{user}/nfs/Screenshots/{date_folder_name}")
+    path = config["COMPUTER"]["SAVE_PATH"]
+    if not os.path.exists(f"{path}/{date_folder_name}"):
+        os.mkdir(f"{path}/{date_folder_name}")
 
     img_name = filename
 
-    image_path = f"/home/{user}/nfs/Screenshots/{date_folder_name}/{str(img_name)}.png"
+    image_path = f"{path}/{date_folder_name}/{str(img_name)}.png"
     driver.save_screenshot(image_path)
     img = cv2.imread(image_path)
 
@@ -140,13 +156,3 @@ def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
                     ad.location_x:ad.location_x + ad.width
                     ]
     cv2.imwrite(image_path, cropped_image)
-
-
-# TODO ask PM for possible solution/take
-# From the project perspective, this doesn't matter. Project DO NOT do this
-def create_scr_folders_if_not_exist(user: str) -> None:
-    if not os.path.exists(f"/home/{user}/nfs"):
-        os.chdir(f"/home/{user}")
-        os.system("mkdir -m 777 nfs")
-        os.system("cd nfs")
-        os.system("mkdir nfs/Screenshots")

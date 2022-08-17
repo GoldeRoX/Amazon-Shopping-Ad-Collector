@@ -18,3 +18,4 @@ DATABASE:
 
 COMPUTER:
   IP: ""
+  SAVE_PATH: "/home/krzysztof/nfs/Screenshots"

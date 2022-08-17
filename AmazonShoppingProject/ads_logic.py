@@ -3,6 +3,8 @@ import math
 import os
 import time
 
+import yaml
+from datetime import datetime
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.webdriver import WebDriver
@@ -30,14 +32,14 @@ class AdHandler(object):
         save_cropped_scr(driver, ad, str(Manager.get_last_saved_id_from_db()) + ".png")
 
     # TODO test and use
-    def is_ad_used(self, ad) -> bool:
-        text = ad.text.strip()
-        if text not in self.ad_text_filter:
+    def is_ad_used(self, web_element: WebElement) -> bool:
+        element_id = web_element.id
+        if element_id not in self.ad_text_filter:
             return False
         else:
             return True
 
-    def execute_ad_1(self, session_id: int) -> None:
+    def collect_ad_type_1(self, session_id: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
             ads_list = self.collect_ads_1()
@@ -58,7 +60,7 @@ class AdHandler(object):
                 webelements.append(element)
         return webelements
 
-    def execute_ad_2(self, session_id: int) -> None:
+    def collect_ad_type_2(self, session_id: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_2()
@@ -72,10 +74,11 @@ class AdHandler(object):
                     time.sleep(2)
 
                 """create an object of ad"""
-                ad = Ad(web_element, 2)
-                self.save_ad(self.driver, session_id, ad)
-                if ad.text.strip() is not None:
-                    self.ad_text_filter.append(ad.text)
+                if web_element.get_attribute("text") not in self.ad_text_filter:
+                    ad = Ad(web_element, 2)
+                    self.save_ad(self.driver, session_id, ad)
+                    if ad.text.strip() is not None:
+                        self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
 
@@ -121,7 +124,7 @@ class AdHandler(object):
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
             return []
 
-    def execute_ad_4(self, session_id: int):
+    def collect_ad_type_4(self, session_id: int):
         """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_4()
@@ -151,7 +154,7 @@ class AdHandler(object):
                 StaleElementReferenceException, InvalidElementStateException):
             pass
 
-    def execute_ad_5(self, session_id: int):
+    def collect_ad_type_5(self, session_id: int):
         """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_5()
@@ -167,31 +170,38 @@ class AdHandler(object):
                         ad = Ad(webElement, 5)
                         ad.text = result_text
                         self.save_ad(self.driver, session_id, ad)
+                        self.ad_text_filter.append(webElement.id)
                         if ad.text is not None:
                             self.ad_text_filter.append(ad.text)
+
         except (
                 NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException,
                 IndexError):
             pass
 
-        # TODO webElement.id zamiast weryfikacji txt
-
     def video_ad(self):
+        with open("../data/config.yaml", "r") as file:
+            config = yaml.safe_load(file)
         try:
             video_ad_web_element = self.driver.find_element(By.XPATH, self.lang.ad_video)
             if video_ad_web_element.size["height"] > 10:
                 AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
+                date_folder_name = datetime.now().strftime("%Y-%m-%d")
+
+                path = config["COMPUTER"]["SAVE_PATH"]
+                if not os.path.exists(f"{path}/{date_folder_name}"):
+                    os.mkdir(f"{path}/{date_folder_name}")
                 self.driver.start_recording_screen()
-                time.sleep(30)
+                time.sleep(60)
                 video_rawdata = self.driver.stop_recording_screen()
                 video_name = self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")
-                filepath = os.path.join("/home/krzysztof", video_name + ".mp4")
+                filepath = os.path.join(f"{path}/{date_folder_name}", "test_"+video_name + ".mp4")
 
                 with open(filepath, "wb+") as vd:
                     vd.write(base64.b64decode(video_rawdata))
 
-                print("original: " + video_ad_web_element.id)
-
+                os.system(f'ffmpeg -i {path}/{date_folder_name}/test_{video_name}.mp4 -vf "crop={video_ad_web_element.size["width"]}:{video_ad_web_element.size["height"]}:{video_ad_web_element.location["x"]}:{video_ad_web_element.location["y"]}" {path}/{date_folder_name}/{video_name}.mp4')
+                os.system(f"unlink {path}/{date_folder_name}/test_{video_name}.mp4")
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
 
@@ -206,7 +216,6 @@ class AdjustAd(object):
             previous_height: int = web_element.size["height"]
             self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
             next_height: int = web_element.size["height"]
-            print("scroll: " + web_element.id)
 
             while True:
 
@@ -225,5 +234,3 @@ class AdjustAd(object):
                     self.driver.swipe(start_x=10, start_y=1000, end_x=10, end_y=1500, duration=400)
                     next_height = web_element.size["height"]
 
-    def return_to_start_position(self):
-        pass
