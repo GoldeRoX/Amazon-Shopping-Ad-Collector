@@ -47,7 +47,7 @@ def main():
 
         while not is_end_of_page:
             session.cookies_click()
-            ad_handler.video_ad()
+            ad_handler.collect_video_ad(session_id)
             ad_handler.collect_ad_type_4(session_id)
             ad_handler.collect_ad_type_5(session_id)
             session.scroll_down()

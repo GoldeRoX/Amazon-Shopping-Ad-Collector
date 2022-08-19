@@ -79,11 +79,11 @@ class MyDriver(object):
         try:
             self.wait_for_element(By.XPATH, DE.search_icon)
             self.driver.find_element(By.XPATH, DE.search_icon).click()
-        except NoSuchElementException:
+        except (NoSuchElementException, TimeoutException):
             try:
                 self.wait_for_element(By.XPATH, ENG.search_icon)
                 self.driver.find_element(By.XPATH, ENG.search_icon).click()
-            except NoSuchElementException:
+            except (NoSuchElementException, TimeoutException):
                 self.wait_for_element(By.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
                 self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
 
@@ -155,4 +155,7 @@ def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
                     ad.location_y:ad.location_y + ad.height,
                     ad.location_x:ad.location_x + ad.width
                     ]
-    cv2.imwrite(image_path, cropped_image)
+    try:
+        cv2.imwrite(image_path, cropped_image)
+    except cv2.error:
+        pass

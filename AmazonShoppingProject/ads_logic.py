@@ -29,7 +29,7 @@ class AdHandler(object):
         Manager = SQLAdManager()
         Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
                                 ad.ad_type, session_id, ad.price)
-        save_cropped_scr(driver, ad, str(Manager.get_last_saved_id_from_db()) + ".png")
+        save_cropped_scr(driver, ad, str(Manager.get_last_saved_id_from_db()))
 
     # TODO test and use
     def is_ad_used(self, web_element: WebElement) -> bool:
@@ -170,7 +170,6 @@ class AdHandler(object):
                         ad = Ad(webElement, 5)
                         ad.text = result_text
                         self.save_ad(self.driver, session_id, ad)
-                        self.ad_text_filter.append(webElement.id)
                         if ad.text is not None:
                             self.ad_text_filter.append(ad.text)
 
@@ -179,29 +178,49 @@ class AdHandler(object):
                 IndexError):
             pass
 
-    def video_ad(self):
+    def create_and_crop_video(self, video_ad_web_element: WebElement, db_id: int):
         with open("../data/config.yaml", "r") as file:
             config = yaml.safe_load(file)
+        date_folder_name = datetime.now().strftime("%Y-%m-%d")
+
+        path = config["COMPUTER"]["SAVE_PATH"]
+        if not os.path.exists(f"{path}/{date_folder_name}"):
+            os.mkdir(f"{path}/{date_folder_name}")
+        self.driver.start_recording_screen()
+        time.sleep(60)
+        video_rawdata = self.driver.stop_recording_screen()
+        video_name = str(db_id)
+        filepath = os.path.join(f"{path}/{date_folder_name}", "test_" + video_name + ".mp4")
+
+        with open(filepath, "wb+") as vd:
+            vd.write(base64.b64decode(video_rawdata))
+
+        os.system(
+            f'ffmpeg -i {path}/{date_folder_name}/test_{video_name}.mp4 -vf "crop={video_ad_web_element.size["width"]}:{video_ad_web_element.size["height"]}:{video_ad_web_element.location["x"]}:{video_ad_web_element.location["y"]}" {path}/{date_folder_name}/{video_name}.mp4')
+        os.system(f"unlink {path}/{date_folder_name}/test_{video_name}.mp4")
+
+    def collect_video_ad(self, session_id: int):
         try:
             video_ad_web_element = self.driver.find_element(By.XPATH, self.lang.ad_video)
             if video_ad_web_element.size["height"] > 10:
                 AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
-                date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
-                path = config["COMPUTER"]["SAVE_PATH"]
-                if not os.path.exists(f"{path}/{date_folder_name}"):
-                    os.mkdir(f"{path}/{date_folder_name}")
-                self.driver.start_recording_screen()
-                time.sleep(60)
-                video_rawdata = self.driver.stop_recording_screen()
-                video_name = self.driver.current_activity + time.strftime("%Y_%m_%d_%H%M%S")
-                filepath = os.path.join(f"{path}/{date_folder_name}", "test_"+video_name + ".mp4")
+                path = ".//child::*" + 7 * "/following-sibling::*"
+                text = video_ad_web_element.find_element(By.XPATH, path).get_attribute("text")
 
-                with open(filepath, "wb+") as vd:
-                    vd.write(base64.b64decode(video_rawdata))
+                """create ad object"""
+                ad = Ad(video_ad_web_element, 6)
+                ad.text = text
 
-                os.system(f'ffmpeg -i {path}/{date_folder_name}/test_{video_name}.mp4 -vf "crop={video_ad_web_element.size["width"]}:{video_ad_web_element.size["height"]}:{video_ad_web_element.location["x"]}:{video_ad_web_element.location["y"]}" {path}/{date_folder_name}/{video_name}.mp4')
-                os.system(f"unlink {path}/{date_folder_name}/test_{video_name}.mp4")
+                Manager = SQLAdManager()
+                Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
+                                        ad.ad_type, session_id, ad.price)
+                save_cropped_scr(self.driver, ad, str(Manager.get_last_saved_id_from_db()))
+                self.ad_text_filter.append(video_ad_web_element.id)
+                if ad.text is not None:
+                    self.ad_text_filter.append(ad.text)
+
+                self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
 
@@ -233,4 +252,3 @@ class AdjustAd(object):
                     previous_height = web_element.size["height"]
                     self.driver.swipe(start_x=10, start_y=1000, end_x=10, end_y=1500, duration=400)
                     next_height = web_element.size["height"]
-
