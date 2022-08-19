@@ -186,6 +186,7 @@ class AdHandler(object):
         path = config["COMPUTER"]["SAVE_PATH"]
         if not os.path.exists(f"{path}/{date_folder_name}"):
             os.mkdir(f"{path}/{date_folder_name}")
+        AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
         self.driver.start_recording_screen()
         time.sleep(60)
         video_rawdata = self.driver.stop_recording_screen()
@@ -212,7 +213,6 @@ class AdHandler(object):
 
                 if text not in self.ad_text_filter:
                     """create ad object"""
-                    AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
                     ad = Ad(video_ad_web_element, 6)
                     ad.text = text
 
@@ -234,6 +234,7 @@ class AdjustAd(object):
     def __init__(self, driver):
         self.driver = driver
 
+    # samsung s20
     def match_ad_visibility(self, web_element: WebElement):
         if web_element.size["height"] > 10 and web_element.size["width"] > 10:
             previous_height: int = web_element.size["height"]
