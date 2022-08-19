@@ -196,31 +196,35 @@ class AdHandler(object):
             vd.write(base64.b64decode(video_rawdata))
 
         os.system(
-            f'ffmpeg -i {path}/{date_folder_name}/test_{video_name}.mp4 -vf "crop={video_ad_web_element.size["width"]}:{video_ad_web_element.size["height"]}:{video_ad_web_element.location["x"]}:{video_ad_web_element.location["y"]}" {path}/{date_folder_name}/{video_name}.mp4')
+            f'ffmpeg -i {path}/{date_folder_name}/test_{video_name}.mp4 -vf "crop={video_ad_web_element.size["width"]}:'
+            f'{video_ad_web_element.size["height"]}:{video_ad_web_element.location["x"]}:'
+            f'{video_ad_web_element.location["y"]}" {path}/{date_folder_name}/{video_name}.mp4')
         os.system(f"unlink {path}/{date_folder_name}/test_{video_name}.mp4")
 
     def collect_video_ad(self, session_id: int):
+        """Collecting video, scr and modified scr for ad of type 6 - video_ad"""
         try:
             video_ad_web_element = self.driver.find_element(By.XPATH, self.lang.ad_video)
             if video_ad_web_element.size["height"] > 10:
-                AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
 
                 path = ".//child::*" + 7 * "/following-sibling::*"
                 text = video_ad_web_element.find_element(By.XPATH, path).get_attribute("text")
 
-                """create ad object"""
-                ad = Ad(video_ad_web_element, 6)
-                ad.text = text
+                if text not in self.ad_text_filter:
+                    """create ad object"""
+                    AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
+                    ad = Ad(video_ad_web_element, 6)
+                    ad.text = text
 
-                Manager = SQLAdManager()
-                Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                        ad.ad_type, session_id, ad.price)
-                save_cropped_scr(self.driver, ad, str(Manager.get_last_saved_id_from_db()))
-                self.ad_text_filter.append(video_ad_web_element.id)
-                if ad.text is not None:
-                    self.ad_text_filter.append(ad.text)
+                    Manager = SQLAdManager()
+                    Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
+                                            ad.ad_type, session_id, ad.price)
+                    save_cropped_scr(self.driver, ad, str(Manager.get_last_saved_id_from_db()))
+                    self.ad_text_filter.append(video_ad_web_element.id)
+                    if ad.text is not None:
+                        self.ad_text_filter.append(ad.text)
 
-                self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
+                    self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
 
