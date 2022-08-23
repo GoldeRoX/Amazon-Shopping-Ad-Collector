@@ -159,3 +159,4 @@ def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
         cv2.imwrite(image_path, cropped_image)
     except cv2.error:
         pass
+

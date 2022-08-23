@@ -39,7 +39,7 @@ def main():
         # session.get_page(keyword["keyword"])
         # time.sleep(5)
         session.get_page(random.choice(list(open('keywords_test.txt'))))
-        # session.get_page("Bosch")
+        # session.get_page("Monitors")
 
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
@@ -62,7 +62,7 @@ def main():
         sys.exit()
     finally:
         print(f"end of session {session_id} : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print("--- %s seconds running---" % (time.time() - start_time))
+        print("--- %s seconds running ---" % (time.time() - start_time))
         session.driver.close_app()
 
 

@@ -3,6 +3,8 @@ import math
 import os
 import time
 
+import cv2
+import numpy as np
 import yaml
 from datetime import datetime
 from appium.webdriver import WebElement
@@ -178,6 +180,51 @@ class AdHandler(object):
                 IndexError):
             pass
 
+    def save_cropped_scr_for_videos(self, ad: Ad, filename: str) -> None:
+        with open("../data/config.yaml", "r") as file:
+            config = yaml.safe_load(file)
+        date_folder_name = datetime.now().strftime("%Y-%m-%d")
+
+        path = config["COMPUTER"]["SAVE_PATH"]
+        if not os.path.exists(f"{path}/{date_folder_name}"):
+            os.mkdir(f"{path}/{date_folder_name}")
+
+        img_name = filename
+
+        image_path = f"{path}/{date_folder_name}/{str(img_name)}_thumb.png"
+        self.driver.save_screenshot(image_path)
+        img = cv2.imread(image_path)
+
+        cropped_image = img[
+                        ad.location_y:ad.location_y + ad.height,
+                        ad.location_x:ad.location_x + ad.width
+                        ]
+
+        cv2.imwrite(image_path, cropped_image)
+
+        image_path = f"{path}/{date_folder_name}/{str(img_name)}.png"
+        video_element_ad_web_element = self.driver.find_element(By.XPATH, self.lang.ad_video)
+        path = ".//child::*/following-sibling::*"
+        video_element = video_element_ad_web_element.find_element(By.XPATH, path)
+        self.driver.save_screenshot(image_path)
+        new_img = cv2.imread(image_path)
+
+        # mask = np.zeros_like(new_img)
+        test = cv2.rectangle(new_img, (video_element.location["x"], video_element.location["y"]), (video_element.location["x"]+video_element.size["width"], video_element.location["y"]+video_element.size["height"]), (0, 0, 0), -1)
+        # masked = cv2.bitwise_and(new_img, new_img, mask=mask)
+
+        #new_img[video_element.location["x"]:video_element.size["width"], video_element.location["y"]:video_element.size["height"]] = (0, 0, 0)
+
+        cropped_image = test[
+                        ad.location_y:ad.location_y + ad.height,
+                        ad.location_x:ad.location_x + ad.width
+                        ]
+
+        try:
+            cv2.imwrite(image_path, cropped_image)
+        except cv2.error:
+            pass
+
     def create_and_crop_video(self, video_ad_web_element: WebElement, db_id: int):
         with open("../data/config.yaml", "r") as file:
             config = yaml.safe_load(file)
@@ -186,7 +233,7 @@ class AdHandler(object):
         path = config["COMPUTER"]["SAVE_PATH"]
         if not os.path.exists(f"{path}/{date_folder_name}"):
             os.mkdir(f"{path}/{date_folder_name}")
-        AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
+        # AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
         self.driver.start_recording_screen()
         time.sleep(60)
         video_rawdata = self.driver.stop_recording_screen()
@@ -207,6 +254,7 @@ class AdHandler(object):
         try:
             video_ad_web_element = self.driver.find_element(By.XPATH, self.lang.ad_video)
             if video_ad_web_element.size["height"] > 10:
+                AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
 
                 path = ".//child::*" + 7 * "/following-sibling::*"
                 text = video_ad_web_element.find_element(By.XPATH, path).get_attribute("text")
@@ -219,12 +267,13 @@ class AdHandler(object):
                     Manager = SQLAdManager()
                     Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
                                             ad.ad_type, session_id, ad.price)
-                    save_cropped_scr(self.driver, ad, str(Manager.get_last_saved_id_from_db()))
+
+                    self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
                     self.ad_text_filter.append(video_ad_web_element.id)
+                    self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
 
-                    self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
 
