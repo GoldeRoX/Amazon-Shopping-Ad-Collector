@@ -4,7 +4,6 @@ import os
 import time
 
 import cv2
-import numpy as np
 import yaml
 from datetime import datetime
 from appium.webdriver import WebElement
@@ -209,12 +208,9 @@ class AdHandler(object):
         self.driver.save_screenshot(image_path)
         new_img = cv2.imread(image_path)
 
-        # mask = np.zeros_like(new_img)
-        test = cv2.rectangle(new_img, (video_element.location["x"], video_element.location["y"]), (video_element.location["x"]+video_element.size["width"], video_element.location["y"]+video_element.size["height"]), (0, 0, 0), -1)
-        # masked = cv2.bitwise_and(new_img, new_img, mask=mask)
-
-        #new_img[video_element.location["x"]:video_element.size["width"], video_element.location["y"]:video_element.size["height"]] = (0, 0, 0)
-
+        test = cv2.rectangle(new_img, (video_element.location["x"], video_element.location["y"]),
+                             (video_element.location["x"]+video_element.size["width"],
+                              video_element.location["y"]+video_element.size["height"]), (0, 0, 0), -1)
         cropped_image = test[
                         ad.location_y:ad.location_y + ad.height,
                         ad.location_x:ad.location_x + ad.width
@@ -233,7 +229,6 @@ class AdHandler(object):
         path = config["COMPUTER"]["SAVE_PATH"]
         if not os.path.exists(f"{path}/{date_folder_name}"):
             os.mkdir(f"{path}/{date_folder_name}")
-        # AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
         self.driver.start_recording_screen()
         time.sleep(60)
         video_rawdata = self.driver.stop_recording_screen()
