@@ -12,8 +12,6 @@ from base import *
 
 
 def main():
-    with open("../data/config.yaml", "r") as file:
-        config = yaml.safe_load(file)
 
     # os.system("cd ~/android-sdk/emulator ./emulator -avd Amazon")
     start_time = time.time()
@@ -36,7 +34,7 @@ def main():
         # TODO add to db column keyword_id
         # keyword_id = keyword["id"]
 
-        # session.get_page(keyword["keyword"])
+        session.get_page(keyword["keyword"])
         # time.sleep(5)
         session.get_page(random.choice(list(open('keywords_test.txt'))))
         # session.get_page("Monitors")
@@ -50,9 +48,10 @@ def main():
             ad_handler.collect_video_ad(session_id)
             ad_handler.collect_ad_type_4(session_id)
             ad_handler.collect_ad_type_5(session_id)
-            session.scroll_down()
-            is_end_of_page = previous_page_source == session.driver.page_source
 
+            session.scroll_down()
+
+            is_end_of_page = previous_page_source == session.driver.page_source
             previous_page_source = session.driver.page_source
 
         ad_handler.collect_ad_type_1(session_id)

@@ -29,7 +29,7 @@ class AdHandler(object):
     def save_ad(driver, session_id: int, ad: Ad):
         Manager = SQLAdManager()
         Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                ad.ad_type, session_id, ad.price)
+                                ad.ad_type, session_id)
         save_cropped_scr(driver, ad, str(Manager.get_last_saved_id_from_db()))
 
     # TODO test and use
@@ -261,7 +261,7 @@ class AdHandler(object):
 
                     Manager = SQLAdManager()
                     Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                            ad.ad_type, session_id, ad.price)
+                                            ad.ad_type, session_id)
 
                     self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
                     self.ad_text_filter.append(video_ad_web_element.id)
