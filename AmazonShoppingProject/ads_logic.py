@@ -32,14 +32,6 @@ class AdHandler(object):
                                 ad.ad_type, session_id)
         save_cropped_scr(driver, ad, str(Manager.get_last_saved_id_from_db()))
 
-    # TODO test and use
-    def is_ad_used(self, web_element: WebElement) -> bool:
-        element_id = web_element.id
-        if element_id not in self.ad_text_filter:
-            return False
-        else:
-            return True
-
     def collect_ad_type_1(self, session_id: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
@@ -137,11 +129,11 @@ class AdHandler(object):
                 if element.size["height"] > 50:
                     action = TouchAction(self.driver)
                     for i, web_element in enumerate(ads_webelements):
-                        print("collecting ad \033[1;31;40mtype 4\033[0;0m ...")
                         path = ".//child::*" + 3 * "/following-sibling::*"
                         text = web_element.find_element(By.XPATH, path).get_attribute("text")
                         if text not in self.ad_text_filter and text != "product-detail":
                             """scroll through web_elements ads"""
+                            print("collecting ad \033[1;31;40mtype 4\033[0;0m ...")
                             if i == 0:
                                 AdjustAd(self.driver).match_ad_visibility(element)
                             else:
@@ -290,6 +282,7 @@ class AdjustAd(object):
         self.driver = driver
 
     # samsung s20
+    # TODO remake and repair match_ad_visibility(). It must adjust with windowed architecture of the site
     def match_ad_visibility(self, web_element: WebElement):
         if web_element.size["height"] > 10 and web_element.size["width"] > 10:
             previous_height: int = web_element.size["height"]
