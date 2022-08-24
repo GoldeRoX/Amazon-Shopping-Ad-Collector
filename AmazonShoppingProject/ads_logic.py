@@ -45,9 +45,11 @@ class AdHandler(object):
         try:
             ads_list = self.collect_ads_1()
             for ad in ads_list:
+                print("collecting ad \033[1;31;40mtype 1\033[0;0m ...")
                 self.save_ad(self.driver, session_id, ad)
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
+                print("ad \033[1;31;40mtype 1\033[0;0m \033[1;32;40mcollected\033[0;0m")
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
 
@@ -68,6 +70,7 @@ class AdHandler(object):
             action = TouchAction(self.driver)
             for i, web_element in enumerate(ads_webelements):
                 """scroll through web_elements ads"""
+                print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
                 if i == 0:
                     pass
                 else:
@@ -78,6 +81,7 @@ class AdHandler(object):
                 if web_element.get_attribute("text") not in self.ad_text_filter:
                     ad = Ad(web_element, 2)
                     self.save_ad(self.driver, session_id, ad)
+                    print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text.strip() is not None:
                         self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
@@ -133,9 +137,10 @@ class AdHandler(object):
                 if element.size["height"] > 50:
                     action = TouchAction(self.driver)
                     for i, web_element in enumerate(ads_webelements):
+                        print("collecting ad \033[1;31;40mtype 4\033[0;0m ...")
                         path = ".//child::*" + 3 * "/following-sibling::*"
                         text = web_element.find_element(By.XPATH, path).get_attribute("text")
-                        if text not in self.ad_text_filter:
+                        if text not in self.ad_text_filter and text != "product-detail":
                             """scroll through web_elements ads"""
                             if i == 0:
                                 AdjustAd(self.driver).match_ad_visibility(element)
@@ -148,6 +153,7 @@ class AdHandler(object):
                             ad = Ad(web_element, 4)
                             ad.text = text
                             self.save_ad(self.driver, session_id, ad)
+                            print("ad \033[1;31;40mtype 4\033[0;0m \033[1;32;40mcollected\033[0;0m")
                             if ad.text is not None:
                                 self.ad_text_filter.append(ad.text)
                     break
@@ -168,9 +174,11 @@ class AdHandler(object):
                     if var1 and var2 and result_text not in self.ad_text_filter:
                         """create ad object"""
                         AdjustAd(self.driver).match_ad_visibility(webElement)
+                        print("collecting ad \033[1;31;40mtype 5\033[0;0m ...")
                         ad = Ad(webElement, 5)
                         ad.text = result_text
                         self.save_ad(self.driver, session_id, ad)
+                        print("ad \033[1;31;40mtype 5\033[0;0m \033[1;32;40mcollected\033[0;0m")
                         if ad.text is not None:
                             self.ad_text_filter.append(ad.text)
 
@@ -249,6 +257,7 @@ class AdHandler(object):
         try:
             video_ad_web_element = self.driver.find_element(By.XPATH, self.lang.ad_video)
             if video_ad_web_element.size["height"] > 10:
+                print("adjusting video ad ...")
                 AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
 
                 path = ".//child::*" + 7 * "/following-sibling::*"
@@ -256,6 +265,7 @@ class AdHandler(object):
 
                 if text not in self.ad_text_filter:
                     """create ad object"""
+                    print("collecting ad \033[1;31;40mvideo\033[0;0m ...")
                     ad = Ad(video_ad_web_element, 6)
                     ad.text = text
 
@@ -266,6 +276,7 @@ class AdHandler(object):
                     self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
                     self.ad_text_filter.append(video_ad_web_element.id)
                     self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
+                    print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
 

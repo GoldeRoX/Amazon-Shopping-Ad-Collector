@@ -12,11 +12,11 @@ from base import *
 
 
 def main():
-
     # os.system("cd ~/android-sdk/emulator ./emulator -avd Amazon")
     start_time = time.time()
     try:
         session = MyDriver()
+        session.first_launch()
     except WebDriverException:
         session = MyDriver(skip_device_initialization=False, skip_server_installation=False, no_reset=False)
         session.config_start()
@@ -30,11 +30,11 @@ def main():
 
     try:
 
-        keyword = get_random_keyword()
+        # keyword = get_random_keyword()
         # TODO add to db column keyword_id
         # keyword_id = keyword["id"]
 
-        session.get_page(keyword["keyword"])
+        # session.get_page(keyword["keyword"])
         # time.sleep(5)
         session.get_page(random.choice(list(open('keywords_test.txt'))))
         # session.get_page("Monitors")
