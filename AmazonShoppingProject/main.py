@@ -1,7 +1,4 @@
-import random
 import sys
-
-import yaml
 
 from ads_logic import *
 from database_connector import get_random_keyword
@@ -30,13 +27,12 @@ def main():
 
     try:
 
-        # keyword = get_random_keyword()
+        keyword = get_random_keyword()
         # TODO add to db column keyword_id
-        # keyword_id = keyword["id"]
+        keyword_id = keyword["id"]
 
-        # session.get_page(keyword["keyword"])
-        # time.sleep(5)
-        session.get_page(random.choice(list(open('keywords_test.txt'))))
+        session.get_page(keyword["keyword"])
+        # session.get_page(random.choice(list(open('keywords_test.txt'))))
         # session.get_page("Monitors")
 
         """scroll down through app Y and collect ads"""
@@ -45,17 +41,17 @@ def main():
 
         while not is_end_of_page:
             session.cookies_click()
-            ad_handler.collect_video_ad(session_id)
-            ad_handler.collect_ad_type_4(session_id)
-            ad_handler.collect_ad_type_5(session_id)
+            ad_handler.collect_video_ad(session_id, keyword_id)
+            ad_handler.collect_ad_type_4(session_id, keyword_id)
+            ad_handler.collect_ad_type_5(session_id, keyword_id)
 
             session.scroll_down()
 
             is_end_of_page = previous_page_source == session.driver.page_source
             previous_page_source = session.driver.page_source
 
-        ad_handler.collect_ad_type_1(session_id)
-        ad_handler.collect_ad_type_2(session_id)
+        ad_handler.collect_ad_type_1(session_id, keyword_id)
+        ad_handler.collect_ad_type_2(session_id, keyword_id)
     except KeyboardInterrupt:
         print("KeyboardInterrupt exception")
         sys.exit()
