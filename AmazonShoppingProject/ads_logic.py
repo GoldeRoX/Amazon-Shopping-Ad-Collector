@@ -84,7 +84,8 @@ class AdHandler(object):
         elements = self.driver.find_elements(By.XPATH, self.lang.BOTTOM_AD)
 
         for element in elements:
-            if element.size["height"] > 300:
+            text_element_node = self.driver.find_element(By.XPATH, self.lang.BOTTOM_AD_TEXT_ELEMENT)
+            if element.size["height"] > 300 and text_element_node.size["width"] > 500:
                 webelements.append(element)
         return webelements
 
@@ -144,10 +145,11 @@ class AdHandler(object):
                             """create an object of ad"""
                             ad = Ad(web_element, 4)
                             ad.text = text
-                            self.save_ad(self.driver, session_id, ad)
-                            print("ad \033[1;31;40mtype 4\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                            if ad.text is not None:
-                                self.ad_text_filter.append(ad.text)
+                            if ad.width > 300 and ad.height > 300:
+                                self.save_ad(self.driver, session_id, ad)
+                                print("ad \033[1;31;40mtype 4\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                                if ad.text is not None:
+                                    self.ad_text_filter.append(ad.text)
                     break
         except (NoSuchElementException, TimeoutException, WebDriverException,
                 StaleElementReferenceException, InvalidElementStateException):
@@ -257,7 +259,7 @@ class AdHandler(object):
 
                 if text not in self.ad_text_filter:
                     """create ad object"""
-                    print("collecting ad \033[1;31;40mvideo\033[0;0m ...")
+                    print("collecting ad \033[1;31;40mvideo type 6\033[0;0m ...")
                     ad = Ad(video_ad_web_element, 6)
                     ad.text = text
 
