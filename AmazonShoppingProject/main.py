@@ -62,7 +62,6 @@ def main():
 
 
 if __name__ == "__main__":
-    while True:
-        main()
+    main()
 
 # TODO Disable gps location on first lunch to save settings .... the rest of runs, enable gps to secure session

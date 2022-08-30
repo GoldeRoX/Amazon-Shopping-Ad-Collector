@@ -252,28 +252,27 @@ class AdHandler(object):
         """Collecting video, scr and modified scr for ad of type 6 - video_ad"""
         try:
             video_ad_web_element = self.driver.find_element(By.XPATH, self.lang.ad_video)
-            if video_ad_web_element.size["height"] > 10:
+            path = ".//child::*" + 7 * "/following-sibling::*"
+            text = video_ad_web_element.find_element(By.XPATH, path).get_attribute("text")
+            if video_ad_web_element.size["height"] > 10 and text not in self.ad_text_filter:
+
                 print("adjusting video ad ...")
                 AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
 
-                path = ".//child::*" + 7 * "/following-sibling::*"
-                text = video_ad_web_element.find_element(By.XPATH, path).get_attribute("text")
+                """create ad object"""
+                print("collecting ad \033[1;31;40mvideo type 6\033[0;0m ...")
+                ad = Ad(video_ad_web_element, 6)
+                ad.text = text
 
-                if text not in self.ad_text_filter:
-                    """create ad object"""
-                    print("collecting ad \033[1;31;40mvideo type 6\033[0;0m ...")
-                    ad = Ad(video_ad_web_element, 6)
-                    ad.text = text
+                Manager = SQLAdManager()
+                Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
+                                        ad.ad_type, session_id, keyword_id)
 
-                    Manager = SQLAdManager()
-                    Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                            ad.ad_type, session_id, keyword_id)
-
-                    self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
-                    self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
-                    print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                    if ad.text is not None:
-                        self.ad_text_filter.append(ad.text)
+                self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
+                self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
+                print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                if ad.text is not None:
+                    self.ad_text_filter.append(ad.text)
 
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
             pass
