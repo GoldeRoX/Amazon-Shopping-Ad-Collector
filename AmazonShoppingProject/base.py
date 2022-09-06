@@ -23,10 +23,11 @@ class MyDriver(object):
                  app_activity="com.amazon.mShop.home.HomeActivity", device_name="emulator-5554",
                  uiautomator_2_server_launch_timeout=40000, ios_install_pause=8000,
                  wda_startup_retry_interval=20000, new_command_timeout=20000, skip_device_initialization=True,
-                 skip_server_installation=True, no_reset=True, normalize_tag_names=True):
+                 skip_server_installation=True, no_reset=True, normalize_tag_names=True, udid="emulator-5554"):
 
         desired_caps = {
             "platformName": platform_name,
+            "udid": udid,
             "appium:platformVersion": platform_version,
             "appium:automationName": automation_name,
             "appium:appPackage": app_package,
@@ -44,7 +45,7 @@ class MyDriver(object):
         self.driver = webdriver.Remote(command_executor="http://localhost:4723/wd/hub",
                                        desired_capabilities=desired_caps)
 
-    def wait_for_element(self, by_type, path) -> None:
+    def wait_for_element(self, by_type, path: str) -> None:
         WebDriverWait(self.driver, 5).until(
             EC.presence_of_element_located((by_type, path)))
 
@@ -92,7 +93,7 @@ class MyDriver(object):
         """press enter"""
         self.driver.press_keycode(66)
 
-    def scroll_down(self, y=600) -> None:
+    def scroll_down(self, y: int = 600) -> None:
         """scroll down through app Y axis
 
         *default value is y=600

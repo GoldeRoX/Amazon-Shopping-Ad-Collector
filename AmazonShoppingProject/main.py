@@ -1,5 +1,7 @@
 import sys
 
+from selenium.common.exceptions import InvalidSessionIdException
+
 from ads_logic import *
 from database_connector import get_random_keyword
 
@@ -14,11 +16,11 @@ def main():
     try:
         session = MyDriver()
         session.first_launch()
-    except WebDriverException:
+    except (WebDriverException, InvalidSessionIdException):
         session = MyDriver(skip_device_initialization=False, skip_server_installation=False, no_reset=False)
         session.config_start()
         session.first_launch()
-        time.sleep(10)
+        time.sleep(5)
         session.cookies_click()
 
     session_id = SQLAdManager().get_last_saved_session_id_from_db() + 1
@@ -58,7 +60,6 @@ def main():
     finally:
         print(f"end of session {session_id} : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("--- %s seconds running ---" % (time.time() - start_time))
-        session.driver.close_app()
 
 
 if __name__ == "__main__":
