@@ -13,9 +13,9 @@ from selenium.common.exceptions import StaleElementReferenceException, NoSuchEle
     InvalidElementStateException, WebDriverException
 from selenium.webdriver.common.by import By
 
-from Ad import Ad
-from base import save_cropped_scr
-from database_connector import SQLAdManager
+from AmazonShoppingProject.Ad import Ad
+from AmazonShoppingProject.base import save_cropped_scr
+from AmazonShoppingProject.database_connector import SQLAdManager
 
 
 class AdHandler(object):

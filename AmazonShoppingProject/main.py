@@ -1,27 +1,39 @@
+import subprocess
+import shlex
 import sys
 
 from selenium.common.exceptions import InvalidSessionIdException
 
-from ads_logic import *
-from database_connector import get_random_keyword
+from AmazonShoppingProject.ads_logic import *
+from AmazonShoppingProject.database_connector import get_random_keyword
 
-from base import *
-
-"""adb shell settings put global http_proxy 151.236.15.140:3128"""
+from AmazonShoppingProject.base import *
 
 
-def main():
-    # os.system("cd ~/android-sdk/emulator ./emulator -avd Amazon")
+def main(udid: int):
+    pars = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://151.236.15.140:3128 -port {udid}")
+
+    p = subprocess.Popen(pars, cwd="/home/krzysztof/android-sdk/emulator")
+    time.sleep(15)
     start_time = time.time()
+
     try:
-        session = MyDriver()
+        session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid))
+        session.config_start()
         session.first_launch()
+        print("przed1")
+        session.change_lang_from_eng_to_de()
+        print("po1")
     except (WebDriverException, InvalidSessionIdException):
-        session = MyDriver(skip_device_initialization=False, skip_server_installation=False, no_reset=False)
+        session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid),
+                           skip_device_initialization=False, skip_server_installation=False, no_reset=False)
         session.config_start()
         session.first_launch()
         time.sleep(5)
         session.cookies_click()
+        print("przed2")
+        session.change_lang_from_eng_to_de()
+        print("po2")
 
     session_id = SQLAdManager().get_last_saved_session_id_from_db() + 1
 
@@ -30,12 +42,9 @@ def main():
     try:
 
         keyword = get_random_keyword()
-        # TODO add to db column keyword_id
         keyword_id = keyword["id"]
 
         session.get_page(keyword["keyword"])
-        # session.get_page(random.choice(list(open('keywords_test.txt'))))
-        # session.get_page("Monitors")
 
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
@@ -58,11 +67,6 @@ def main():
         print("KeyboardInterrupt exception")
         sys.exit()
     finally:
+        p.terminate()
         print(f"end of session {session_id} : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("--- %s seconds running ---" % (time.time() - start_time))
-
-
-if __name__ == "__main__":
-    main()
-
-# TODO Disable gps location on first lunch to save settings .... the rest of runs, enable gps to secure session

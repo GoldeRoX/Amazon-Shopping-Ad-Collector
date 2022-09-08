@@ -11,9 +11,9 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 import cv2  # import opencv-python	4.5.5.64
-from Ad import Ad
+from AmazonShoppingProject.Ad import Ad
 
-from locators_data import *
+from AmazonShoppingProject.locators_data import *
 
 
 class MyDriver(object):
@@ -45,8 +45,8 @@ class MyDriver(object):
         self.driver = webdriver.Remote(command_executor="http://localhost:4723/wd/hub",
                                        desired_capabilities=desired_caps)
 
-    def wait_for_element(self, by_type, path: str) -> None:
-        WebDriverWait(self.driver, 5).until(
+    def wait_for_element(self, by_type, path: str, time_to_wait: int = 5) -> None:
+        WebDriverWait(self.driver, time_to_wait).until(
             EC.presence_of_element_located((by_type, path)))
 
     def send_text(self, by_type, path: str, text_to_send: str) -> None:
@@ -71,9 +71,12 @@ class MyDriver(object):
 
     def change_lang_if_must(self):
         self.wait_for_element(By.XPATH,
-                              '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, shop by department, programs and features, settings, and customer service Tab 4 of 4"]')
+                              '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, '
+                              'shop by department, programs and features, settings, and customer service Tab 4 of 4"]')
         self.driver.find_element(By.XPATH,
-                                 '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, shop by department, programs and features, settings, and customer service Tab 4 of 4"]').click()
+                                 '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, '
+                                 'shop by department, programs and features, settings, '
+                                 'and customer service Tab 4 of 4"]').click()
 
     def get_page(self, phrase_to_search: str) -> None:
         """search item phrase on the app"""
@@ -135,6 +138,87 @@ class MyDriver(object):
                 web_elements2[-2].click()
             except (NoSuchElementException, IndexError, WebDriverException):
                 pass
+
+    def change_lang_from_eng_to_de(self):
+        try:
+            # TODO naprawic nazwy xpath tak by byly czytelne w dokumentacji
+            self.driver.find_element(By.XPATH, '//android.widget.ImageView[@content-desc="Menu. Contains your orders, '
+                                               'your account, shop by department, programs and features, settings, and'
+                                               ' customer service Tab 4 of 4"]').click()
+            xpath = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
+                    'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
+                    'android.widget.ViewSwitcher/android.widget.FrameLayout/android.view.ViewGroup/' \
+                    'android.widget.ScrollView/android.view.ViewGroup/android.widget.ScrollView/' \
+                    'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/' \
+                    'android.view.ViewGroup/android.widget.Button'
+            self.wait_for_element(By.XPATH, xpath, time_to_wait=15)
+            self.driver.find_element(By.XPATH, xpath).click()
+            xpath2 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
+                     'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
+                     'android.widget.ViewSwitcher/android.widget.FrameLayout/android.view.ViewGroup/' \
+                     'android.widget.ScrollView/android.view.ViewGroup/android.widget.ScrollView/' \
+                     'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/' \
+                     'android.view.ViewGroup/android.view.ViewGroup/android.view.View[1]/android.view.ViewGroup'
+            self.wait_for_element(By.XPATH, xpath2, time_to_wait=15)
+            self.driver.find_element(By.XPATH, xpath2).click()
+            xpath3 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
+                     'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
+                     'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
+                     'android.webkit.WebView/android.view.View[1]/android.view.View/android.view.View/' \
+                     'android.view.View[11]/android.view.View[1]/android.widget.Button'
+            self.wait_for_element(By.XPATH, xpath3, time_to_wait=5)
+            self.driver.find_element(By.XPATH, xpath3).click()
+            # de_lang_xpath = "//*[@text='Germany (Deutschland) Deutschland - Amazon.de']"
+            de_lang_xpath = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
+                            'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
+                            'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
+                            'android.webkit.WebView/android.webkit.WebView/android.view.View[1]/android.view.View/' \
+                            'android.view.View[7]/android.widget.RadioButton[4]'
+            self.wait_for_element(By.XPATH, de_lang_xpath, time_to_wait=5)
+            self.driver.find_element(By.XPATH, de_lang_xpath).click()
+            xpath4 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
+                     'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
+                     'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
+                     'android.webkit.WebView/android.view.View[1]/android.view.View/android.view.View/' \
+                     'android.view.View[14]/android.view.View[1]/android.widget.Button'
+            self.wait_for_element(By.XPATH, xpath4, time_to_wait=5)
+            self.driver.find_element(By.XPATH, xpath4).click()
+            xpath_lang = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
+                         'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
+                         'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
+                         'android.webkit.WebView/android.webkit.WebView/android.view.View[1]/android.view.View/' \
+                         'android.view.View[7]/android.widget.RadioButton[1]'
+            self.wait_for_element(By.XPATH, xpath_lang, time_to_wait=5)
+            self.driver.find_element(By.XPATH, xpath_lang).click()
+            xpath5 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
+                     'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
+                     'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
+                     'android.webkit.WebView/android.view.View[1]/android.view.View/android.view.View/' \
+                     'android.view.View[17]/android.view.View[1]/android.widget.Button'
+            self.wait_for_element(By.XPATH, xpath5, time_to_wait=5)
+            self.driver.find_element(By.XPATH, xpath5).click()
+
+            xpath_currency = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
+                             'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
+                             'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
+                             'android.webkit.WebView/android.webkit.WebView/android.view.View[1]/' \
+                             'android.view.View/android.view.View[7]/android.widget.RadioButton[3]'
+            self.wait_for_element(By.XPATH, xpath_currency, time_to_wait=5)
+            self.driver.find_element(By.XPATH, xpath_currency).click()
+            # TODO naprawic wylapanie przez skrypt guzika akceptacji
+            xpath_confirm_settings = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
+                                     'android.widget.FrameLayout/android.view.ViewGroup/' \
+                                     'android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
+                                     'android.widget.RelativeLayout/' \
+                                     'android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/' \
+                                     'android.view.View[1]/android.view.View/android.view.View/android.view.View[26]/' \
+                                     'android.view.View[1]/android.widget.Button'
+            self.wait_for_element(By.XPATH, xpath_confirm_settings, time_to_wait=5)
+            self.driver.find_element(By.XPATH, xpath_confirm_settings).click()
+            time.sleep(10)
+
+        except (NoSuchElementException, TimeoutException, WebDriverException):
+            pass
 
 
 def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
