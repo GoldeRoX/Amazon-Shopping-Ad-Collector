@@ -142,9 +142,13 @@ class MyDriver(object):
     def change_lang_from_eng_to_de(self):
         try:
             # TODO naprawic nazwy xpath tak by byly czytelne w dokumentacji
+            self.wait_for_element(By.XPATH, '//android.widget.ImageView[@content-desc="Menu. Contains your orders, '
+                                            'your account, shop by department, programs and features, settings, and'
+                                            ' customer service Tab 4 of 4"]')
             self.driver.find_element(By.XPATH, '//android.widget.ImageView[@content-desc="Menu. Contains your orders, '
                                                'your account, shop by department, programs and features, settings, and'
                                                ' customer service Tab 4 of 4"]').click()
+
             xpath = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
                     'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
                     'android.widget.ViewSwitcher/android.widget.FrameLayout/android.view.ViewGroup/' \
@@ -153,6 +157,7 @@ class MyDriver(object):
                     'android.view.ViewGroup/android.widget.Button'
             self.wait_for_element(By.XPATH, xpath, time_to_wait=15)
             self.driver.find_element(By.XPATH, xpath).click()
+
             xpath2 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
                      'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
                      'android.widget.ViewSwitcher/android.widget.FrameLayout/android.view.ViewGroup/' \
@@ -161,6 +166,7 @@ class MyDriver(object):
                      'android.view.ViewGroup/android.view.ViewGroup/android.view.View[1]/android.view.ViewGroup'
             self.wait_for_element(By.XPATH, xpath2, time_to_wait=15)
             self.driver.find_element(By.XPATH, xpath2).click()
+
             xpath3 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
                      'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
                      'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
@@ -168,7 +174,7 @@ class MyDriver(object):
                      'android.view.View[11]/android.view.View[1]/android.widget.Button'
             self.wait_for_element(By.XPATH, xpath3, time_to_wait=5)
             self.driver.find_element(By.XPATH, xpath3).click()
-            # de_lang_xpath = "//*[@text='Germany (Deutschland) Deutschland - Amazon.de']"
+
             de_lang_xpath = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
                             'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
                             'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
@@ -176,6 +182,7 @@ class MyDriver(object):
                             'android.view.View[7]/android.widget.RadioButton[4]'
             self.wait_for_element(By.XPATH, de_lang_xpath, time_to_wait=5)
             self.driver.find_element(By.XPATH, de_lang_xpath).click()
+
             xpath4 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
                      'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
                      'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
@@ -183,6 +190,7 @@ class MyDriver(object):
                      'android.view.View[14]/android.view.View[1]/android.widget.Button'
             self.wait_for_element(By.XPATH, xpath4, time_to_wait=5)
             self.driver.find_element(By.XPATH, xpath4).click()
+
             xpath_lang = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
                          'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
                          'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
@@ -190,6 +198,7 @@ class MyDriver(object):
                          'android.view.View[7]/android.widget.RadioButton[1]'
             self.wait_for_element(By.XPATH, xpath_lang, time_to_wait=5)
             self.driver.find_element(By.XPATH, xpath_lang).click()
+
             xpath5 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
                      'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
                      'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
@@ -205,17 +214,17 @@ class MyDriver(object):
                              'android.view.View/android.view.View[7]/android.widget.RadioButton[3]'
             self.wait_for_element(By.XPATH, xpath_currency, time_to_wait=5)
             self.driver.find_element(By.XPATH, xpath_currency).click()
-            # TODO naprawic wylapanie przez skrypt guzika akceptacji
+
             xpath_confirm_settings = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                                     'android.widget.FrameLayout/android.view.ViewGroup/' \
-                                     'android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
-                                     'android.widget.RelativeLayout/' \
+                                     'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
+                                     'android.widget.FrameLayout/android.widget.RelativeLayout/' \
                                      'android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/' \
-                                     'android.view.View[1]/android.view.View/android.view.View/android.view.View[26]/' \
+                                     'android.view.View[1]/android.view.View/android.view.View/android.view.View[24]/' \
                                      'android.view.View[1]/android.widget.Button'
             self.wait_for_element(By.XPATH, xpath_confirm_settings, time_to_wait=5)
             self.driver.find_element(By.XPATH, xpath_confirm_settings).click()
-            time.sleep(10)
+            # time for the settings to change
+            time.sleep(15)
 
         except (NoSuchElementException, TimeoutException, WebDriverException):
             pass

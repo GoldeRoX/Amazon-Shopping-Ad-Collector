@@ -21,19 +21,13 @@ def main(udid: int):
         session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid))
         session.config_start()
         session.first_launch()
-        print("przed1")
         session.change_lang_from_eng_to_de()
-        print("po1")
     except (WebDriverException, InvalidSessionIdException):
         session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid),
                            skip_device_initialization=False, skip_server_installation=False, no_reset=False)
         session.config_start()
         session.first_launch()
-        time.sleep(5)
-        session.cookies_click()
-        print("przed2")
         session.change_lang_from_eng_to_de()
-        print("po2")
 
     session_id = SQLAdManager().get_last_saved_session_id_from_db() + 1
 
