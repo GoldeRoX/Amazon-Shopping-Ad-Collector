@@ -22,8 +22,8 @@ class MyDriver(object):
                  automation_name="UiAutomator2", app_package="com.amazon.mShop.android.shopping",
                  app_activity="com.amazon.mShop.home.HomeActivity", device_name="emulator-5554",
                  uiautomator_2_server_launch_timeout=40000, ios_install_pause=8000,
-                 wda_startup_retry_interval=20000, new_command_timeout=20000, skip_device_initialization=False,
-                 skip_server_installation=False, no_reset=False, normalize_tag_names=True, udid="emulator-5554"):
+                 wda_startup_retry_interval=20000, new_command_timeout=20000, skip_device_initialization=True,
+                 skip_server_installation=True, no_reset=True, normalize_tag_names=True, udid="emulator-5554"):
 
         desired_caps = {
             "platformName": platform_name,
@@ -142,7 +142,7 @@ class MyDriver(object):
             xpath_menu = '//android.widget.ImageView[@content-desc="Menu. Contains your orders, ' \
                          'your account, shop by department, programs and features, settings, and' \
                          ' customer service Tab 4 of 4"]'
-            self.wait_for_element(By.XPATH, xpath_menu)
+            self.wait_for_element(By.XPATH, xpath_menu, time_to_wait=15)
             self.driver.find_element(By.XPATH, xpath_menu).click()
             is_settings_in_use = True
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
@@ -163,7 +163,7 @@ class MyDriver(object):
                               'android.view.ViewGroup[1]/android.view.ViewGroup/' \
                               'android.view.ViewGroup[2]/android.widget.TextView'
 
-                self.wait_for_element(By.XPATH, xpath_prime, time_to_wait=15)
+                self.wait_for_element(By.XPATH, xpath_prime, time_to_wait=60)
                 prime = self.driver.find_element(By.XPATH, xpath_prime)
 
                 if prime.get_attribute("text") == "Prime":
@@ -205,7 +205,7 @@ class MyDriver(object):
                                     'android.widget.ScrollView/android.view.ViewGroup/android.widget.ScrollView/' \
                                     'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/' \
                                     'android.view.ViewGroup/android.widget.Button'
-                self.wait_for_element(By.XPATH, xpath_setting_bar, time_to_wait=30)
+                self.wait_for_element(By.XPATH, xpath_setting_bar, time_to_wait=60)
                 self.driver.find_element(By.XPATH, xpath_setting_bar).click()
 
                 xpath_country_and_language = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
@@ -219,7 +219,7 @@ class MyDriver(object):
                                              'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/' \
                                              'android.view.ViewGroup/android.view.ViewGroup/android.view.View[' \
                                              '1]'
-                self.wait_for_element(By.XPATH, xpath_country_and_language, time_to_wait=15)
+                self.wait_for_element(By.XPATH, xpath_country_and_language, time_to_wait=60)
                 self.driver.find_element(By.XPATH, xpath_country_and_language).click()
 
                 xpath3 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
@@ -294,7 +294,7 @@ class MyDriver(object):
                              'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
                              'android.webkit.WebView/android.view.View[1]/android.view.View/android.view.View/' \
                              'android.view.View[14]/android.view.View[1]/android.widget.Button'
-            self.wait_for_element(By.XPATH, xpath_language, time_to_wait=5)
+            self.wait_for_element(By.XPATH, xpath_language, time_to_wait=15)
             language_button = self.driver.find_element(By.XPATH, xpath_language)
 
             xpath3 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
@@ -302,7 +302,7 @@ class MyDriver(object):
                      'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
                      'android.webkit.WebView/android.view.View[1]/android.view.View/android.view.View/' \
                      'android.view.View[11]/android.view.View[1]/android.widget.Button'
-            self.wait_for_element(By.XPATH, xpath3, time_to_wait=30)
+            self.wait_for_element(By.XPATH, xpath3, time_to_wait=60)
             country_and_region_button = self.driver.find_element(By.XPATH, xpath3)
 
             is_currency_set = currency_button.get_attribute("text") == "Währung: € - EUR - Euro"
@@ -319,7 +319,7 @@ class MyDriver(object):
                                          'android.view.View[1]/android.view.View/android.view.View/android.view.View[' \
                                          '24]/' \
                                          'android.view.View[1]/android.widget.Button'
-                self.wait_for_element(By.XPATH, xpath_confirm_settings, time_to_wait=5)
+                self.wait_for_element(By.XPATH, xpath_confirm_settings, time_to_wait=15)
                 self.driver.find_element(By.XPATH, xpath_confirm_settings).click()
         else:
             pass

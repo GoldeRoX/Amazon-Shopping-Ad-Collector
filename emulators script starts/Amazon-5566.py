@@ -4,5 +4,6 @@ if __name__ == "__main__":
     while True:
         try:
             main(55566)
-        except:
+        except Exception as e:
+            print(e)
             pass
