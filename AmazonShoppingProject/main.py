@@ -17,8 +17,12 @@ def main(udid: int):
     time.sleep(10)
     start_time = time.time()
 
-    # test
-    session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid))
+    try:
+        session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid))
+    except (WebDriverException, InvalidSessionIdException):
+        session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid),
+                           skip_device_initialization=False, skip_server_installation=False, no_reset=False)
+
     session.config_start()
     session.first_launch()
     session.change_lang_from_eng_to_de()
