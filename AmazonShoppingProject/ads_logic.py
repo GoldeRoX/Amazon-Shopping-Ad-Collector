@@ -238,10 +238,8 @@ class AdHandler(object):
         video_rawdata = self.driver.stop_recording_screen()
         video_name = str(db_id)
         filepath = os.path.join(f"{path}/{date_folder_name}", "test_" + video_name + ".mp4")
-
         with open(filepath, "wb+") as vd:
             vd.write(base64.b64decode(video_rawdata))
-
         os.system(
             f'ffmpeg -i {path}/{date_folder_name}/test_{video_name}.mp4 -vf "crop={video_ad_web_element.size["width"]}:'
             f'{video_ad_web_element.size["height"]}:{video_ad_web_element.location["x"]}:'

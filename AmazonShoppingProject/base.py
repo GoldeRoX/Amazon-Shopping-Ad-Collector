@@ -151,9 +151,7 @@ class MyDriver(object):
         if is_settings_in_use:
 
             try:
-                """
-                in case of a wrong currency ($) and correct lang
-                """
+                # in case of a wrong currency ($) and correct lang
 
                 xpath_prime = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
                               'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
