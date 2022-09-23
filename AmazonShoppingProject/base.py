@@ -174,7 +174,7 @@ class MyDriver(object):
 
                     xpath_settings = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
                                      'android.widget.FrameLayout/' \
-                                     'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
+                                     'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/'\
                                      'android.widget.ViewSwitcher/android.widget.FrameLayout/android.view.ViewGroup/' \
                                      'android.widget.ScrollView/android.view.ViewGroup/android.widget.ScrollView/' \
                                      'android.view.ViewGroup/android.view.ViewGroup[1]/android.view.ViewGroup/' \
@@ -214,13 +214,14 @@ class MyDriver(object):
                                              'android.view.ViewGroup/' \
                                              'android.widget.ScrollView/android.view.ViewGroup/' \
                                              'android.widget.ScrollView/' \
-                                             'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/' \
+                                             'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/'\
                                              'android.view.ViewGroup/android.view.ViewGroup/android.view.View[' \
                                              '1]'
                 self.wait_for_element(By.XPATH, xpath_country_and_language, time_to_wait=60)
                 self.driver.find_element(By.XPATH, xpath_country_and_language).click()
 
-                xpath3 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/' \
+                xpath3 = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
+                         'android.widget.FrameLayout/' \
                          'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
                          'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
                          'android.webkit.WebView/android.view.View[1]/android.view.View/android.view.View/' \
@@ -230,7 +231,8 @@ class MyDriver(object):
                 country_and_region_button.click()
 
                 xpath_region_germany = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                                       'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
+                                       'android.widget.FrameLayout/android.view.ViewGroup/' \
+                                       'android.widget.FrameLayout[2]/' \
                                        'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget' \
                                        '.RelativeLayout/' \
                                        'android.webkit.WebView/android.webkit.WebView/android.view.View[' \
@@ -269,7 +271,8 @@ class MyDriver(object):
                 currency_button.click()
 
                 xpath_currency_euro = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                                      'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
+                                      'android.widget.FrameLayout/' \
+                                      'android.view.ViewGroup/android.widget.FrameLayout[2]/' \
                                       'android.widget.FrameLayout/android.widget.RelativeLayout/' \
                                       'android.widget.RelativeLayout/' \
                                       'android.webkit.WebView/android.webkit.WebView/android.view.View[1]/' \
