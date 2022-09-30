@@ -11,9 +11,8 @@ from AmazonShoppingProject.base import *
 
 
 def main(udid: int):
-    pars = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://151.236.15.140:3128 -port {udid}")
-
-    p = subprocess.Popen(pars, cwd="/home/krzysztof/android-sdk/emulator")
+    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://151.236.15.140:3128 -port {udid}")
+    process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
     time.sleep(10)
     start_time = time.time()
 
@@ -22,6 +21,12 @@ def main(udid: int):
     except (WebDriverException, InvalidSessionIdException):
         session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid),
                            skip_device_initialization=False, skip_server_installation=False, no_reset=False)
+
+    close = session.driver.find_elements(By.ID, "android:id/aerr_close")
+    try:
+        close[0].click()
+    except:
+        pass
 
     session.config_start()
     session.first_launch()
@@ -43,6 +48,10 @@ def main(udid: int):
         previous_page_source = session.driver.page_source
 
         while not is_end_of_page:
+            try:
+                close[0].click()
+            except:
+                pass
             session.cookies_click()
             ad_handler.collect_video_ad(session_id, keyword_id)
             # ad_handler.collect_ad_type_4(session_id, keyword_id)
@@ -62,6 +71,7 @@ def main(udid: int):
         print("KeyboardInterrupt exception")
         sys.exit()
     finally:
-        p.terminate()
+        session.driver.quit()
+        process_emulator.terminate()
         print(f"end of session {session_id} : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("--- %s seconds running ---" % (time.time() - start_time))

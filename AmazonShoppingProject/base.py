@@ -174,7 +174,7 @@ class MyDriver(object):
 
                     xpath_settings = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
                                      'android.widget.FrameLayout/' \
-                                     'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/'\
+                                     'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
                                      'android.widget.ViewSwitcher/android.widget.FrameLayout/android.view.ViewGroup/' \
                                      'android.widget.ScrollView/android.view.ViewGroup/android.widget.ScrollView/' \
                                      'android.view.ViewGroup/android.view.ViewGroup[1]/android.view.ViewGroup/' \
@@ -214,7 +214,7 @@ class MyDriver(object):
                                              'android.view.ViewGroup/' \
                                              'android.widget.ScrollView/android.view.ViewGroup/' \
                                              'android.widget.ScrollView/' \
-                                             'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/'\
+                                             'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/' \
                                              'android.view.ViewGroup/android.view.ViewGroup/android.view.View[' \
                                              '1]'
                 self.wait_for_element(By.XPATH, xpath_country_and_language, time_to_wait=60)
