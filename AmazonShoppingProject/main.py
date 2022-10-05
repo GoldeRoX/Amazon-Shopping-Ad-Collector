@@ -56,8 +56,7 @@ def main(udid: int):
             ad_handler.collect_video_ad(session_id, keyword_id)
             # ad_handler.collect_ad_type_4(session_id, keyword_id)
             ad_handler.collect_ad_type_5(session_id, keyword_id)
-            # TODO
-            # naprawic problem z brakiem txt
+            # TODO naprawic problem z brakiem txt
             # ad_handler.collect_ad_type_1(session_id, keyword_id)
 
             session.scroll_down()
