@@ -2,7 +2,7 @@ import os
 import time
 
 import yaml
-from appium import webdriver  # import Appium-Python-Client 2.2.0
+from appium import webdriver # import Appium-Python-Client 2.2.0
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException, \
     StaleElementReferenceException
