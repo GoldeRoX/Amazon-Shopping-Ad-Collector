@@ -6,7 +6,6 @@ from selenium.common.exceptions import InvalidSessionIdException
 
 from AmazonShoppingProject.ads_logic import *
 from AmazonShoppingProject.database_connector import get_random_keyword
-
 from AmazonShoppingProject.base import *
 
 
