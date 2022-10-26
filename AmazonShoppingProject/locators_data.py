@@ -8,9 +8,9 @@ class ENG:
     ad_5_node = "//*[starts-with(@text,'Sponsored')]/parent::*"
     ad_5_starts_with = "Sponsored"
     ad_2_starts_with = "Sponsored ad from"
+    ad_7 = "//*[starts-with(@text, 'Sponsored ad from')]/parent::*/parent::*"
     # ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]"
     App_close = "android:id/aerr_close"
-
 
 
 class DE:
@@ -25,6 +25,7 @@ class DE:
     ad_2_starts_with = "Gesponserte Werbeanzeige von"
     ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]/parent::*/parent::*"
     App_schlieBen = "android:id/aerr_close"
+    ad_7 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
 
 
 

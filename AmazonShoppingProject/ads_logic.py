@@ -9,8 +9,7 @@ from datetime import datetime
 from appium.webdriver import WebElement
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.webdriver import WebDriver
-from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException, TimeoutException, \
-    InvalidElementStateException, WebDriverException
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
 
 from AmazonShoppingProject.Ad import Ad
@@ -42,7 +41,7 @@ class AdHandler(object):
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
                 print("ad \033[1;31;40mtype 1\033[0;0m \033[1;32;40mcollected\033[0;0m")
-        except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
+        except WebDriverException:
             pass
 
     def get_webelements_ads_2(self) -> [WebElement]:
@@ -54,6 +53,9 @@ class AdHandler(object):
                     self.lang.ad_2_starts_with):
                 webelements.append(element)
         return webelements
+
+    def get_webelements_ads_7(self) -> [WebElement]:
+        return self.driver.find_elements(By.XPATH, self.lang.ad_7)
 
     def collect_ad_type_2(self, session_id: int, keyword_id: int) -> None:
         """Create, send to DB and save scr of ad"""
@@ -76,7 +78,23 @@ class AdHandler(object):
                     print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text.strip() is not None:
                         self.ad_text_filter.append(ad.text)
-        except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
+        except WebDriverException:
+            pass
+
+    def collect_ad_type_7(self, session_id: int, keyword_id: int) -> None:
+        """Create, send to DB and save scr of ad"""
+        try:
+            ads_webelements = self.get_webelements_ads_7()
+            for i, web_element in enumerate(ads_webelements):
+
+                """create an object of ad"""
+                if web_element.get_attribute("text") not in self.ad_text_filter:
+                    ad = Ad(web_element, 2)
+                    self.save_ad(self.driver, session_id, ad, keyword_id)
+                    print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                    if ad.text.strip() is not None:
+                        self.ad_text_filter.append(ad.text)
+        except WebDriverException:
             pass
 
     def get_webelements_ads_1(self) -> [WebElement]:
@@ -109,18 +127,10 @@ class AdHandler(object):
         return ads
 
     def get_webelements_ads_4(self) -> [WebElement]:
-        try:
-            elements = self.driver.find_elements(By.XPATH, self.lang.ad_4_node)
-            return elements
-        except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
-            return []
+        return self.driver.find_elements(By.XPATH, self.lang.ad_4_node)
 
     def get_webelements_ads_5(self) -> [WebElement]:
-        try:
-            elements = self.driver.find_elements(By.XPATH, self.lang.ad_5_node)
-            return elements
-        except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
-            return []
+        return self.driver.find_elements(By.XPATH, self.lang.ad_5_node)
 
     def collect_ad_type_4(self, session_id: int, keyword_id: int):
         """Create, send to DB and save scr of ad"""
@@ -152,8 +162,7 @@ class AdHandler(object):
                                 if ad.text is not None:
                                     self.ad_text_filter.append(ad.text)
                     break
-        except (NoSuchElementException, TimeoutException, WebDriverException,
-                StaleElementReferenceException, InvalidElementStateException):
+        except WebDriverException:
             pass
 
     def collect_ad_type_5(self, session_id: int, keyword_id: int):
@@ -178,9 +187,7 @@ class AdHandler(object):
                         if ad.text is not None:
                             self.ad_text_filter.append(ad.text)
 
-        except (
-                NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException,
-                IndexError):
+        except (WebDriverException, IndexError):
             pass
 
     def save_cropped_scr_for_videos(self, ad: Ad, filename: str) -> None:
@@ -272,7 +279,7 @@ class AdHandler(object):
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
 
-        except (NoSuchElementException, TimeoutException, StaleElementReferenceException, WebDriverException):
+        except WebDriverException:
             pass
 
 

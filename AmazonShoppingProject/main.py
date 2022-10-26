@@ -17,9 +17,11 @@ def main(udid: int):
 
     try:
         session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid))
+        print("normal start")
     except (WebDriverException, InvalidSessionIdException):
         session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid),
                            skip_device_initialization=False, skip_server_installation=False, no_reset=False)
+        print("special start")
 
     close = session.driver.find_elements(By.ID, "android:id/aerr_close")
     try:
@@ -52,9 +54,10 @@ def main(udid: int):
             except:
                 pass
             session.cookies_click()
-            ad_handler.collect_video_ad(session_id, keyword_id)
+            ad_handler.collect_ad_type_7(session_id, keyword_id)
+            # ad_handler.collect_video_ad(session_id, keyword_id)
             # ad_handler.collect_ad_type_4(session_id, keyword_id)
-            ad_handler.collect_ad_type_5(session_id, keyword_id)
+            # ad_handler.collect_ad_type_5(session_id, keyword_id)
             # TODO naprawic problem z brakiem txt
             # ad_handler.collect_ad_type_1(session_id, keyword_id)
 

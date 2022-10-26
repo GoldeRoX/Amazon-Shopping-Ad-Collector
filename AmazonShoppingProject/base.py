@@ -129,8 +129,6 @@ class MyDriver(object):
         except NoSuchElementException:
             try:
                 web_elements2 = self.driver.find_elements(By.XPATH, "//*[starts-with(@text, 'Cookie')]")
-                for element in web_elements2:
-                    print(element.text)
 
                 web_elements2[-2].click()
             except (NoSuchElementException, IndexError, WebDriverException):
@@ -237,7 +235,7 @@ class MyDriver(object):
                                        '.RelativeLayout/' \
                                        'android.webkit.WebView/android.webkit.WebView/android.view.View[' \
                                        '1]/android.view.View/' \
-                                       'android.view.View[7]/android.widget.RadioButton[4]'
+                                       'android.view.View[7]/android.widget.RadioButton[5]'
 
                 self.wait_for_element(By.XPATH, xpath_region_germany, time_to_wait=60)
                 self.driver.find_element(By.XPATH, xpath_region_germany).click()
