@@ -41,33 +41,28 @@ def main(udid: int):
     keyword_id = keyword["id"]
 
     session.get_page(keyword["keyword"])
-
     try:
 
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
         previous_page_source = session.driver.page_source
 
+        ad_handler.collect_ad_type_7(session_id, keyword_id)
         while not is_end_of_page:
             try:
                 close[0].click()
             except:
                 pass
             session.cookies_click()
-            ad_handler.collect_ad_type_7(session_id, keyword_id)
-            # ad_handler.collect_video_ad(session_id, keyword_id)
-            # ad_handler.collect_ad_type_4(session_id, keyword_id)
-            # ad_handler.collect_ad_type_5(session_id, keyword_id)
-            # TODO naprawic problem z brakiem txt
-            # ad_handler.collect_ad_type_1(session_id, keyword_id)
+            ad_handler.collect_video_ad(session_id, keyword_id)
+            ad_handler.collect_ad_type_5(session_id, keyword_id)
+            # TODO naprawic problem z brakiem txt w reklamie 1 (baner)
 
             session.scroll_down()
 
             is_end_of_page = previous_page_source == session.driver.page_source
             previous_page_source = session.driver.page_source
 
-        # ad_handler.collect_ad_type_1(session_id, keyword_id)
-        # ad_handler.collect_ad_type_2(session_id, keyword_id)
     except KeyboardInterrupt:
         print("KeyboardInterrupt exception")
         sys.exit()

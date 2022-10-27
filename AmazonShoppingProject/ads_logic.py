@@ -85,17 +85,20 @@ class AdHandler(object):
         """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_7()
-            for i, web_element in enumerate(ads_webelements):
+            for webElement in ads_webelements:
+                if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
+                    result_text = self.driver.find_element(By.XPATH, "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]").get_attribute("text")
 
-                """create an object of ad"""
-                if web_element.get_attribute("text") not in self.ad_text_filter:
-                    ad = Ad(web_element, 2)
+                    """create ad object"""
+                    print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
+                    ad = Ad(webElement, 7)
+                    ad.text = result_text
                     self.save_ad(self.driver, session_id, ad, keyword_id)
-                    print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                    if ad.text.strip() is not None:
+                    print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                    if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
-        except WebDriverException:
-            pass
+        except Exception as e:
+            print(e)
 
     def get_webelements_ads_1(self) -> [WebElement]:
         webelements = []
@@ -288,7 +291,6 @@ class AdjustAd(object):
     def __init__(self, driver):
         self.driver = driver
 
-    # samsung s20
     # TODO remake and repair match_ad_visibility(). It must adjust with windowed architecture of the site
     def match_ad_visibility(self, web_element: WebElement):
         if web_element.size["height"] > 10 and web_element.size["width"] > 10:
