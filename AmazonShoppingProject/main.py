@@ -23,11 +23,7 @@ def main(udid: int):
                            skip_device_initialization=False, skip_server_installation=False, no_reset=False)
         print("special start")
 
-    close = session.driver.find_elements(By.ID, "android:id/aerr_close")
-    try:
-        close[0].click()
-    except:
-        pass
+    session.amazon_not_responding_close()
 
     session.config_start()
     session.first_launch()
@@ -43,16 +39,15 @@ def main(udid: int):
     session.get_page(keyword["keyword"])
     try:
 
+        session.amazon_not_responding_close()
+        session.cookies_click()
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
         previous_page_source = session.driver.page_source
 
         ad_handler.collect_ad_type_7(session_id, keyword_id)
         while not is_end_of_page:
-            try:
-                close[0].click()
-            except:
-                pass
+            session.amazon_not_responding_close()
             session.cookies_click()
             ad_handler.collect_video_ad(session_id, keyword_id)
             ad_handler.collect_ad_type_5(session_id, keyword_id)

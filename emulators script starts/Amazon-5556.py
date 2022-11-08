@@ -6,4 +6,3 @@ if __name__ == "__main__":
             main(5556)
         except Exception as e:
             print(e)
-            pass

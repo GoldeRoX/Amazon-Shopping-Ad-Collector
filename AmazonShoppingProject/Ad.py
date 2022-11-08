@@ -14,7 +14,8 @@ class Ad(object):
     text: str
     timestamp: str
     ad_type: int
-    price: str = None
+    emulator: int
+    host_ip: str
 
     def __init__(self, element: WebElement, ad_type: int):
         self.width = element.size["width"]

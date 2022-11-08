@@ -1,4 +1,4 @@
-class ENG:
+class ENG(object):
     search_icon = '(//android.widget.LinearLayout[@content-desc="Search"])[1]/android.widget.LinearLayout/android.widget.TextView '
     search_input = 'com.amazon.mShop.android.shopping:id/rs_search_src_text'
     BOTTOM_AD = "//*[@text='Leave feedback on Sponsored ad']/parent::*/parent::*"
@@ -9,11 +9,12 @@ class ENG:
     ad_5_starts_with = "Sponsored"
     ad_2_starts_with = "Sponsored ad from"
     ad_7 = "//*[starts-with(@text, 'Sponsored ad from')]/parent::*/parent::*"
+    ad_7_alt_1 = "//*[starts-with(@text, 'Sponsored ad from')]/parent::*"
     # ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]"
     App_close = "android:id/aerr_close"
 
 
-class DE:
+class DE(object):
     search_icon = '//android.widget.LinearLayout[@content-desc="Suche"]'
     search_input = 'com.amazon.mShop.android.shopping:id/rs_search_src_text'
     BOTTOM_AD = "//*[@text='Feedback zur gesponserten Werbeanzeige geben']/parent::*/parent::*"
@@ -26,6 +27,7 @@ class DE:
     ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]/parent::*/parent::*"
     App_schlieBen = "android:id/aerr_close"
     ad_7 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
+    ad_7_alt_1 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*"
 
 
 
