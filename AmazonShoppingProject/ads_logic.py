@@ -25,19 +25,19 @@ class AdHandler(object):
         self.lang = lang
 
     @staticmethod
-    def save_ad(driver, session_id: int, ad: Ad, keyword_id):
+    def save_ad(driver, session_id: int, ad: Ad, keyword_id, udid: int):
         Manager = SQLAdManager()
         Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                ad.ad_type, session_id, keyword_id)
+                                ad.ad_type, session_id, keyword_id, udid)
         save_cropped_scr(driver, ad, str(Manager.get_last_saved_id_from_db()))
 
-    def collect_ad_type_1(self, session_id: int, keyword_id: int) -> None:
+    def collect_ad_type_1(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
             ads_list = self.collect_ads_1()
             for ad in ads_list:
                 print("collecting ad \033[1;31;40mtype 1\033[0;0m ...")
-                self.save_ad(self.driver, session_id, ad, keyword_id)
+                self.save_ad(self.driver, session_id, ad, keyword_id, udid)
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
                 print("ad \033[1;31;40mtype 1\033[0;0m \033[1;32;40mcollected\033[0;0m")
@@ -50,7 +50,7 @@ class AdHandler(object):
     def get_webelements_ads_7(self) -> [WebElement]:
         return self.driver.find_elements(MobileBy.XPATH, self.lang.ad_7)
 
-    def collect_ad_type_2(self, session_id: int, keyword_id: int) -> None:
+    def collect_ad_type_2(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send to DB and save scr of ad"""
         # TODO naprawic i wprowadzic do systemu
         try:
@@ -79,14 +79,14 @@ class AdHandler(object):
                         """create an object of ad"""
                         if web_element.get_attribute("text") not in self.ad_text_filter:
                             ad = Ad(web_element, 2)
-                            self.save_ad(self.driver, session_id, ad, keyword_id)
+                            self.save_ad(self.driver, session_id, ad, keyword_id, udid)
                             print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
                             if ad.text.strip() is not None:
                                 self.ad_text_filter.append(ad.text)
         except WebDriverException:
             pass
 
-    def collect_ad_type_7(self, session_id: int, keyword_id: int) -> None:
+    def collect_ad_type_7(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_7()
@@ -98,14 +98,14 @@ class AdHandler(object):
                     print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
                     ad = Ad(webElement, 7)
                     ad.text = result_text
-                    self.save_ad(self.driver, session_id, ad, keyword_id)
+                    self.save_ad(self.driver, session_id, ad, keyword_id, udid)
                     print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
         except Exception as e:
             print(e)
 
-    def collect_ad_type_8(self, session_id: int, keyword_id: int) -> None:
+    def collect_ad_type_8(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create ad type 8 | the same type of ad type 7 (type 7 is only for TOP presenting),
         send to DB and save scr of ad"""
         try:
@@ -119,7 +119,7 @@ class AdHandler(object):
                     print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
                     ad = Ad(webElement, 8)
                     ad.text = result_text
-                    self.save_ad(self.driver, session_id, ad, keyword_id)
+                    self.save_ad(self.driver, session_id, ad, keyword_id, udid)
                     print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
@@ -161,7 +161,7 @@ class AdHandler(object):
     def get_webelements_ads_5(self) -> [WebElement]:
         return self.driver.find_elements(MobileBy.XPATH, self.lang.ad_5_node)
 
-    def collect_ad_type_4(self, session_id: int, keyword_id: int):
+    def collect_ad_type_4(self, session_id: int, keyword_id: int, udid: int):
         """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_4()
@@ -186,7 +186,7 @@ class AdHandler(object):
                             ad = Ad(web_element, 4)
                             ad.text = text
                             if ad.width > 300 and ad.height > 300:
-                                self.save_ad(self.driver, session_id, ad, keyword_id)
+                                self.save_ad(self.driver, session_id, ad, keyword_id, udid)
                                 print("ad \033[1;31;40mtype 4\033[0;0m \033[1;32;40mcollected\033[0;0m")
                                 if ad.text is not None:
                                     self.ad_text_filter.append(ad.text)
@@ -194,7 +194,7 @@ class AdHandler(object):
         except WebDriverException:
             pass
 
-    def collect_ad_type_5(self, session_id: int, keyword_id: int):
+    def collect_ad_type_5(self, session_id: int, keyword_id: int, udid: int):
         """Create, send to DB and save scr of ad"""
         try:
             ads_webelements = self.get_webelements_ads_5()
@@ -211,7 +211,7 @@ class AdHandler(object):
                         print("collecting ad \033[1;31;40mtype 5\033[0;0m ...")
                         ad = Ad(webElement, 5)
                         ad.text = result_text
-                        self.save_ad(self.driver, session_id, ad, keyword_id)
+                        self.save_ad(self.driver, session_id, ad, keyword_id, udid)
                         print("ad \033[1;31;40mtype 5\033[0;0m \033[1;32;40mcollected\033[0;0m")
                         if ad.text is not None:
                             self.ad_text_filter.append(ad.text)
@@ -282,7 +282,7 @@ class AdHandler(object):
             f'{video_ad_web_element.location["y"]}" {path}/{date_folder_name}/{video_name}.mp4')
         os.system(f"unlink {path}/{date_folder_name}/test_{video_name}.mp4")
 
-    def collect_video_ad(self, session_id: int, keyword_id: int):
+    def collect_video_ad(self, session_id: int, keyword_id: int, udid: int):
         """Collecting video, scr and modified scr for ad of type 6 - video_ad"""
         try:
             video_ad_web_element = self.driver.find_element(MobileBy.XPATH, self.lang.ad_video)
@@ -300,7 +300,7 @@ class AdHandler(object):
 
                 Manager = SQLAdManager()
                 Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                        ad.ad_type, session_id, keyword_id)
+                                        ad.ad_type, session_id, keyword_id, udid)
 
                 self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
                 self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)

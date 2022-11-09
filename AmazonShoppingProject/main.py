@@ -36,8 +36,7 @@ def main(udid: int):
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
 
-    # session.get_page(keyword["keyword"])
-    session.get_page("minecraft")
+    session.get_page(keyword["keyword"])
     try:
 
         session.amazon_not_responding_close()
@@ -46,15 +45,15 @@ def main(udid: int):
         is_end_of_page = False
         previous_page_source = session.driver.page_source
 
-        ad_handler.collect_ad_type_7(session_id, keyword_id)
+        ad_handler.collect_ad_type_7(session_id, keyword_id, udid)
         while not is_end_of_page:
             session.amazon_not_responding_close()
             session.cookies_click()
-            # ad_handler.collect_video_ad(session_id, keyword_id)
-            ad_handler.collect_ad_type_5(session_id, keyword_id)
-            ad_handler.collect_ad_type_8(session_id, keyword_id)
-            ad_handler.collect_ad_type_2(session_id, keyword_id)
-            # TODO naprawic problem z brakiem txt w reklamie 1 (baner)
+            ad_handler.collect_video_ad(session_id, keyword_id, udid)
+            ad_handler.collect_ad_type_5(session_id, keyword_id, udid)
+            ad_handler.collect_ad_type_8(session_id, keyword_id, udid)
+            # ad_handler.collect_ad_type_2(session_id, keyword_id)
+            # TODO naprawic problem z brakiem txt w reklamie 1 (banner)
 
             session.scroll_down()
 

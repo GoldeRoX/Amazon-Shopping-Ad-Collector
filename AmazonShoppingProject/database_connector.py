@@ -65,7 +65,7 @@ class SQLAdManager(object):
         self.data_set_id = str(c.lastrowid)
 
     def update_query(self, width: int, height: int, location_x: int, location_y: int, text: str,
-                     timestamp: str, id_ad_type: int, id_session: int, keyword_id: int):
+                     timestamp: str, id_ad_type: int, id_session: int, keyword_id: int, udid: int):
         query_update = f"""
                 UPDATE ads_meta_data
                 SET filename = '{self.data_set_id + ".png"}', 
@@ -77,7 +77,8 @@ class SQLAdManager(object):
                 timestamp = %s, 
                 id_ad_type = %s, 
                 id_session = %s,
-                keyword_id = %s
+                keyword_id = %s,
+                id_emulator = %s
                 WHERE id = {self.data_set_id};
                 """
         with cursor(**db_credentials) as c:
@@ -86,12 +87,12 @@ class SQLAdManager(object):
 
             c.execute(
                 query_update,
-                (width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, keyword_id)
+                (width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, keyword_id, udid)
             )
 
-    def send_data_to_db(self, width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id):
+    def send_data_to_db(self, width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id, udid):
         self.insert_empty_query()
-        self.update_query(width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id)
+        self.update_query(width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id, udid)
 
     def get_last_saved_id_from_db(self) -> int:
         return self.data_set_id
