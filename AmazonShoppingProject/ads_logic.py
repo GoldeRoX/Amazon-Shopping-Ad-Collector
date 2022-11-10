@@ -116,11 +116,11 @@ class AdHandler(object):
                     AdjustAd(self.driver).match_ad_visibility(webElement)
 
                     """create ad object"""
-                    print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
+                    print("collecting ad \033[1;31;40mtype 8\033[0;0m ...")
                     ad = Ad(webElement, 8)
                     ad.text = result_text
                     self.save_ad(self.driver, session_id, ad, keyword_id, udid)
-                    print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                    print("ad \033[1;31;40mtype 8\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
         except Exception as e:

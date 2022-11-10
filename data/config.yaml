@@ -1,11 +1,18 @@
 APP:
   LANG: "DE" # options: DE / ENG
 
+#DATABASE:
+#  USERNAME: "root"
+#  PASSWORD: ""
+#  HOST: "127.0.0.1"
+#  DB: "Amazon_ads"
+#  CHARSET: 'utf8mb4'
+
 DATABASE:
-  USERNAME: "root"
-  PASSWORD: ""
-  HOST: "127.0.0.1"
-  DB: "Amazon_ads"
+  USERNAME: "krzysiek"
+  PASSWORD: "ndXs5RzCCPot90Se"
+  HOST: "10.10.10.19"
+  DB: "amazon_krzysiek"
   CHARSET: 'utf8mb4'
 
 #db_credentials = {
@@ -17,5 +24,5 @@ DATABASE:
 #}
 
 COMPUTER:
-  IP: "127.0.0.1"
-  SAVE_PATH: "/home/krzysztof/nfs/Screenshots"
+  IP: "2"
+  SAVE_PATH: "/nfs/Screenshots"
