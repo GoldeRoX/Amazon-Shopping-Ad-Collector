@@ -7,6 +7,7 @@ from typing import (
     ContextManager,
 )
 import yaml
+import os
 
 
 @contextlib.contextmanager
@@ -33,7 +34,9 @@ def cursor(*args, **kwargs) -> ContextManager[Cursor]:
             cur.close()
 
 
-with open("../data/config.yaml", "r") as file:
+PATH = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
+
+with open(PATH, "r") as file:
     config = yaml.safe_load(file)
 
 db_credentials = {
@@ -117,6 +120,8 @@ def get_random_keyword() -> {}:
     Returns:
         returns a dictionary (id, keyword) of random keyword from database
     """
+
+
 
     query = """
         SELECT id, keyword FROM keywords

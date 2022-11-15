@@ -12,9 +12,9 @@ from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import WebDriverException
 
-from AmazonShoppingProject.Ad import Ad
-from AmazonShoppingProject.base import save_cropped_scr
-from AmazonShoppingProject.database_connector import SQLAdManager
+from amazonadcollector.Ad import Ad
+from amazonadcollector.base import save_cropped_scr
+from amazonadcollector.database_connector import SQLAdManager
 
 
 class AdHandler(object):
@@ -24,12 +24,11 @@ class AdHandler(object):
         self.ad_text_filter = []
         self.lang = lang
 
-    @staticmethod
-    def save_ad(driver, session_id: int, ad: Ad, keyword_id, udid: int):
+    def save_ad(self, session_id: int, ad: Ad, keyword_id, udid: int):
         Manager = SQLAdManager()
         Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
                                 ad.ad_type, session_id, keyword_id, udid)
-        save_cropped_scr(driver, ad, str(Manager.get_last_saved_id_from_db()))
+        save_cropped_scr(self.driver, ad, str(Manager.get_last_saved_id_from_db()))
 
     def collect_ad_type_1(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send to DB and save scr of ad"""
@@ -37,7 +36,7 @@ class AdHandler(object):
             ads_list = self.collect_ads_1()
             for ad in ads_list:
                 print("collecting ad \033[1;31;40mtype 1\033[0;0m ...")
-                self.save_ad(self.driver, session_id, ad, keyword_id, udid)
+                self.save_ad(session_id, ad, keyword_id, udid)
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
                 print("ad \033[1;31;40mtype 1\033[0;0m \033[1;32;40mcollected\033[0;0m")
@@ -79,7 +78,7 @@ class AdHandler(object):
                         """create an object of ad"""
                         if web_element.get_attribute("text") not in self.ad_text_filter:
                             ad = Ad(web_element, 2)
-                            self.save_ad(self.driver, session_id, ad, keyword_id, udid)
+                            self.save_ad(session_id, ad, keyword_id, udid)
                             print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
                             if ad.text.strip() is not None:
                                 self.ad_text_filter.append(ad.text)
@@ -98,7 +97,7 @@ class AdHandler(object):
                     print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
                     ad = Ad(webElement, 7)
                     ad.text = result_text
-                    self.save_ad(self.driver, session_id, ad, keyword_id, udid)
+                    self.save_ad(session_id, ad, keyword_id, udid)
                     print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
@@ -119,7 +118,7 @@ class AdHandler(object):
                     print("collecting ad \033[1;31;40mtype 8\033[0;0m ...")
                     ad = Ad(webElement, 8)
                     ad.text = result_text
-                    self.save_ad(self.driver, session_id, ad, keyword_id, udid)
+                    self.save_ad(session_id, ad, keyword_id, udid)
                     print("ad \033[1;31;40mtype 8\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
@@ -186,7 +185,7 @@ class AdHandler(object):
                             ad = Ad(web_element, 4)
                             ad.text = text
                             if ad.width > 300 and ad.height > 300:
-                                self.save_ad(self.driver, session_id, ad, keyword_id, udid)
+                                self.save_ad(session_id, ad, keyword_id, udid)
                                 print("ad \033[1;31;40mtype 4\033[0;0m \033[1;32;40mcollected\033[0;0m")
                                 if ad.text is not None:
                                     self.ad_text_filter.append(ad.text)
@@ -211,7 +210,7 @@ class AdHandler(object):
                         print("collecting ad \033[1;31;40mtype 5\033[0;0m ...")
                         ad = Ad(webElement, 5)
                         ad.text = result_text
-                        self.save_ad(self.driver, session_id, ad, keyword_id, udid)
+                        self.save_ad(session_id, ad, keyword_id, udid)
                         print("ad \033[1;31;40mtype 5\033[0;0m \033[1;32;40mcollected\033[0;0m")
                         if ad.text is not None:
                             self.ad_text_filter.append(ad.text)

@@ -4,9 +4,14 @@ import sys
 
 from selenium.common.exceptions import InvalidSessionIdException
 
-from AmazonShoppingProject.ads_logic import *
-from AmazonShoppingProject.database_connector import get_random_keyword
-from AmazonShoppingProject.base import *
+from amazonadcollector.ads_logic import SQLAdManager, AdHandler
+from amazonadcollector.database_connector import get_random_keyword
+from amazonadcollector.base import MyDriver
+from selenium.common.exceptions import WebDriverException
+from datetime import datetime
+import time
+
+from amazonadcollector.locators_data import DE
 
 
 def main(udid: int):
