@@ -27,7 +27,4 @@ class DE(object):
     ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]/parent::*/parent::*"
     App_schlieBen = "android:id/aerr_close"
     ad_7 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
-    ad_7_alt_1 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*"
-
-
-
+    ad_8 = "//*[starts-with(@content-desc, 'Gesponserte Werbeanzeige von')]"

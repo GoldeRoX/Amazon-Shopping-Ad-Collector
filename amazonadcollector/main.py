@@ -6,7 +6,7 @@ from selenium.common.exceptions import InvalidSessionIdException
 
 from amazonadcollector.ads_logic import SQLAdManager, AdHandler
 from amazonadcollector.database_connector import get_random_keyword
-from amazonadcollector.base import MyDriver
+from amazonadcollector.base import MyDriver, BaseMethods
 from selenium.common.exceptions import WebDriverException
 from datetime import datetime
 import time
@@ -15,7 +15,8 @@ from amazonadcollector.locators_data import DE
 
 
 def main(udid: int):
-    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://151.236.15.140:3128 -port {udid}")
+
+    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://151.236.17.155:3128 -port {udid}")
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
     time.sleep(10)
     start_time = time.time()
@@ -28,11 +29,12 @@ def main(udid: int):
                            skip_device_initialization=False, skip_server_installation=False, no_reset=False)
         print("special start")
 
-    session.amazon_not_responding_close()
+    base_methods = BaseMethods(session.driver)
+    base_methods.amazon_not_responding_close()
 
-    session.config_start()
-    session.first_launch()
-    session.change_lang_from_eng_to_de()
+    base_methods.config_start()
+    base_methods.first_launch()
+    base_methods.change_lang_from_eng_to_de()
 
     session_id = SQLAdManager().get_last_saved_session_id_from_db() + 1
 
@@ -41,26 +43,29 @@ def main(udid: int):
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
 
-    session.get_page(keyword["keyword"])
+    # session.get_page(keyword["keyword"])
+    base_methods.get_page("Monitors")
     try:
 
-        session.amazon_not_responding_close()
-        session.cookies_click()
+        new_udid = 1
+
+        base_methods.amazon_not_responding_close()
+        base_methods.cookies_click()
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
         previous_page_source = session.driver.page_source
 
-        ad_handler.collect_ad_type_7(session_id, keyword_id, udid)
+        ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_8(session_id, keyword_id, new_udid)
         while not is_end_of_page:
-            session.amazon_not_responding_close()
-            session.cookies_click()
-            ad_handler.collect_video_ad(session_id, keyword_id, udid)
-            ad_handler.collect_ad_type_5(session_id, keyword_id, udid)
-            # ad_handler.collect_ad_type_8(session_id, keyword_id, udid)
-            ad_handler.collect_ad_type_2(session_id, keyword_id, udid)
+            base_methods.amazon_not_responding_close()
+            base_methods.cookies_click()
+            # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
+            ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
+            ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
             # TODO naprawic problem z brakiem txt w reklamie 1 (banner)
 
-            session.scroll_down()
+            base_methods.scroll_down()
 
             is_end_of_page = previous_page_source == session.driver.page_source
             previous_page_source = session.driver.page_source

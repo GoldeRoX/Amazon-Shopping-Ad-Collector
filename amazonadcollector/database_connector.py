@@ -39,6 +39,7 @@ PATH = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
 with open(PATH, "r") as file:
     config = yaml.safe_load(file)
 
+
 db_credentials = {
     'host': config["DATABASE"]["HOST"],
     'database': config["DATABASE"]["DB"],
@@ -58,9 +59,9 @@ class SQLAdManager(object):
                         INSERT INTO 
                             ads_meta_data
                             (filename, width, height, location_x, location_y, text, 
-                            timestamp, id_ad_type, id_session)
+                            timestamp, id_ad_type, id_session, keyword_id, id_host_ip, id_emulator)
                         VALUES
-                            (0, 0, 0, 0, 0, 0, 0, 0, 0);
+                            (0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL);
                         """
 
         with cursor(**db_credentials) as c:
@@ -120,8 +121,6 @@ def get_random_keyword() -> {}:
     Returns:
         returns a dictionary (id, keyword) of random keyword from database
     """
-
-
 
     query = """
         SELECT id, keyword FROM keywords

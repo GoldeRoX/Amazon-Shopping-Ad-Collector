@@ -9,6 +9,7 @@ from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException, \
     StaleElementReferenceException
 from selenium.webdriver.common.by import By
+from appium.webdriver.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
@@ -46,6 +47,12 @@ class MyDriver(object):
         }
         self.driver = webdriver.Remote(command_executor="http://localhost:4723/wd/hub",
                                        desired_capabilities=desired_caps)
+
+
+class BaseMethods(object):
+
+    def __init__(self, driver):
+        self.driver: WebDriver = driver
 
     def wait_for_element(self, by_type, path: str, time_to_wait: int = 5) -> None:
         WebDriverWait(self.driver, time_to_wait).until(
@@ -102,7 +109,7 @@ class MyDriver(object):
         try:
             close = self.driver.find_elements(By.ID, "android:id/aerr_close")
             close[0].click()
-        except IndexError:
+        except (IndexError, WebDriverException):
             pass
 
     def scroll_down(self, y: int = 600) -> None:
@@ -237,11 +244,10 @@ class MyDriver(object):
         self.driver.find_element(By.XPATH, xpath_country_and_language).click()
 
         country_region = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                         'android.widget.FrameLayout/' \
-                         'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
-                         'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
-                         'android.webkit.WebView/android.view.View[1]/android.view.View/android.view.View/' \
-                         'android.view.View[11]/android.view.View[1]/android.widget.Button'
+                         'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
+                         'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
+                         'android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/' \
+                         'android.view.View/android.view.View[1]/android.widget.Button'
         self.wait_for_element(By.XPATH, country_region, time_to_wait=30)
         country_and_region_button = self.driver.find_element(By.XPATH, country_region)
         country_and_region_button.click()
@@ -251,36 +257,30 @@ class MyDriver(object):
                                                   "android.widget.FrameLayout/android.view.ViewGroup/"
                                                   "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
                                                   "android.widget.RelativeLayout/android.widget.RelativeLayout/"
-                                                  "android.webkit.WebView/android.webkit.WebView/android.view.View[1]/"
-                                                  "android.view.View/android.view.View[7]/"
-                                                  "android.widget.RadioButton[5]", time_to_wait=60)
+                                                  "android.webkit.WebView/android.webkit.WebView/android.view.View/"
+                                                  "android.view.View/android.view.View/android.widget.RadioButton[5]", time_to_wait=60)
             webElement_region_germany = self.driver.find_element(MobileBy.XPATH,
                                                                  "/hierarchy/android.widget.FrameLayout/"
-                                                                 "android.widget.LinearLayout/"
-                                                                 "android.widget.FrameLayout/"
-                                                                 "android.view.ViewGroup/"
+                                                                 "android.widget.LinearLayout/android.widget."
+                                                                 "FrameLayout/android.view.ViewGroup/"
                                                                  "android.widget.FrameLayout[2]/"
                                                                  "android.widget.FrameLayout/"
                                                                  "android.widget.RelativeLayout/"
                                                                  "android.widget.RelativeLayout/"
-                                                                 "android.webkit.WebView/"
-                                                                 "android.webkit.WebView/"
-                                                                 "android.view.View[1]/"
-                                                                 "android.view.View/"
-                                                                 "android.view.View[7]/"
-                                                                 "android.widget.RadioButton[5]")
+                                                                 "android.webkit.WebView/android.webkit.WebView/"
+                                                                 "android.view.View/android.view.View/"
+                                                                 "android.view.View/android.widget.RadioButton[5]")
             webElement_region_germany.click()
 
         except WebDriverException:
             # TODO change to logs
             print("ERROR in the country/regions button settings (stage 1)!")
 
-        xpath_language = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget' \
-                         '.FrameLayout/' \
-                         'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
-                         'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
-                         'android.webkit.WebView/android.view.View[1]/android.view.View/android.view.View/' \
-                         'android.view.View[14]/android.view.View[1]/android.widget.Button'
+        xpath_language = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
+                         'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
+                         'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
+                         'android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/' \
+                         'android.view.View/android.view.View[2]/android.widget.Button'
         self.wait_for_element(MobileBy.XPATH, xpath_language, time_to_wait=60)
         language_button = self.driver.find_element(MobileBy.XPATH, xpath_language)
         language_button.click()
@@ -298,12 +298,11 @@ class MyDriver(object):
 
         language_button.click()
 
-        xpath_currency = '/hierarchy/android.widget.FrameLayout/' \
-                         'android.widget.LinearLayout/android.widget.FrameLayout/' \
-                         'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
-                         'android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/' \
-                         'android.webkit.WebView/android.view.View[1]/android.view.View/android.view.View/' \
-                         'android.view.View[17]/android.view.View[1]/android.widget.Button'
+        xpath_currency = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
+                         'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
+                         'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
+                         'android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/' \
+                         'android.view.View/android.view.View[3]/android.widget.Button'
         self.wait_for_element(By.XPATH, xpath_currency, time_to_wait=60)
         currency_button = self.driver.find_element(By.XPATH, xpath_currency)
         if currency_button.get_attribute("text") == "€ - EUR - Euro":
@@ -322,7 +321,8 @@ class MyDriver(object):
 
 
 def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
-    with open("../data/config.yaml", "r") as file:
+    PATH = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
+    with open(PATH, "r") as file:
         config = yaml.safe_load(file)
     date_folder_name = datetime.now().strftime("%Y-%m-%d")
 

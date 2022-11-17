@@ -5,3 +5,8 @@ sudo apt-get install python-dev libmysqlclient-dev
 pip install PyYAML==6.0
 pip install Appium-Python-Client==2.2.0
 sudo apt install ffmpeg   ###Installing FFmpeg on Ubuntu###
+
+
+
+
+session = MyDriver(udid="emulator-" + str(5554), device_name="emulator-" + str(5554))

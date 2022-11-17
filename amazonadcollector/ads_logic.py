@@ -10,7 +10,7 @@ from appium.webdriver import WebElement
 from appium.webdriver.common.mobileby import MobileBy
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.webdriver import WebDriver
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, NoSuchElementException
 
 from amazonadcollector.Ad import Ad
 from amazonadcollector.base import save_cropped_scr
@@ -91,7 +91,9 @@ class AdHandler(object):
             ads_webelements = self.get_webelements_ads_7()
             for webElement in ads_webelements:
                 if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                    result_text = self.driver.find_element(MobileBy.XPATH, "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]").get_attribute("text")
+                    result_text = self.driver.find_element(MobileBy.XPATH,
+                                                           "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]").get_attribute(
+                        "text")
 
                     """create ad object"""
                     print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
@@ -104,26 +106,41 @@ class AdHandler(object):
         except Exception as e:
             print(e)
 
+    def get_webelements_ads_8(self) -> [WebElement]:
+        return self.driver.find_elements(MobileBy.XPATH, self.lang.ad_8)
+
     def collect_ad_type_8(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create ad type 8 | the same type of ad type 7 (type 7 is only for TOP presenting),
         send to DB and save scr of ad"""
-        try:
-            ads_webelements = self.get_webelements_ads_7()
-            for webElement in ads_webelements:
-                result_text = self.driver.find_element(MobileBy.XPATH, "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]").get_attribute("text")
-                if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search" and result_text not in self.ad_text_filter:
-                    AdjustAd(self.driver).match_ad_visibility(webElement)
 
-                    """create ad object"""
-                    print("collecting ad \033[1;31;40mtype 8\033[0;0m ...")
-                    ad = Ad(webElement, 8)
-                    ad.text = result_text
-                    self.save_ad(session_id, ad, keyword_id, udid)
-                    print("ad \033[1;31;40mtype 8\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                    if ad.text is not None:
-                        self.ad_text_filter.append(ad.text)
-        except Exception as e:
-            print(e)
+        print("start type_8")
+        ads_webelements = self.get_webelements_ads_8()
+        for webElement in ads_webelements:
+
+            result_text: str = webElement.get_attribute('content-desc')  # to byc dobre
+            print(result_text)
+
+            element_1_gesponsert: WebElement = webElement.find_element(MobileBy.XPATH,
+                                                                       ".//following-sibling::*/following-sibling::*")
+            element_1_gesponsert_text: str = element_1_gesponsert.get_attribute("text")
+            print(element_1_gesponsert_text)
+
+            element_2_Jetzt_einkaufen: WebElement = element_1_gesponsert.find_element(
+                ".//following-sibling::*/following-sibling::*/child::*/following-sibling::*/child::*")
+            element_2_Jetzt_einkaufen_text: str = element_2_Jetzt_einkaufen.get_attribute('content-desc')
+            print(element_2_Jetzt_einkaufen_text)
+
+            if webElement.size["height"] > 10 and result_text not in self.ad_text_filter:
+
+                """create ad object"""
+                print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
+                ad = Ad(webElement, 7)
+                ad.text = result_text
+                self.save_ad(session_id, ad, keyword_id, udid)
+                print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                if ad.text is not None:
+                    self.ad_text_filter.append(ad.text)
+
 
     def get_webelements_ads_1(self) -> [WebElement]:
         webelements = []
@@ -219,7 +236,8 @@ class AdHandler(object):
             pass
 
     def save_cropped_scr_for_videos(self, ad: Ad, filename: str) -> None:
-        with open("../data/config.yaml", "r") as file:
+        PATH: str = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
+        with open(PATH, "r") as file:
             config = yaml.safe_load(file)
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
@@ -248,8 +266,8 @@ class AdHandler(object):
         new_img = cv2.imread(image_path)
 
         test = cv2.rectangle(new_img, (video_element.location["x"], video_element.location["y"]),
-                             (video_element.location["x"]+video_element.size["width"],
-                              video_element.location["y"]+video_element.size["height"]), (0, 0, 0), -1)
+                             (video_element.location["x"] + video_element.size["width"],
+                              video_element.location["y"] + video_element.size["height"]), (0, 0, 0), -1)
         cropped_image = test[
                         ad.location_y:ad.location_y + ad.height,
                         ad.location_x:ad.location_x + ad.width
@@ -261,7 +279,9 @@ class AdHandler(object):
             pass
 
     def create_and_crop_video(self, video_ad_web_element: WebElement, db_id: int):
-        with open("../data/config.yaml", "r") as file:
+
+        PATH = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
+        with open(PATH, "r") as file:
             config = yaml.safe_load(file)
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
@@ -307,8 +327,8 @@ class AdHandler(object):
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
 
-        except WebDriverException:
-            pass
+        except Exception as e:
+            print(e)
 
 
 class AdjustAd(object):
