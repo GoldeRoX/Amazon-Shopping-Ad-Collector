@@ -17,7 +17,7 @@ from amazonadcollector.locators_data import DE
 def main(udid: int):
 
     pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://151.236.17.155:3128 -port {udid}")
-    process_emulator = subprocess.Popen(pars_emulator, cwd="/home/user/android-sdk/emulator")
+    process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
     time.sleep(10)
     start_time = time.time()
 
@@ -43,8 +43,8 @@ def main(udid: int):
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
 
-    base_methods.get_page(keyword["keyword"])
-    # base_methods.get_page("Monitors")
+    # base_methods.get_page(keyword["keyword"])
+    base_methods.get_page("Monitors")
     try:
 
         new_udid = 1
@@ -56,7 +56,7 @@ def main(udid: int):
         previous_page_source = session.driver.page_source
 
         ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
-        # ad_handler.collect_ad_type_8(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
         while not is_end_of_page:
             base_methods.amazon_not_responding_close()
             base_methods.cookies_click()
