@@ -86,25 +86,26 @@ class AdHandler(object):
             pass
 
     def collect_ad_type_7(self, session_id: int, keyword_id: int, udid: int) -> None:
-        """Create, send to DB and save scr of ad"""
-        try:
-            ads_webelements = self.get_webelements_ads_7()
-            for webElement in ads_webelements:
-                if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                    result_text = self.driver.find_element(AppiumBy.XPATH,
-                                                           "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]").get_attribute(
-                        "text")
-
-                    """create ad object"""
-                    print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
-                    ad = Ad(webElement, 7)
-                    ad.text = result_text
-                    self.save_ad(session_id, ad, keyword_id, udid)
-                    print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                    if ad.text is not None:
-                        self.ad_text_filter.append(ad.text)
-        except Exception as e:
-            print(e)
+        # TODO naprawic i zweryfikowac reklame 7
+        """Create, send data to DB and save scr of ad"""
+        ads_webelements = self.get_webelements_ads_7()
+        for webElement in ads_webelements:
+            if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
+                elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
+                print(elements)
+                print(f"size of elements list is {len(elements)}")
+                result_text = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text, 'Gesponserte "
+                                                                       "Werbeanzeige von')]").get_attribute("text")
+                """create ad object"""
+                print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
+                ad = Ad(webElement, 7)
+                ad.text = result_text
+                self.save_ad(session_id, ad, keyword_id, udid)
+                print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                if ad.text is not None:
+                    self.ad_text_filter.append(ad.text)
+            else:
+                return
 
     def get_webelements_ads_8(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_8)
@@ -117,7 +118,7 @@ class AdHandler(object):
         ads_webelements = self.get_webelements_ads_8()
         for webElement in ads_webelements:
 
-            result_text: str = webElement.get_attribute('content-desc')  # to byc dobre
+            result_text: str = webElement.get_attribute('content-desc')
             print(result_text)
 
             element_1_gesponsert: WebElement = webElement.find_element(AppiumBy.XPATH,
@@ -153,10 +154,6 @@ class AdHandler(object):
             if webElement.size["height"] > 40:
 
                 elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
-
-                """for index, element in enumerate(elements):
-                    if element.get_attribute("text").strip():
-                        print(element.get_attribute("text") + f" index: {index}")"""
 
                 try:
                     result_text: str = elements[1].get_attribute("text")
@@ -361,10 +358,13 @@ class AdHandler(object):
                                         ad.ad_type, session_id, keyword_id, udid)
 
                 self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
-                self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
-                print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
+
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
+                """In case of error in recording screen, save ad info and continue"""
+
+                self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
+                print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
 
         except NoSuchElementException:
             pass

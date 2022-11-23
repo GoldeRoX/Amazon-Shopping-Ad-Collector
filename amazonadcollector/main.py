@@ -44,7 +44,7 @@ def main(udid: int):
     keyword_id = keyword["id"]
 
     # base_methods.get_page(keyword["keyword"])
-    base_methods.get_page("Monitors")
+    base_methods.get_page("Lego")
     try:
 
         new_udid = 1
