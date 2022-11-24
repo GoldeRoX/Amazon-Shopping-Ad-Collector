@@ -57,6 +57,7 @@ def main(udid: int):
 
         ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_10(session_id, keyword_id, new_udid)
         while not is_end_of_page:
             base_methods.amazon_not_responding_close()
             base_methods.cookies_click()

@@ -29,3 +29,4 @@ class DE(object):
     ad_7 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
     ad_8 = "//*[starts-with(@content-desc, 'Gesponserte Werbeanzeige von')]"
     ad_9 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*"
+    ad_10 = "//*[starts-with(@content-desc, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"

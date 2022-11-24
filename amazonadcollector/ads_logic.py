@@ -94,14 +94,51 @@ class AdHandler(object):
                 elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
                 print(elements)
                 print(f"size of elements list is {len(elements)}")
-                result_text = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text, 'Gesponserte "
-                                                                       "Werbeanzeige von')]").get_attribute("text")
+
+                print(elements[len(elements) - 1].get_attribute("text"))
+                result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text, 'Gesponserte "
+                                                                            "Werbeanzeige von')]").get_attribute("text")
                 """create ad object"""
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
                 ad = Ad(webElement, 7)
                 ad.text = result_text
                 self.save_ad(session_id, ad, keyword_id, udid)
                 print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                if ad.text is not None:
+                    self.ad_text_filter.append(ad.text)
+            else:
+                return
+
+    def get_webelements_ads_10(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_10)
+
+    def collect_ad_type_10(self, session_id: int, keyword_id: int, udid: int) -> None:
+        # TODO naprawic i zweryfikowac reklame 10 oskryptowac osobno kazda okolicznosc text lub contecst-desc
+        """Create, send data to DB and save scr of ad"""
+        ads_webelements = self.get_webelements_ads_10()
+        for webElement in ads_webelements:
+            if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
+                elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH,
+                                                                  "//*[@class='android.view.View']")
+
+                for index, element in enumerate(elements):
+                    print(
+                        f'text of element: {element.get_attribute("text")} or {element.text}, desc of element: {element.get_attribute("content-desc")} element of index --- {index}')
+
+                print(elements)
+                print(f"size of elements list is {len(elements)}")
+                print(elements[len(elements) - 1])
+                print(elements[len(elements) - 1].get_attribute("text"))
+                print(elements[len(elements) - 1].get_attribute("content-desc"))
+                result_text = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@content-desc, 'Gesponserte "
+                                                                       "Werbeanzeige von')]").get_attribute("text")
+
+                """create ad object"""
+                print("collecting ad \033[1;31;40mtype 10\033[0;0m ...")
+                ad = Ad(webElement, 7)
+                ad.text = result_text
+                self.save_ad(session_id, ad, keyword_id, udid)
+                print("ad \033[1;31;40mtype 10\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
             else:
