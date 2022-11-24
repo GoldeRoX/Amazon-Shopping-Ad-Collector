@@ -118,8 +118,7 @@ class AdHandler(object):
         ads_webelements = self.get_webelements_ads_10()
         for webElement in ads_webelements:
             if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH,
-                                                                  "//*[@class='android.view.View']")
+                elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
 
                 for index, element in enumerate(elements):
                     print(
