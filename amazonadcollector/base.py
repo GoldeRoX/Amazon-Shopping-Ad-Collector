@@ -4,11 +4,10 @@ import time
 import yaml
 from appium import webdriver  # import Appium-Python-Client 2.2.0
 from appium.webdriver import WebElement
-from appium.webdriver.common.mobileby import MobileBy
+from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException, \
     StaleElementReferenceException
-from selenium.webdriver.common.by import By
 from appium.webdriver.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -68,21 +67,21 @@ class BaseMethods(object):
     def first_launch(self) -> None:
         """this method will be executed when the emulator had a reset or is a new one"""
         try:
-            self.wait_for_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
-            self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
+            self.wait_for_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
+            self.driver.find_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
         except (NoSuchElementException, TimeoutException):
             pass
         try:
-            self.wait_for_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
-            self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
+            self.wait_for_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
+            self.driver.find_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
         except (NoSuchElementException, TimeoutException):
             pass
 
     def change_lang_if_must(self):
-        self.wait_for_element(By.XPATH,
+        self.wait_for_element(AppiumBy.XPATH,
                               '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, '
                               'shop by department, programs and features, settings, and customer service Tab 4 of 4"]')
-        self.driver.find_element(By.XPATH,
+        self.driver.find_element(AppiumBy.XPATH,
                                  '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, '
                                  'shop by department, programs and features, settings, '
                                  'and customer service Tab 4 of 4"]').click()
@@ -90,24 +89,24 @@ class BaseMethods(object):
     def get_page(self, phrase_to_search: str) -> None:
         """search item phrase on the app"""
         try:
-            self.wait_for_element(By.XPATH, DE.search_icon, time_to_wait=30)
-            self.driver.find_element(By.XPATH, DE.search_icon).click()
+            self.wait_for_element(AppiumBy.XPATH, DE.search_icon, time_to_wait=30)
+            self.driver.find_element(AppiumBy.XPATH, DE.search_icon).click()
         except (NoSuchElementException, TimeoutException):
             try:
-                self.wait_for_element(By.XPATH, ENG.search_icon)
-                self.driver.find_element(By.XPATH, ENG.search_icon).click()
+                self.wait_for_element(AppiumBy.XPATH, ENG.search_icon)
+                self.driver.find_element(AppiumBy.XPATH, ENG.search_icon).click()
             except (NoSuchElementException, TimeoutException):
-                self.wait_for_element(By.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
-                self.driver.find_element(By.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
+                self.wait_for_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
+                self.driver.find_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
 
-        self.send_text(By.ID, 'com.amazon.mShop.android.shopping:id/rs_search_src_text', phrase_to_search)
+        self.send_text(AppiumBy.ID, 'com.amazon.mShop.android.shopping:id/rs_search_src_text', phrase_to_search)
 
         """press enter"""
         self.driver.press_keycode(66)
 
     def amazon_not_responding_close(self):
         try:
-            close = self.driver.find_elements(By.ID, "android:id/aerr_close")
+            close = self.driver.find_elements(AppiumBy.ID, "android:id/aerr_close")
             close[0].click()
         except (IndexError, WebDriverException):
             pass
@@ -125,25 +124,25 @@ class BaseMethods(object):
         # TODO change xpath for multi lang (config)
         xpath = "//*[@text='Land/Region: Vereinigte Staaten (United States)']"
         try:
-            self.wait_for_element(By.XPATH, xpath, time_to_wait=15)
-            self.driver.find_element(By.XPATH, xpath).click()
+            self.wait_for_element(AppiumBy.XPATH, xpath, time_to_wait=15)
+            self.driver.find_element(AppiumBy.XPATH, xpath).click()
             time.sleep(4)
             TouchAction(self.driver).tap(None, 500, 500, 1).perform()
             # TODO change xpath for multi lang (config)
             xpath_button = "//*[@text='Fertig']"
-            self.wait_for_element(By.XPATH, xpath_button, time_to_wait=8)
-            self.driver.find_element(By.XPATH, xpath_button).click()
+            self.wait_for_element(AppiumBy.XPATH, xpath_button, time_to_wait=8)
+            self.driver.find_element(AppiumBy.XPATH, xpath_button).click()
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
             pass
 
     def cookies_click(self) -> None:
         try:
             xpath = "//*[@text='Cookies akzeptieren']"
-            self.driver.find_element(By.XPATH, xpath).click()
+            self.driver.find_element(AppiumBy.XPATH, xpath).click()
 
         except NoSuchElementException:
             try:
-                web_elements2 = self.driver.find_elements(By.XPATH, "//*[starts-with(@text, 'Cookie')]")
+                web_elements2 = self.driver.find_elements(AppiumBy.XPATH, "//*[starts-with(@text, 'Cookie')]")
 
                 web_elements2[-2].click()
             except (NoSuchElementException, IndexError, WebDriverException):
@@ -155,8 +154,8 @@ class BaseMethods(object):
             xpath_menu = '//android.widget.ImageView[@content-desc="Menu. Contains your orders, ' \
                          'your account, shop by department, programs and features, settings, and' \
                          ' customer service Tab 4 of 4"]'
-            self.wait_for_element(By.XPATH, xpath_menu, time_to_wait=15)
-            self.driver.find_element(By.XPATH, xpath_menu).click()
+            self.wait_for_element(AppiumBy.XPATH, xpath_menu, time_to_wait=15)
+            self.driver.find_element(AppiumBy.XPATH, xpath_menu).click()
             is_settings_in_use = True
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
             pass
@@ -182,8 +181,8 @@ class BaseMethods(object):
                           'android.view.ViewGroup[1]/android.view.ViewGroup/' \
                           'android.view.ViewGroup[2]/android.widget.TextView'
 
-            self.wait_for_element(By.XPATH, xpath_prime, time_to_wait=60)
-            prime = self.driver.find_element(By.XPATH, xpath_prime)
+            self.wait_for_element(AppiumBy.XPATH, xpath_prime, time_to_wait=60)
+            prime = self.driver.find_element(AppiumBy.XPATH, xpath_prime)
 
             if prime.get_attribute("text") == "Prime":
                 is_end_of_page = False
@@ -200,8 +199,8 @@ class BaseMethods(object):
                                  'android.widget.ScrollView/android.view.ViewGroup/android.widget.ScrollView/' \
                                  'android.view.ViewGroup/android.view.ViewGroup[1]/android.view.ViewGroup/' \
                                  'android.view.ViewGroup/android.widget.Button'
-                self.wait_for_element(By.XPATH, xpath_settings)
-                self.driver.find_element(By.XPATH, xpath_settings).click()
+                self.wait_for_element(AppiumBy.XPATH, xpath_settings)
+                self.driver.find_element(AppiumBy.XPATH, xpath_settings).click()
 
                 xpath_land_und_sprache = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
                                          'android.widget.FrameLayout/android.view.ViewGroup/' \
@@ -212,8 +211,8 @@ class BaseMethods(object):
                                          'android.view.ViewGroup/android.view.ViewGroup[1]/' \
                                          'android.view.ViewGroup/android.view.ViewGroup/' \
                                          'android.view.ViewGroup/android.view.View[1]'
-                self.wait_for_element(By.XPATH, xpath_land_und_sprache, time_to_wait=30)
-                self.driver.find_element(By.XPATH, xpath_land_und_sprache).click()
+                self.wait_for_element(AppiumBy.XPATH, xpath_land_und_sprache, time_to_wait=30)
+                self.driver.find_element(AppiumBy.XPATH, xpath_land_und_sprache).click()
 
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
             self.standard_config1()
@@ -226,8 +225,8 @@ class BaseMethods(object):
                             'android.widget.ScrollView/android.view.ViewGroup/android.widget.ScrollView/' \
                             'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/' \
                             'android.view.ViewGroup/android.widget.Button'
-        self.wait_for_element(By.XPATH, xpath_setting_bar, time_to_wait=60)
-        self.driver.find_element(By.XPATH, xpath_setting_bar).click()
+        self.wait_for_element(AppiumBy.XPATH, xpath_setting_bar, time_to_wait=60)
+        self.driver.find_element(AppiumBy.XPATH, xpath_setting_bar).click()
 
         xpath_country_and_language = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
                                      'android.widget.FrameLayout/' \
@@ -240,26 +239,26 @@ class BaseMethods(object):
                                      'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/' \
                                      'android.view.ViewGroup/android.view.ViewGroup/android.view.View[' \
                                      '1]'
-        self.wait_for_element(By.XPATH, xpath_country_and_language, time_to_wait=60)
-        self.driver.find_element(By.XPATH, xpath_country_and_language).click()
+        self.wait_for_element(AppiumBy.XPATH, xpath_country_and_language, time_to_wait=60)
+        self.driver.find_element(AppiumBy.XPATH, xpath_country_and_language).click()
 
         country_region = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
                          'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
                          'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
                          'android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/' \
                          'android.view.View/android.view.View[1]/android.widget.Button'
-        self.wait_for_element(By.XPATH, country_region, time_to_wait=30)
-        country_and_region_button = self.driver.find_element(By.XPATH, country_region)
+        self.wait_for_element(AppiumBy.XPATH, country_region, time_to_wait=30)
+        country_and_region_button = self.driver.find_element(AppiumBy.XPATH, country_region)
         country_and_region_button.click()
 
         try:
-            self.wait_for_element(MobileBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/"
+            self.wait_for_element(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/"
                                                   "android.widget.FrameLayout/android.view.ViewGroup/"
                                                   "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
                                                   "android.widget.RelativeLayout/android.widget.RelativeLayout/"
                                                   "android.webkit.WebView/android.webkit.WebView/android.view.View/"
                                                   "android.view.View/android.view.View/android.widget.RadioButton[5]", time_to_wait=60)
-            webElement_region_germany = self.driver.find_element(MobileBy.XPATH,
+            webElement_region_germany = self.driver.find_element(AppiumBy.XPATH,
                                                                  "/hierarchy/android.widget.FrameLayout/"
                                                                  "android.widget.LinearLayout/android.widget."
                                                                  "FrameLayout/android.view.ViewGroup/"
@@ -281,8 +280,8 @@ class BaseMethods(object):
                          'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
                          'android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/' \
                          'android.view.View/android.view.View[2]/android.widget.Button'
-        self.wait_for_element(MobileBy.XPATH, xpath_language, time_to_wait=60)
-        language_button = self.driver.find_element(MobileBy.XPATH, xpath_language)
+        self.wait_for_element(AppiumBy.XPATH, xpath_language, time_to_wait=60)
+        language_button = self.driver.find_element(AppiumBy.XPATH, xpath_language)
         language_button.click()
 
         """xpath_lang = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
@@ -293,8 +292,8 @@ class BaseMethods(object):
 
         xpath_lang = "//*[starts-with(@text,'German Deutsch')]"
 
-        self.wait_for_element(MobileBy.XPATH, xpath_lang, time_to_wait=60)
-        language_button: WebElement = self.driver.find_element(MobileBy.XPATH, xpath_lang)
+        self.wait_for_element(AppiumBy.XPATH, xpath_lang, time_to_wait=60)
+        language_button: WebElement = self.driver.find_element(AppiumBy.XPATH, xpath_lang)
 
         language_button.click()
 
@@ -303,20 +302,20 @@ class BaseMethods(object):
                          'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
                          'android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/' \
                          'android.view.View/android.view.View[3]/android.widget.Button'
-        self.wait_for_element(By.XPATH, xpath_currency, time_to_wait=60)
-        currency_button = self.driver.find_element(By.XPATH, xpath_currency)
+        self.wait_for_element(AppiumBy.XPATH, xpath_currency, time_to_wait=60)
+        currency_button = self.driver.find_element(AppiumBy.XPATH, xpath_currency)
         if currency_button.get_attribute("text") == "€ - EUR - Euro":
             pass
         elif currency_button.get_attribute("text") == "Währung: $ - USD - US-Dollar":
             currency_button.click()
 
-            self.wait_for_element(MobileBy.XPATH, "//*[starts-with(@text,'€ - EUR - Euro')]")
-            webelement_currency_euro = self.driver.find_element(MobileBy.XPATH,
+            self.wait_for_element(AppiumBy.XPATH, "//*[starts-with(@text,'€ - EUR - Euro')]")
+            webelement_currency_euro = self.driver.find_element(AppiumBy.XPATH,
                                                                 "//*[starts-with(@text,'€ - EUR - Euro')]")
             webelement_currency_euro.click()
 
-        self.wait_for_element(MobileBy.XPATH, "//*[starts-with(@text,'Fertig')]")
-        accept_button = self.driver.find_element(MobileBy.XPATH, "//*[starts-with(@text,'Fertig')]")
+        self.wait_for_element(AppiumBy.XPATH, "//*[starts-with(@text,'Fertig')]")
+        accept_button = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text,'Fertig')]")
         accept_button.click()
 
 
