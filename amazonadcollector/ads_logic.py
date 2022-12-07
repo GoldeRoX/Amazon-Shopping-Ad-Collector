@@ -53,7 +53,7 @@ class AdHandler(object):
         """Create, send to DB and save scr of ad"""
         # TODO naprawic i wprowadzic do systemu
         try:
-            ads_webelements = self.get_webelements_ads_2()
+            ads_webelements: [WebElement] = self.get_webelements_ads_2()
 
             for webElement in ads_webelements:
                 if webElement.size["height"] > 10:
@@ -280,8 +280,8 @@ class AdHandler(object):
                 if element.size["height"] > 50:
                     action = TouchAction(self.driver)
                     for i, web_element in enumerate(ads_webelements):
-                        path = ".//child::*" + 3 * "/following-sibling::*"
-                        text = web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
+                        path: str = ".//child::*" + 3 * "/following-sibling::*"
+                        text: str = web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
                         if text not in self.ad_text_filter and text != "product-detail":
                             """scroll through web_elements ads"""
                             print("collecting ad \033[1;31;40mtype 4\033[0;0m ...")
