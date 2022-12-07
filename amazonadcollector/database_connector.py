@@ -39,7 +39,6 @@ PATH = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
 with open(PATH, "r") as file:
     config = yaml.safe_load(file)
 
-
 db_credentials = {
     'host': config["DATABASE"]["HOST"],
     'database': config["DATABASE"]["DB"],
@@ -95,9 +94,11 @@ class SQLAdManager(object):
                 (width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, keyword_id, ip, udid)
             )
 
-    def send_data_to_db(self, width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id, udid):
+    def send_data_to_db(self, width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id,
+                        udid):
         self.insert_empty_query()
-        self.update_query(width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id, config["COMPUTER"]["IP"], udid)
+        self.update_query(width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id,
+                          config["COMPUTER"]["IP"], udid)
 
     def get_last_saved_id_from_db(self) -> int:
         return self.data_set_id
@@ -138,3 +139,19 @@ def get_random_keyword() -> {}:
     }
 
     return result
+
+# TODO wprowadzic system auto pobierania proxy
+def get_proxy_address() -> str:
+    """
+    Returns: proxy_address
+    """
+
+    query = """
+        SELECT id, keyword FROM keywords
+        ORDER BY RAND()
+        LIMIT 1;
+        """
+
+    return query
+
+

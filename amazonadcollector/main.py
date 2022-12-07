@@ -16,7 +16,7 @@ from amazonadcollector.locators_data import DE
 
 def main(udid: int):
 
-    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://151.236.17.155:3128 -port {udid}")
+    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://151.236.17.199:3128 -port {udid}")
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
     time.sleep(10)
     start_time = time.time()
@@ -57,11 +57,13 @@ def main(udid: int):
 
         ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_10(session_id, keyword_id, new_udid)
         while not is_end_of_page:
             base_methods.amazon_not_responding_close()
             base_methods.cookies_click()
             ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
+            ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
             # TODO naprawic problem z brakiem txt w reklamie 1 (banner)

@@ -26,7 +26,6 @@ class MyDriver(object):
                  uiautomator_2_server_launch_timeout=40000, ios_install_pause=8000,
                  wda_startup_retry_interval=20000, new_command_timeout=20000, skip_device_initialization=True,
                  skip_server_installation=True, no_reset=True, normalize_tag_names=True, udid="emulator-5554"):
-
         desired_caps = {
             "platformName": platform_name,
             "udid": udid,
@@ -97,7 +96,8 @@ class BaseMethods(object):
                 self.driver.find_element(AppiumBy.XPATH, ENG.search_icon).click()
             except (NoSuchElementException, TimeoutException):
                 self.wait_for_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
-                self.driver.find_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
+                self.driver.find_element(AppiumBy.ID,
+                                         "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
 
         self.send_text(AppiumBy.ID, 'com.amazon.mShop.android.shopping:id/rs_search_src_text', phrase_to_search)
 
@@ -257,7 +257,8 @@ class BaseMethods(object):
                                                   "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
                                                   "android.widget.RelativeLayout/android.widget.RelativeLayout/"
                                                   "android.webkit.WebView/android.webkit.WebView/android.view.View/"
-                                                  "android.view.View/android.view.View/android.widget.RadioButton[5]", time_to_wait=60)
+                                                  "android.view.View/android.view.View/android.widget.RadioButton[5]",
+                                  time_to_wait=60)
             webElement_region_germany = self.driver.find_element(AppiumBy.XPATH,
                                                                  "/hierarchy/android.widget.FrameLayout/"
                                                                  "android.widget.LinearLayout/android.widget."
@@ -310,9 +311,9 @@ class BaseMethods(object):
             currency_button.click()
 
             self.wait_for_element(AppiumBy.XPATH, "//*[starts-with(@text,'€ - EUR - Euro')]")
-            webelement_currency_euro = self.driver.find_element(AppiumBy.XPATH,
-                                                                "//*[starts-with(@text,'€ - EUR - Euro')]")
-            webelement_currency_euro.click()
+            web_element_currency_euro = self.driver.find_element(AppiumBy.XPATH,
+                                                                 "//*[starts-with(@text,'€ - EUR - Euro')]")
+            web_element_currency_euro.click()
 
         self.wait_for_element(AppiumBy.XPATH, "//*[starts-with(@text,'Fertig')]")
         accept_button = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text,'Fertig')]")
