@@ -311,10 +311,10 @@ class AdHandler(object):
             ads_webelements = self.get_webelements_ads_5()
             for webElement in ads_webelements:
                 if webElement.size["height"] > 10:
-                    elements = webElement.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
-                    result_text = elements[4].get_attribute("text")
-                    var1 = result_text.startswith(self.lang.ad_5_starts_with)
-                    var2 = elements[7].get_attribute("text") == "product-detail"
+                    elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
+                    result_text: str = elements[4].get_attribute("text")
+                    var1: bool = result_text.startswith(self.lang.ad_5_starts_with)
+                    var2: bool = elements[7].get_attribute("text") == "product-detail"
                     if var1 and var2 and result_text not in self.ad_text_filter:
                         """create ad object"""
                         print("adjusting ad type 5 ...")
@@ -342,7 +342,7 @@ class AdHandler(object):
 
         img_name = filename
 
-        image_path = f"{path}/{date_folder_name}/{str(img_name)}_thumb.png"
+        image_path: str = f"{path}/{date_folder_name}/{str(img_name)}_thumb.png"
         self.driver.save_screenshot(image_path)
         img = cv2.imread(image_path)
 
