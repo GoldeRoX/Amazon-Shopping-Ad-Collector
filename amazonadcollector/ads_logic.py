@@ -23,8 +23,9 @@ class AdHandler(object):
         self.driver: WebDriver = driver
         self.ad_text_filter = []
         self.lang = lang
+        self.action = TouchAction(self.driver)
 
-    def save_ad(self, session_id: int, ad: Ad, keyword_id, udid: int):
+    def save_ad(self, session_id: int, ad: Ad, keyword_id, udid: int) -> None:
         Manager = SQLAdManager()
         Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
                                 ad.ad_type, session_id, keyword_id, udid)
@@ -33,7 +34,7 @@ class AdHandler(object):
     def collect_ad_type_1(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
-            ads_list = self.collect_ads_1()
+            ads_list: [Ad] = self.collect_ads_1()
             for ad in ads_list:
                 print("collecting ad \033[1;31;40mtype 1\033[0;0m ...")
                 self.save_ad(session_id, ad, keyword_id, udid)
@@ -51,29 +52,32 @@ class AdHandler(object):
 
     def collect_ad_type_2(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send to DB and save scr of ad"""
-        # TODO naprawic i wprowadzic do systemu
         try:
-            ads_webelements: [WebElement] = self.get_webelements_ads_2()
+            ads_webelements: list[WebElement] = self.get_webelements_ads_2()
 
             for webElement in ads_webelements:
                 if webElement.size["height"] > 10:
+                    elements: list[WebElement] = webElement.find_elements(AppiumBy.XPATH,
+                                                                          ".//*[@class='android.view.View']")
+                    webelements: list = []
 
-                    action = TouchAction(self.driver)
-                    elements = webElement.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
-                    webelements = []
                     for element in elements:
-                        if element.get_attribute("clickable") == "true" and element.get_attribute("text").startswith(
-                                self.lang.ad_2_starts_with):
+                        if element.get_attribute("clickable") == "true" and \
+                                element.get_attribute("text").startswith(self.lang.ad_2_starts_with)\
+                                and element.get_attribute("text") not in self.ad_text_filter:
                             webelements.append(element)
 
                     for index, web_element in enumerate(webelements):
                         """scroll through web_elements ads"""
                         print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
                         if index == 0:
-                            pass
+                            print(print("adjusting ad type 2 ..."))
+                            AdjustAd(self.driver).match_ad_visibility(web_element)
                         else:
-                            action.press(webelements[index]).move_to(webelements[index - 1]).wait(ms=2000).release().perform()
-                            time.sleep(2)
+                            self.action.press(webelements[index])\
+                                .move_to(webelements[index - 1]).wait(ms=2000).release()\
+                                .perform()
+                            time.sleep(1)
 
                         """create an object of ad"""
                         if web_element.get_attribute("text") not in self.ad_text_filter:
@@ -82,7 +86,7 @@ class AdHandler(object):
                             print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
                             if ad.text.strip() is not None:
                                 self.ad_text_filter.append(ad.text)
-        except WebDriverException:
+        except (NoSuchElementException, IndexError):
             pass
 
     def collect_ad_type_7(self, session_id: int, keyword_id: int, udid: int) -> None:
@@ -90,11 +94,6 @@ class AdHandler(object):
         ads_webelements = self.get_webelements_ads_7()
         for webElement in ads_webelements:
             if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
-                print(elements)
-                print(f"size of elements list is {len(elements)}")
-
-                print(elements[len(elements) - 1].get_attribute("text"))
                 result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text, 'Gesponserte "
                                                                             "Werbeanzeige von')]").get_attribute("text")
                 """create ad object"""
@@ -189,7 +188,8 @@ class AdHandler(object):
                 element_wit_Jetzt_einkaufen_validation: bool = element_wit_Jetzt_einkaufen.startswith("Jetzt")
 
                 if result_text not in self.ad_text_filter \
-                        and element_with_gesponsert_validation and element_wit_Jetzt_einkaufen_validation:
+                        and element_with_gesponsert_validation \
+                        and element_wit_Jetzt_einkaufen_validation:
 
                     """create ad object"""
                     print("collecting ad \033[1;31;40mtype 9\033[0;0m ...")
@@ -212,7 +212,7 @@ class AdHandler(object):
         for webElement in ads_webelements:
             if webElement.size["height"] > 40:
 
-                elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
+                elements: list[WebElement] = webElement.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
 
                 try:
                     result_text: str = elements[1].get_attribute("content-desc")
@@ -225,7 +225,8 @@ class AdHandler(object):
                 element_wit_Jetzt_einkaufen_validation: bool = element_wit_Jetzt_einkaufen.startswith("Jetzt")
 
                 if result_text not in self.ad_text_filter \
-                        and element_with_gesponsert_validation and element_wit_Jetzt_einkaufen_validation:
+                        and element_with_gesponsert_validation \
+                        and element_wit_Jetzt_einkaufen_validation:
 
                     """create ad object"""
                     print("collecting ad \033[1;31;40mtype 9_alt\033[0;0m ...")
@@ -275,10 +276,9 @@ class AdHandler(object):
     def collect_ad_type_4(self, session_id: int, keyword_id: int, udid: int):
         """Create, send to DB and save scr of ad"""
         try:
-            ads_webelements = self.get_webelements_ads_4()
+            ads_webelements: list[WebElement] = self.get_webelements_ads_4()
             for element in ads_webelements:
                 if element.size["height"] > 50:
-                    action = TouchAction(self.driver)
                     for i, web_element in enumerate(ads_webelements):
                         path: str = ".//child::*" + 3 * "/following-sibling::*"
                         text: str = web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
@@ -289,7 +289,7 @@ class AdHandler(object):
                                 AdjustAd(self.driver).match_ad_visibility(element)
                             else:
                                 par = (ads_webelements[i].size["width"] - ads_webelements[i].size["width"] / 2)
-                                action.press(ads_webelements[i]).move_to(ads_webelements[i - 1], x=par, y=0).wait(
+                                self.action.press(ads_webelements[i]).move_to(ads_webelements[i - 1], x=par, y=0).wait(
                                     ms=2000).release().perform()
                                 print("adjusting ad type 4 ...")
                                 AdjustAd(self.driver).match_ad_visibility(element)
@@ -308,10 +308,10 @@ class AdHandler(object):
     def collect_ad_type_5(self, session_id: int, keyword_id: int, udid: int):
         """Create, send to DB and save scr of ad"""
         try:
-            ads_webelements = self.get_webelements_ads_5()
+            ads_webelements: list[WebElement] = self.get_webelements_ads_5()
             for webElement in ads_webelements:
                 if webElement.size["height"] > 10:
-                    elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
+                    elements: list[WebElement] = webElement.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                     result_text: str = elements[4].get_attribute("text")
                     var1: bool = result_text.startswith(self.lang.ad_5_starts_with)
                     var2: bool = elements[7].get_attribute("text") == "product-detail"
@@ -400,8 +400,8 @@ class AdHandler(object):
         """Collecting video, scr and modified scr for ad of type 6 - video_ad"""
         try:
             video_ad_web_element = self.driver.find_element(AppiumBy.XPATH, self.lang.ad_video)
-            path = ".//child::*" + 7 * "/following-sibling::*"
-            text = video_ad_web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
+            path: str = ".//child::*" + 7 * "/following-sibling::*"
+            text: str = video_ad_web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
             if video_ad_web_element.size["height"] > 10 and text not in self.ad_text_filter:
 
                 print("adjusting video ad ...")
@@ -433,14 +433,8 @@ class AdHandler(object):
         try:
             video_ad_web_element = self.driver.find_element(AppiumBy.XPATH, self.lang.ad_video)
 
-            elements: [WebElement] = video_ad_web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
-
-            for index, element in enumerate(elements):
-                print(
-                    f'text of element: {element.get_attribute("text")} or {element.text}, desc of element: {element.get_attribute("content-desc")} element of index --- {index}')
-
-            path = ".//child::*" + 7 * "/following-sibling::*"
-            text = video_ad_web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
+            path: str = ".//child::*" + 7 * "/following-sibling::*"
+            text: str = video_ad_web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
             if video_ad_web_element.size["height"] > 10 and text not in self.ad_text_filter:
 
                 print("adjusting video ad ...")
