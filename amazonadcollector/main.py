@@ -43,8 +43,8 @@ def main(udid: int):
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
 
-    # base_methods.get_page(keyword["keyword"])
-    base_methods.get_page("books")
+    base_methods.get_page(keyword["keyword"])
+    # base_methods.get_page("lego")
     try:
 
         new_udid = 1

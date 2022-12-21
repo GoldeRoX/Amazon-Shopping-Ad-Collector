@@ -23,7 +23,6 @@ class AdHandler(object):
         self.driver: WebDriver = driver
         self.ad_text_filter = []
         self.lang = lang
-        self.action = TouchAction(self.driver)
 
     def save_ad(self, session_id: int, ad: Ad, keyword_id, udid: int) -> None:
         Manager = SQLAdManager()
@@ -60,7 +59,7 @@ class AdHandler(object):
                     elements: list[WebElement] = webElement.find_elements(AppiumBy.XPATH,
                                                                           ".//*[@class='android.view.View']")
                     webelements: list = []
-
+                    action = TouchAction(self.driver)
                     for element in elements:
                         if element.get_attribute("clickable") == "true" and \
                                 element.get_attribute("text").startswith(self.lang.ad_2_starts_with)\
@@ -74,10 +73,12 @@ class AdHandler(object):
                             print(print("adjusting ad type 2 ..."))
                             AdjustAd(self.driver).match_ad_visibility(web_element)
                         else:
-                            self.action.press(webelements[index])\
-                                .move_to(webelements[index - 1]).wait(ms=2000).release()\
+                            action.press(webelements[index])\
+                                .move_to(webelements[index - 1])\
+                                .wait(ms=2000)\
+                                .release()\
                                 .perform()
-                            time.sleep(1)
+                            time.sleep(2.5)
 
                         """create an object of ad"""
                         if web_element.get_attribute("text") not in self.ad_text_filter:
@@ -279,6 +280,7 @@ class AdHandler(object):
             ads_webelements: list[WebElement] = self.get_webelements_ads_4()
             for element in ads_webelements:
                 if element.size["height"] > 50:
+                    action = TouchAction(self.driver)
                     for i, web_element in enumerate(ads_webelements):
                         path: str = ".//child::*" + 3 * "/following-sibling::*"
                         text: str = web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
@@ -289,8 +291,12 @@ class AdHandler(object):
                                 AdjustAd(self.driver).match_ad_visibility(element)
                             else:
                                 par = (ads_webelements[i].size["width"] - ads_webelements[i].size["width"] / 2)
-                                self.action.press(ads_webelements[i]).move_to(ads_webelements[i - 1], x=par, y=0).wait(
-                                    ms=2000).release().perform()
+
+                                action.press(ads_webelements[i])\
+                                    .move_to(ads_webelements[i - 1], x=par, y=0)\
+                                    .wait(ms=2000)\
+                                    .release()\
+                                    .perform()
                                 print("adjusting ad type 4 ...")
                                 AdjustAd(self.driver).match_ad_visibility(element)
                             """create an object of ad"""
@@ -311,7 +317,8 @@ class AdHandler(object):
             ads_webelements: list[WebElement] = self.get_webelements_ads_5()
             for webElement in ads_webelements:
                 if webElement.size["height"] > 10:
-                    elements: list[WebElement] = webElement.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
+                    elements: list[WebElement] = webElement.find_elements(AppiumBy.XPATH,
+                                                                          ".//*[@class='android.view.View']")
                     result_text: str = elements[4].get_attribute("text")
                     var1: bool = result_text.startswith(self.lang.ad_5_starts_with)
                     var2: bool = elements[7].get_attribute("text") == "product-detail"
