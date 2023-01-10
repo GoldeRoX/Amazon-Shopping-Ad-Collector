@@ -5,9 +5,13 @@ import sys
 from selenium.common.exceptions import InvalidSessionIdException
 
 from amazonadcollector.ads_logic import SQLAdManager, AdHandler
+
+from appium.webdriver import WebElement
 from amazonadcollector.database_connector import get_random_keyword
 from amazonadcollector.base import MyDriver, BaseMethods
 from selenium.common.exceptions import WebDriverException
+
+from appium.webdriver.common.appiumby import AppiumBy
 from datetime import datetime
 import time
 
@@ -24,7 +28,7 @@ def main(udid: int):
     try:
         session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid))
         print("normal start")
-    except (WebDriverException, InvalidSessionIdException):
+    except WebDriverException:
         session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid),
                            skip_device_initialization=False, skip_server_installation=False, no_reset=False)
         print("special start")
@@ -44,7 +48,7 @@ def main(udid: int):
     keyword_id = keyword["id"]
 
     base_methods.get_page(keyword["keyword"])
-    # base_methods.get_page("lego")
+    # base_methods.get_page("Lego")
     try:
 
         new_udid = 1
@@ -55,20 +59,29 @@ def main(udid: int):
         is_end_of_page = False
         previous_page_source = session.driver.page_source
 
-        ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
+        """ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)
-        ad_handler.collect_ad_type_10(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_10(session_id, keyword_id, new_udid)"""
+        test: {str, WebElement} = ad_handler.get_all_node_web_elements()
+        print(len(test))
+        print(test)
+
+        print(len(test[1].find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")))
+
         while not is_end_of_page:
             base_methods.amazon_not_responding_close()
             base_methods.cookies_click()
-            ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
+            print(test[1].find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']"))
+            #ad_handler.collect_ad_type_1(session_id, keyword_id, new_udid)
+            """ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
             ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
-            # TODO naprawic problem z brakiem txt w reklamie 1 (banner)
+            ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)"""
+            # ad_handler.collect_ad_type_1()
 
             base_methods.scroll_down()
+            print(test[1].find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']"))
 
             is_end_of_page = previous_page_source == session.driver.page_source
             previous_page_source = session.driver.page_source

@@ -133,14 +133,15 @@ def get_random_keyword() -> {}:
         c.execute(query)
         result_of_query = c.fetchone()
 
-    result = {
+    result: dict[str, str | int] = {
         "id": int(result_of_query[0]),
         "keyword": str(result_of_query[1])
     }
 
     return result
 
-# TODO wprowadzic system auto pobierania proxy
+
+# TODO wprowadzic system auto proxy
 def get_proxy_address() -> str:
     """
     Returns: proxy_address
@@ -153,5 +154,3 @@ def get_proxy_address() -> str:
         """
 
     return query
-
-
