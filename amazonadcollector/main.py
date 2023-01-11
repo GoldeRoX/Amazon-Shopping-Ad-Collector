@@ -1,20 +1,14 @@
 import subprocess
 import shlex
 import sys
-
-from selenium.common.exceptions import InvalidSessionIdException
-
-from amazonadcollector.ads_logic import SQLAdManager, AdHandler
-
-from appium.webdriver import WebElement
-from amazonadcollector.database_connector import get_random_keyword
-from amazonadcollector.base import MyDriver, BaseMethods
-from selenium.common.exceptions import WebDriverException
-
-from appium.webdriver.common.appiumby import AppiumBy
-from datetime import datetime
 import time
 
+from selenium.common.exceptions import WebDriverException
+from datetime import datetime
+
+from amazonadcollector.ads_logic import SQLAdManager, AdHandler
+from amazonadcollector.database_connector import get_random_keyword
+from amazonadcollector.base import MyDriver, BaseMethods
 from amazonadcollector.locators_data import DE
 
 
@@ -47,7 +41,6 @@ def main(udid: int):
     keyword_id = keyword["id"]
 
     base_methods.get_page(keyword["keyword"])
-    # base_methods.get_page("Lego")
     try:
 
         new_udid = 1
