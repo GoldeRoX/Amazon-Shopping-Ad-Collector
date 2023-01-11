@@ -69,14 +69,13 @@ class AdHandler(object):
 
         return dictionary
 
-    def filtered_complex_web_elements(self) -> {int, WebElement}:
+    def get_filtered_complex_web_elements(self) -> {int, WebElement}:
         dictionary: dict[int, WebElement] = {}
-        dic = self.get_all_node_web_elements()
+        dic: dict[int, WebElement] = self.get_all_node_web_elements()
 
-        for index in dic:
-            if len(self.driver.find_element(AppiumBy.XPATH, dic[index]).find_elements(AppiumBy.XPATH,
-                                                                                      "//*[@class='android.view.View']")) > 0:
-                dictionary[index] = self.driver.find_element(AppiumBy.XPATH, dic[index])
+        for index, web_element in enumerate(dic.values(), start=1):
+            if len(web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")) > 1:
+                dictionary[index] = web_element
 
         return dictionary
 
