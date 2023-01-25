@@ -19,8 +19,8 @@ from amazonadcollector.locators_data import *
 
 
 class MyDriver(object):
-
-    def __init__(self, platform_name="Android", platform_version="9",
+    # noReset - sprawdzic sprawnosc z nowym systemem 12.0
+    def __init__(self, platform_name="Android", platform_version="12",
                  automation_name="UiAutomator2", app_package="com.amazon.mShop.android.shopping",
                  app_activity="com.amazon.mShop.home.HomeActivity", device_name="emulator-5554",
                  uiautomator_2_server_launch_timeout=40000, ios_install_pause=8000,
@@ -41,7 +41,9 @@ class MyDriver(object):
             "skipDeviceInitialization": skip_device_initialization,
             "skipServerInstallation": skip_server_installation,
             "noReset": no_reset,
-            "normalizeTagNames": normalize_tag_names
+            "normalizeTagNames": normalize_tag_names,
+            "clearSystemFiles": True,
+            "app": "/home/krzysztof/Downloads/com.amazon.mShop.android.shopping_26.1.2.100.apk"
         }
         self.driver = webdriver.Remote(command_executor="http://localhost:4723/wd/hub",
                                        desired_capabilities=desired_caps)

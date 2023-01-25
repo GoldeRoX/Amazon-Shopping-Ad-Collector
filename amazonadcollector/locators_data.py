@@ -22,7 +22,7 @@ class DE(object):
     BOTTOM_AD_TEXT_ELEMENT = "//*[@text='Feedback zur gesponserten Werbeanzeige geben']/parent::*"
     brands_related_to_your_search_element_node = "//*[ends-with(@text, 'mit Ihrer Suche')]/parent::*"
     ad_4_node = "//*[starts-with(@text,'Gesponserte Anzeige –')]/parent::*"
-    ad_5_node = "//*[starts-with(@text,'Gesponsert')]/parent::*"
+    ad_5_node = "//*[starts-with(@text,'Gesponsert')]/parent::*/parent::*"
     ad_5_starts_with = "Gesponsert"
     ad_2_starts_with = "Gesponserte Werbeanzeige von"
     ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]/parent::*/parent::*"

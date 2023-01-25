@@ -40,7 +40,8 @@ def main(udid: int):
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
 
-    base_methods.get_page(keyword["keyword"])
+    # base_methods.get_page(keyword["keyword"])
+    base_methods.get_page("Laptops")
     try:
 
         new_udid = 1
@@ -51,25 +52,25 @@ def main(udid: int):
         is_end_of_page = False
         previous_page_source = session.driver.page_source
 
-        ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
+        """ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)
-        ad_handler.collect_ad_type_10(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_10(session_id, keyword_id, new_udid)"""
 
-        test_1 = ad_handler.get_all_node_web_elements()
+        """test_1 = ad_handler.get_all_node_web_elements()
         print(len(test_1))
         test = ad_handler.get_filtered_complex_web_elements()
         print(len(test))
-        print(test)
+        print(test)"""
 
         while not is_end_of_page:
             base_methods.amazon_not_responding_close()
             base_methods.cookies_click()
             # ad_handler.collect_ad_type_1(session_id, keyword_id, new_udid)
-            ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
-            ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
+            # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
+            # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
+            # ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_1()
 
             base_methods.scroll_down()
