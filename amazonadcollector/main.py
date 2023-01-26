@@ -29,7 +29,7 @@ def main(udid: int):
     base_methods = BaseMethods(session.driver)
     base_methods.amazon_not_responding_close()
 
-    base_methods.config_start()
+    # base_methods.config_start()
     base_methods.first_launch()
     base_methods.change_lang_from_eng_to_de()
 
@@ -69,7 +69,7 @@ def main(udid: int):
             # ad_handler.collect_ad_type_1(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
+            # ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_1()
 

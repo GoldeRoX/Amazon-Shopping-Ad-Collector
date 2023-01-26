@@ -33,3 +33,5 @@ class DE(object):
     ad_9_alt = "//*[starts-with(@content-desc, 'Gesponserte Werbeanzeige von')]/parent::*"
     ad_10 = "//*[starts-with(@content-desc, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
     banner_ad = "//*[@text='Feedback zu gesponserter Anzeige geben']/parent::*/parent::*"
+    country_and_language = "//*[starts-with(@text, 'Country/Region:')]"
+    country_and_language = "//*[@text='Country/Region: United States']"

@@ -19,7 +19,8 @@ from amazonadcollector.locators_data import *
 
 
 class MyDriver(object):
-    # noReset - sprawdzic sprawnosc z nowym systemem 12.0
+
+    # new android 12.0 and model Pixel 4a
     def __init__(self, platform_name="Android", platform_version="12",
                  automation_name="UiAutomator2", app_package="com.amazon.mShop.android.shopping",
                  app_activity="com.amazon.mShop.home.HomeActivity", device_name="emulator-5554",
@@ -43,6 +44,7 @@ class MyDriver(object):
             "noReset": no_reset,
             "normalizeTagNames": normalize_tag_names,
             "clearSystemFiles": True,
+            "ignoreHiddenApiPolicyError": True,
             "app": "/home/krzysztof/Downloads/com.amazon.mShop.android.shopping_26.1.2.100.apk"
         }
         self.driver = webdriver.Remote(command_executor="http://localhost:4723/wd/hub",
@@ -54,52 +56,47 @@ class BaseMethods(object):
     def __init__(self, driver):
         self.driver: WebDriver = driver
 
-    def wait_for_element(self, by_type, path: str, time_to_wait: int = 5) -> None:
-        WebDriverWait(self.driver, time_to_wait).until(
+    def get_element_when_located(self, by_type, path: str, time_to_wait: int = 5) -> WebElement:
+        return WebDriverWait(self.driver, time_to_wait).until(
             EC.presence_of_element_located((by_type, path)))
 
     def send_text(self, by_type, path: str, text_to_send: str) -> None:
         try:
-            self.wait_for_element(by_type, path)
-            self.driver.find_element(by_type, path).send_keys(text_to_send)
+            self.get_element_when_located(by_type, path).send_keys(text_to_send)
         except (NoSuchElementException, TimeoutException):
             print('No "Search Input" field')
 
     def first_launch(self) -> None:
         """this method will be executed when the emulator had a reset or is a new one"""
         try:
-            self.wait_for_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/btn_cancel")
-            self.driver.find_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
+            self.get_element_when_located(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/btn_cancel").click()
         except (NoSuchElementException, TimeoutException):
             pass
         try:
-            self.wait_for_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button")
-            self.driver.find_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
+            self.get_element_when_located(AppiumBy.ID,
+                                          "com.amazon.mShop.android.shopping:id/skip_sign_in_button").click()
         except (NoSuchElementException, TimeoutException):
             pass
 
     def change_lang_if_must(self):
-        self.wait_for_element(AppiumBy.XPATH,
-                              '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, '
-                              'shop by department, programs and features, settings, and customer service Tab 4 of 4"]')
-        self.driver.find_element(AppiumBy.XPATH,
-                                 '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, '
-                                 'shop by department, programs and features, settings, '
-                                 'and customer service Tab 4 of 4"]').click()
+        self.get_element_when_located(AppiumBy.XPATH,
+                                      '//android.widget.ImageView[@content-desc='
+                                      '"Menu. Contains your orders, your account, '
+                                      'shop by department, programs and features, settings,'
+                                      ' and customer service Tab 4 of 4"]').click()
 
     def get_page(self, phrase_to_search: str) -> None:
         """search item phrase on the app"""
         try:
-            self.wait_for_element(AppiumBy.XPATH, DE.search_icon, time_to_wait=30)
-            self.driver.find_element(AppiumBy.XPATH, DE.search_icon).click()
+            self.get_element_when_located(AppiumBy.XPATH, DE.search_icon, time_to_wait=30).click()
         except (NoSuchElementException, TimeoutException):
             try:
-                self.wait_for_element(AppiumBy.XPATH, ENG.search_icon)
+                self.get_element_when_located(AppiumBy.XPATH, ENG.search_icon)
                 self.driver.find_element(AppiumBy.XPATH, ENG.search_icon).click()
             except (NoSuchElementException, TimeoutException):
-                self.wait_for_element(AppiumBy.ID, "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
-                self.driver.find_element(AppiumBy.ID,
-                                         "com.amazon.mShop.android.shopping:id/chrome_action_bar_search_icon")
+                self.get_element_when_located(AppiumBy.ID,
+                                              "com.amazon.mShop.android.shopping:id/"
+                                              "chrome_action_bar_search_icon").click()
 
         self.send_text(AppiumBy.ID, 'com.amazon.mShop.android.shopping:id/rs_search_src_text', phrase_to_search)
 
@@ -126,14 +123,10 @@ class BaseMethods(object):
         # TODO change xpath for multi lang (config)
         xpath = "//*[@text='Land/Region: Vereinigte Staaten (United States)']"
         try:
-            self.wait_for_element(AppiumBy.XPATH, xpath, time_to_wait=15)
-            self.driver.find_element(AppiumBy.XPATH, xpath).click()
+            self.get_element_when_located(AppiumBy.XPATH, xpath, time_to_wait=15).click()
             time.sleep(4)
             TouchAction(self.driver).tap(None, 500, 500, 1).perform()
-            # TODO change xpath for multi lang (config)
-            xpath_button = "//*[@text='Fertig']"
-            self.wait_for_element(AppiumBy.XPATH, xpath_button, time_to_wait=8)
-            self.driver.find_element(AppiumBy.XPATH, xpath_button).click()
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Fertig']", time_to_wait=8).click()
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
             pass
 
@@ -151,175 +144,57 @@ class BaseMethods(object):
                 pass
 
     def change_lang_from_eng_to_de(self):
-        is_settings_in_use = False
         try:
             xpath_menu = '//android.widget.ImageView[@content-desc="Menu. Contains your orders, ' \
                          'your account, shop by department, programs and features, settings, and' \
                          ' customer service Tab 4 of 4"]'
-            self.wait_for_element(AppiumBy.XPATH, xpath_menu, time_to_wait=15)
-            self.driver.find_element(AppiumBy.XPATH, xpath_menu).click()
-            is_settings_in_use = True
-        except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
-            pass
+            self.get_element_when_located(AppiumBy.XPATH, '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, shop by department, programs and features, settings, and customer service Tab 4 of 4"]', 10).click()
 
-        if is_settings_in_use:
-            try:
-                self.standard_config1()
-            except WebDriverException:
-                try:
-                    self.standard_config2()
-                except WebDriverException:
-                    pass
+            self.get_element_when_located(AppiumBy.XPATH,
+                                          "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/"
+                                          "android.widget.FrameLayout/android.view.ViewGroup/"
+                                          "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
+                                          "android.widget.ViewSwitcher/android.widget.FrameLayout/"
+                                          "android.view.ViewGroup/android.widget.ScrollView/"
+                                          "android.view.ViewGroup/android.widget.ScrollView/"
+                                          "android.view.ViewGroup/android.view.ViewGroup[2]/"
+                                          "android.view.ViewGroup/android.view.ViewGroup/"
+                                          "android.widget.Button", 120).click()
 
-    def standard_config2(self):
-        try:
-            # in case of a wrong currency ($) and correct lang
+            self.get_element_when_located(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/"
+                                                          "android.widget.LinearLayout/android.widget.FrameLayout/"
+                                                          "android.view.ViewGroup/android.widget.FrameLayout[2]/"
+                                                          "android.widget.FrameLayout/android.widget.ViewSwitcher/"
+                                                          "android.widget.FrameLayout/android.view.ViewGroup/"
+                                                          "android.widget.ScrollView/android.view.ViewGroup/"
+                                                          "android.widget.ScrollView/android.view.ViewGroup/"
+                                                          "android.view.ViewGroup[2]/android.view.ViewGroup/"
+                                                          "android.view.ViewGroup/android.view.ViewGroup/"
+                                                          "android.view.View[1]/android.view.ViewGroup/"
+                                                          "android.widget.TextView", 120).click()
+            time.sleep(5)
+            self.get_element_when_located(AppiumBy.XPATH, "//*[starts-with(@text, 'Country/Region:')]", 5).click()
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Germany (Deutschland)']", 5).click()
 
-            xpath_prime = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                          'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
-                          'android.widget.FrameLayout/android.widget.ViewSwitcher/android.widget.FrameLayout/' \
-                          'android.view.ViewGroup/android.widget.ScrollView/android.view.ViewGroup/' \
-                          'android.view.ViewGroup/android.view.ViewGroup/android.view.ViewGroup[1]/' \
-                          'android.view.ViewGroup[1]/android.view.ViewGroup/' \
-                          'android.view.ViewGroup[2]/android.widget.TextView'
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Language: English']", 5).click()
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='German']", 5).click()
 
-            self.wait_for_element(AppiumBy.XPATH, xpath_prime, time_to_wait=60)
-            prime = self.driver.find_element(AppiumBy.XPATH, xpath_prime)
+            self.get_element_when_located(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/"
+                                                          "android.widget.LinearLayout/android.widget.FrameLayout/"
+                                                          "android.view.ViewGroup/android.widget.FrameLayout[2]/"
+                                                          "android.widget.FrameLayout/android.widget.RelativeLayout/"
+                                                          "android.widget.RelativeLayout/android.webkit.WebView/"
+                                                          "android.webkit.WebView/android.view.View/android.view.View/"
+                                                          "android.view.View/android.view.View[10]/"
+                                                          "android.widget.Button").click()
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='€ - EUR - Euro']", 5).click()
 
-            if prime.get_attribute("text") == "Prime":
-                is_end_of_page = False
-                previous_page_source = self.driver.page_source
-                while not is_end_of_page:
-                    self.scroll_down()
-                    is_end_of_page = previous_page_source == self.driver.page_source
-                    previous_page_source = self.driver.page_source
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Fertig']", 5).click()
 
-                xpath_settings = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                                 'android.widget.FrameLayout/' \
-                                 'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
-                                 'android.widget.ViewSwitcher/android.widget.FrameLayout/android.view.ViewGroup/' \
-                                 'android.widget.ScrollView/android.view.ViewGroup/android.widget.ScrollView/' \
-                                 'android.view.ViewGroup/android.view.ViewGroup[1]/android.view.ViewGroup/' \
-                                 'android.view.ViewGroup/android.widget.Button'
-                self.wait_for_element(AppiumBy.XPATH, xpath_settings)
-                self.driver.find_element(AppiumBy.XPATH, xpath_settings).click()
-
-                xpath_land_und_sprache = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                                         'android.widget.FrameLayout/android.view.ViewGroup/' \
-                                         'android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
-                                         'android.widget.ViewSwitcher/android.widget.FrameLayout/' \
-                                         'android.view.ViewGroup/android.widget.ScrollView/' \
-                                         'android.view.ViewGroup/android.widget.ScrollView/' \
-                                         'android.view.ViewGroup/android.view.ViewGroup[1]/' \
-                                         'android.view.ViewGroup/android.view.ViewGroup/' \
-                                         'android.view.ViewGroup/android.view.View[1]'
-                self.wait_for_element(AppiumBy.XPATH, xpath_land_und_sprache, time_to_wait=30)
-                self.driver.find_element(AppiumBy.XPATH, xpath_land_und_sprache).click()
+            time.sleep(20)
 
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
-            self.standard_config1()
-
-    def standard_config1(self):
-        xpath_setting_bar = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                            'android.widget.FrameLayout/' \
-                            'android.view.ViewGroup/android.widget.FrameLayout[2]/android.widget.FrameLayout/' \
-                            'android.widget.ViewSwitcher/android.widget.FrameLayout/android.view.ViewGroup/' \
-                            'android.widget.ScrollView/android.view.ViewGroup/android.widget.ScrollView/' \
-                            'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/' \
-                            'android.view.ViewGroup/android.widget.Button'
-        self.wait_for_element(AppiumBy.XPATH, xpath_setting_bar, time_to_wait=60)
-        self.driver.find_element(AppiumBy.XPATH, xpath_setting_bar).click()
-
-        xpath_country_and_language = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                                     'android.widget.FrameLayout/' \
-                                     'android.view.ViewGroup/android.widget.FrameLayout[' \
-                                     '2]/android.widget.FrameLayout/' \
-                                     'android.widget.ViewSwitcher/android.widget.FrameLayout/' \
-                                     'android.view.ViewGroup/' \
-                                     'android.widget.ScrollView/android.view.ViewGroup/' \
-                                     'android.widget.ScrollView/' \
-                                     'android.view.ViewGroup/android.view.ViewGroup[2]/android.view.ViewGroup/' \
-                                     'android.view.ViewGroup/android.view.ViewGroup/android.view.View[' \
-                                     '1]'
-        self.wait_for_element(AppiumBy.XPATH, xpath_country_and_language, time_to_wait=60)
-        self.driver.find_element(AppiumBy.XPATH, xpath_country_and_language).click()
-
-        country_region = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                         'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
-                         'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
-                         'android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/' \
-                         'android.view.View/android.view.View[1]/android.widget.Button'
-        self.wait_for_element(AppiumBy.XPATH, country_region, time_to_wait=30)
-        country_and_region_button = self.driver.find_element(AppiumBy.XPATH, country_region)
-        country_and_region_button.click()
-
-        try:
-            self.wait_for_element(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/"
-                                                  "android.widget.FrameLayout/android.view.ViewGroup/"
-                                                  "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
-                                                  "android.widget.RelativeLayout/android.widget.RelativeLayout/"
-                                                  "android.webkit.WebView/android.webkit.WebView/android.view.View/"
-                                                  "android.view.View/android.view.View/android.widget.RadioButton[5]",
-                                  time_to_wait=60)
-            webElement_region_germany = self.driver.find_element(AppiumBy.XPATH,
-                                                                 "/hierarchy/android.widget.FrameLayout/"
-                                                                 "android.widget.LinearLayout/android.widget."
-                                                                 "FrameLayout/android.view.ViewGroup/"
-                                                                 "android.widget.FrameLayout[2]/"
-                                                                 "android.widget.FrameLayout/"
-                                                                 "android.widget.RelativeLayout/"
-                                                                 "android.widget.RelativeLayout/"
-                                                                 "android.webkit.WebView/android.webkit.WebView/"
-                                                                 "android.view.View/android.view.View/"
-                                                                 "android.view.View/android.widget.RadioButton[5]")
-            webElement_region_germany.click()
-
-        except WebDriverException:
-            # TODO change to logs
-            print("ERROR in the country/regions button settings (stage 1)!")
-
-        xpath_language = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                         'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
-                         'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
-                         'android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/' \
-                         'android.view.View/android.view.View[2]/android.widget.Button'
-        self.wait_for_element(AppiumBy.XPATH, xpath_language, time_to_wait=60)
-        language_button = self.driver.find_element(AppiumBy.XPATH, xpath_language)
-        language_button.click()
-
-        """xpath_lang = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                     'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
-                     'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
-                     'android.webkit.WebView/android.webkit.WebView/android.view.View[1]/android.view.View/' \
-                     'android.view.View[7]/android.widget.RadioButton[1]'"""
-
-        xpath_lang = "//*[starts-with(@text,'German Deutsch')]"
-
-        self.wait_for_element(AppiumBy.XPATH, xpath_lang, time_to_wait=60)
-        language_button: WebElement = self.driver.find_element(AppiumBy.XPATH, xpath_lang)
-
-        language_button.click()
-
-        xpath_currency = '/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/' \
-                         'android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout[2]/' \
-                         'android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/' \
-                         'android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/' \
-                         'android.view.View/android.view.View[3]/android.widget.Button'
-        self.wait_for_element(AppiumBy.XPATH, xpath_currency, time_to_wait=60)
-        currency_button = self.driver.find_element(AppiumBy.XPATH, xpath_currency)
-        if currency_button.get_attribute("text") == "€ - EUR - Euro":
             pass
-        elif currency_button.get_attribute("text") == "Währung: $ - USD - US-Dollar":
-            currency_button.click()
-
-            self.wait_for_element(AppiumBy.XPATH, "//*[starts-with(@text,'€ - EUR - Euro')]")
-            web_element_currency_euro = self.driver.find_element(AppiumBy.XPATH,
-                                                                 "//*[starts-with(@text,'€ - EUR - Euro')]")
-            web_element_currency_euro.click()
-
-        self.wait_for_element(AppiumBy.XPATH, "//*[starts-with(@text,'Fertig')]")
-        accept_button = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text,'Fertig')]")
-        accept_button.click()
 
 
 def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
