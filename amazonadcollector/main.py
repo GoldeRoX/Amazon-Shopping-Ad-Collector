@@ -13,23 +13,19 @@ from amazonadcollector.locators_data import DE
 
 
 def main(udid: int):
-    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://149.154.159.246:3128 -port {udid}")
+    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://142.132.181.232:50011 -port {udid}")
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
     time.sleep(10)
     start_time = time.time()
 
     try:
         session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid))
-        print("normal start")
     except WebDriverException:
         session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid),
                            skip_device_initialization=False, skip_server_installation=False, no_reset=False)
-        print("special start")
 
     base_methods = BaseMethods(session.driver)
     base_methods.amazon_not_responding_close()
-
-    # base_methods.config_start()
     base_methods.first_launch()
     base_methods.change_lang_from_eng_to_de()
 
@@ -43,17 +39,20 @@ def main(udid: int):
     # base_methods.get_page(keyword["keyword"])
     base_methods.get_page("Laptops")
     try:
+        print(session.driver.get_settings())
 
         new_udid = 1
 
         base_methods.amazon_not_responding_close()
+        time.sleep(1.5)
         base_methods.cookies_click()
+        time.sleep(1.5)
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
         previous_page_source = session.driver.page_source
-
-        """ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
-        ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_7_alternative(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
+        """ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_10(session_id, keyword_id, new_udid)"""
 

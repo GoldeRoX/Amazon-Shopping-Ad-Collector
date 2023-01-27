@@ -19,8 +19,23 @@ from amazonadcollector.locators_data import *
 
 
 class MyDriver(object):
-
     # new android 12.0 and model Pixel 4a
+
+    """"platformName": "Android",
+    "appium:platformVersion": "12",
+    "appium:automationName": "UiAutomator2",
+    "appium:appPackage": "com.amazon.mShop.android.shopping",
+    "appium:appActivity": "com.amazon.mShop.home.HomeActivity",
+    "appium:deviceName": "emulator-5554",
+    "uiautomator2ServerLaunchTimeout": 40000,
+    "iosInstallPause": 8000,
+    "wdaStartupRetryInterval": 200000,
+    "newCommandTimeout": 20000,
+    "skipDeviceInitialization": true,
+    "skipServerInstallation": true,
+    "noReset": true,
+    "normalizeTagNames": true"""
+
     def __init__(self, platform_name="Android", platform_version="12",
                  automation_name="UiAutomator2", app_package="com.amazon.mShop.android.shopping",
                  app_activity="com.amazon.mShop.home.HomeActivity", device_name="emulator-5554",
@@ -43,8 +58,6 @@ class MyDriver(object):
             "skipServerInstallation": skip_server_installation,
             "noReset": no_reset,
             "normalizeTagNames": normalize_tag_names,
-            "clearSystemFiles": True,
-            "ignoreHiddenApiPolicyError": True,
             "app": "/home/krzysztof/Downloads/com.amazon.mShop.android.shopping_26.1.2.100.apk"
         }
         self.driver = webdriver.Remote(command_executor="http://localhost:4723/wd/hub",
@@ -148,36 +161,44 @@ class BaseMethods(object):
             xpath_menu = '//android.widget.ImageView[@content-desc="Menu. Contains your orders, ' \
                          'your account, shop by department, programs and features, settings, and' \
                          ' customer service Tab 4 of 4"]'
-            self.get_element_when_located(AppiumBy.XPATH, '//android.widget.ImageView[@content-desc="Menu. Contains your orders, your account, shop by department, programs and features, settings, and customer service Tab 4 of 4"]', 10).click()
+            self.get_element_when_located(AppiumBy.XPATH, '//android.widget.ImageView[@content-desc='
+                                                          '"Menu. Contains your orders, your account,'
+                                                          ' shop by department, programs and features,'
+                                                          ' settings, and customer service Tab 4 of 4"]', 15).click()
 
-            self.get_element_when_located(AppiumBy.XPATH,
-                                          "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/"
-                                          "android.widget.FrameLayout/android.view.ViewGroup/"
-                                          "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
-                                          "android.widget.ViewSwitcher/android.widget.FrameLayout/"
-                                          "android.view.ViewGroup/android.widget.ScrollView/"
-                                          "android.view.ViewGroup/android.widget.ScrollView/"
-                                          "android.view.ViewGroup/android.view.ViewGroup[2]/"
-                                          "android.view.ViewGroup/android.view.ViewGroup/"
-                                          "android.widget.Button", 120).click()
+            try:
+                self.get_element_when_located(AppiumBy.XPATH,
+                                              "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/"
+                                              "android.widget.FrameLayout/android.view.ViewGroup/"
+                                              "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
+                                              "android.widget.ViewSwitcher/android.widget.FrameLayout/"
+                                              "android.view.ViewGroup/android.widget.ScrollView/"
+                                              "android.view.ViewGroup/android.widget.ScrollView/"
+                                              "android.view.ViewGroup/android.view.ViewGroup[2]/"
+                                              "android.view.ViewGroup/android.view.ViewGroup/"
+                                              "android.widget.Button", 20).click()
 
-            self.get_element_when_located(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/"
-                                                          "android.widget.LinearLayout/android.widget.FrameLayout/"
-                                                          "android.view.ViewGroup/android.widget.FrameLayout[2]/"
-                                                          "android.widget.FrameLayout/android.widget.ViewSwitcher/"
-                                                          "android.widget.FrameLayout/android.view.ViewGroup/"
-                                                          "android.widget.ScrollView/android.view.ViewGroup/"
-                                                          "android.widget.ScrollView/android.view.ViewGroup/"
-                                                          "android.view.ViewGroup[2]/android.view.ViewGroup/"
-                                                          "android.view.ViewGroup/android.view.ViewGroup/"
-                                                          "android.view.View[1]/android.view.ViewGroup/"
-                                                          "android.widget.TextView", 120).click()
+                self.get_element_when_located(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/"
+                                                              "android.widget.LinearLayout/android.widget.FrameLayout/"
+                                                              "android.view.ViewGroup/android.widget.FrameLayout[2]/"
+                                                              "android.widget.FrameLayout/android.widget.ViewSwitcher/"
+                                                              "android.widget.FrameLayout/android.view.ViewGroup/"
+                                                              "android.widget.ScrollView/android.view.ViewGroup/"
+                                                              "android.widget.ScrollView/android.view.ViewGroup/"
+                                                              "android.view.ViewGroup[2]/android.view.ViewGroup/"
+                                                              "android.view.ViewGroup/android.view.ViewGroup/"
+                                                              "android.view.View[1]/android.view.ViewGroup/"
+                                                              "android.widget.TextView", 10).click()
+            except Exception as e:
+                self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Settings']").click()
+                self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Country & Language']").click()
+
             time.sleep(5)
-            self.get_element_when_located(AppiumBy.XPATH, "//*[starts-with(@text, 'Country/Region:')]", 5).click()
-            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Germany (Deutschland)']", 5).click()
+            self.get_element_when_located(AppiumBy.XPATH, "//*[starts-with(@text, 'Country/Region:')]").click()
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Germany (Deutschland)']").click()
 
-            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Language: English']", 5).click()
-            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='German']", 5).click()
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Language: English']").click()
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='German']").click()
 
             self.get_element_when_located(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/"
                                                           "android.widget.LinearLayout/android.widget.FrameLayout/"
