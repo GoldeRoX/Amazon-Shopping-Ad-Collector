@@ -24,14 +24,13 @@ class AdHandler(object):
         self.ad_text_filter = []
         self.page_index = []
         self.lang = lang
+        self.sql_manager = SQLAdManager()
 
     def save_ad(self, session_id: int, ad: Ad, keyword_id, udid: int) -> None:
-        Manager = SQLAdManager()
-        Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                ad.ad_type, session_id, keyword_id, udid)
-        save_cropped_scr(self.driver, ad, str(Manager.get_last_saved_id_from_db()))
+        self.sql_manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
+                                         ad.ad_type, session_id, keyword_id, udid)
+        save_cropped_scr(self.driver, ad, str(self.sql_manager.get_last_saved_id_from_db()))
 
-    # TODO nadpisac nowa wersje banera
     def get_web_elements_banner_ad(self) -> [WebElement]:
         web_elements: list[WebElement] = self.driver.find_elements(AppiumBy.XPATH, self.lang.banner_ad)
         return [element for element in web_elements if element.size["width"] > 500 and element.size["height"] > 300]
@@ -153,7 +152,8 @@ class AdHandler(object):
         for webElement in ads_webelements:
             if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
                 result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@content-desc,"
-                                                                            " 'Gesponserte Werbeanzeige von')]").get_attribute("content-desc")
+                                                                            " 'Gesponserte Werbeanzeige von')]")\
+                                                                            .get_attribute("content-desc")
                 """create ad object"""
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
                 ad = Ad(webElement, 7)
@@ -373,10 +373,14 @@ class AdHandler(object):
                 if webElement.size["height"] > 10:
                     elements: list[WebElement] = webElement.find_elements(AppiumBy.XPATH,
                                                                           ".//*[@class='android.view.View']")
-                    result_text: str = elements[4].get_attribute("text")
-                    var1: bool = result_text.startswith(self.lang.ad_5_starts_with)
-                    var2: bool = elements[7].get_attribute("text") == "product-detail"
-                    if var1 and var2 and result_text not in self.ad_text_filter:
+                    result_text: str = elements[4].get_attribute("content-desc")
+                    var1: bool = False
+                    try:
+                        var1: bool = result_text.startswith("Gesponsert")
+                    except AttributeError:
+                        pass
+                    # var2: bool = elements[7].get_attribute("content-desc") == "product-detail"
+                    if var1 and result_text not in self.ad_text_filter:
                         """create ad object"""
                         print("adjusting ad type 5 ...")
                         AdjustAd(self.driver).match_ad_visibility(webElement)
@@ -444,9 +448,11 @@ class AdHandler(object):
         path: str = config["COMPUTER"]["SAVE_PATH"]
         if not os.path.exists(f"{path}/{date_folder_name}"):
             os.mkdir(f"{path}/{date_folder_name}")
+
         self.driver.start_recording_screen()
         time.sleep(60)
         video_rawdata: bytes = self.driver.stop_recording_screen()
+
         video_name: str = str(db_id)
         filepath = os.path.join(f"{path}/{date_folder_name}", "test_" + video_name + ".mp4")
         with open(filepath, "wb+") as vd:
@@ -462,9 +468,8 @@ class AdHandler(object):
         try:
             video_ad_web_element: WebElement = self.driver.find_element(AppiumBy.XPATH, self.lang.ad_video)
             path: str = ".//child::*" + 7 * "/following-sibling::*"
-            text: str = video_ad_web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
-            if video_ad_web_element.size["height"] > 10 and text not in self.ad_text_filter:
-
+            text: str = video_ad_web_element.find_element(AppiumBy.XPATH, path).get_attribute("content-desc")
+            if video_ad_web_element.size["height"] > 10 and text not in self.ad_text_filter and text is not None:
                 print("adjusting video ad ...")
                 AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
 
@@ -473,18 +478,15 @@ class AdHandler(object):
                 ad = Ad(video_ad_web_element, 6)
                 ad.text = text
 
-                Manager = SQLAdManager()
-                Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                        ad.ad_type, session_id, keyword_id, udid)
+                self.sql_manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text,
+                                                 ad.timestamp, ad.ad_type, session_id, keyword_id, udid)
 
-                self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
+                self.save_cropped_scr_for_videos(ad, str(self.sql_manager.get_last_saved_id_from_db()))
 
-                if ad.text is not None:
-                    self.ad_text_filter.append(ad.text)
-                """In case of error in recording screen, save ad info and continue"""
-
-                self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
+                self.ad_text_filter.append(ad.text)
+                self.create_and_crop_video(video_ad_web_element, self.sql_manager.data_set_id)
                 print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                """In case of error in recording screen, save ad info and continue"""
 
         except NoSuchElementException:
             pass
@@ -493,11 +495,9 @@ class AdHandler(object):
         """Collecting video, scr and modified scr for ad of type 6 - video_ad"""
         try:
             video_ad_web_element: WebElement = self.driver.find_element(AppiumBy.XPATH, self.lang.ad_video)
-
             path: str = ".//child::*" + 7 * "/following-sibling::*"
             text: str = video_ad_web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
-            if video_ad_web_element.size["height"] > 10 and text not in self.ad_text_filter:
-
+            if video_ad_web_element.size["height"] > 10 and text not in self.ad_text_filter and text is not None:
                 print("adjusting video ad ...")
                 AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
 
@@ -506,18 +506,15 @@ class AdHandler(object):
                 ad = Ad(video_ad_web_element, 6)
                 ad.text = text
 
-                Manager = SQLAdManager()
-                Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                        ad.ad_type, session_id, keyword_id, udid)
+                self.sql_manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text,
+                                                 ad.timestamp, ad.ad_type, session_id, keyword_id, udid)
 
-                self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
+                self.save_cropped_scr_for_videos(ad, str(self.sql_manager.get_last_saved_id_from_db()))
 
-                if ad.text is not None:
-                    self.ad_text_filter.append(ad.text)
-                """In case of error in recording screen, save ad info and continue"""
-
-                self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
+                self.ad_text_filter.append(ad.text)
+                self.create_and_crop_video(video_ad_web_element, self.sql_manager.data_set_id)
                 print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                """In case of error in recording screen, save ad info and continue"""
 
         except NoSuchElementException:
             pass

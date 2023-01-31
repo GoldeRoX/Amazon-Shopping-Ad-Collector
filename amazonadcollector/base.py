@@ -158,9 +158,6 @@ class BaseMethods(object):
 
     def change_lang_from_eng_to_de(self):
         try:
-            xpath_menu = '//android.widget.ImageView[@content-desc="Menu. Contains your orders, ' \
-                         'your account, shop by department, programs and features, settings, and' \
-                         ' customer service Tab 4 of 4"]'
             self.get_element_when_located(AppiumBy.XPATH, '//android.widget.ImageView[@content-desc='
                                                           '"Menu. Contains your orders, your account,'
                                                           ' shop by department, programs and features,'

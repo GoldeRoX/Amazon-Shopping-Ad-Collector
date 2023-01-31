@@ -37,10 +37,8 @@ def main(udid: int):
     keyword_id = keyword["id"]
 
     # base_methods.get_page(keyword["keyword"])
-    base_methods.get_page("Laptops")
+    base_methods.get_page("Tea")
     try:
-        print(session.driver.get_settings())
-
         new_udid = 1
 
         base_methods.amazon_not_responding_close()
@@ -66,9 +64,10 @@ def main(udid: int):
             base_methods.amazon_not_responding_close()
             base_methods.cookies_click()
             # ad_handler.collect_ad_type_1(session_id, keyword_id, new_udid)
+            # TODO naprawic video
             # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
-            # ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
+            ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_1()
 
