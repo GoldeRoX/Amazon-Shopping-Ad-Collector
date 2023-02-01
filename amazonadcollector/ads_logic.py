@@ -150,35 +150,42 @@ class AdHandler(object):
         """Create, send data to DB and save scr of ad"""
         ads_webelements = self.get_webelements_ads_7_alternative()
         for webElement in ads_webelements:
-            if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@content-desc,"
-                                                                            " 'Gesponserte Werbeanzeige von')]")\
-                                                                            .get_attribute("content-desc")
-                """create ad object"""
-                print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
-                ad = Ad(webElement, 7)
-                ad.text = result_text
-                self.save_ad(session_id, ad, keyword_id, udid)
-                print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                if ad.text is not None:
-                    self.ad_text_filter.append(ad.text)
+            try:
+                if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
+                    result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@content-desc,"
+                                                                                " 'Gesponserte Werbeanzeige von')]")\
+                                                                                .get_attribute("content-desc")
+                    """create ad object"""
+                    print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
+                    ad = Ad(webElement, 7)
+                    ad.text = result_text
+                    self.save_ad(session_id, ad, keyword_id, udid)
+                    print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                    if ad.text is not None:
+                        self.ad_text_filter.append(ad.text)
+                    return
+            except AttributeError:
                 return
 
     def collect_ad_type_7(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send data to DB and save scr of ad"""
         ads_webelements = self.get_webelements_ads_7()
         for webElement in ads_webelements:
-            if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text, 'Gesponserte "
-                                                                            "Werbeanzeige von')]").get_attribute("text")
-                """create ad object"""
-                print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
-                ad = Ad(webElement, 7)
-                ad.text = result_text
-                self.save_ad(session_id, ad, keyword_id, udid)
-                print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                if ad.text is not None:
-                    self.ad_text_filter.append(ad.text)
+            try:
+                if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
+                    result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text, 'Gesponserte "
+                                                                                "Werbeanzeige von')]")\
+                                                                                .get_attribute("text")
+                    """create ad object"""
+                    print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
+                    ad = Ad(webElement, 7)
+                    ad.text = result_text
+                    self.save_ad(session_id, ad, keyword_id, udid)
+                    print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                    if ad.text is not None:
+                        self.ad_text_filter.append(ad.text)
+                    return
+            except AttributeError:
                 return
 
     def get_webelements_ads_10(self) -> [WebElement]:
@@ -529,7 +536,7 @@ class AdjustAd(object):
     def match_ad_visibility(self, web_element: WebElement):
         if web_element.size["height"] > 10 and web_element.size["width"] > 10:
             previous_height: int = web_element.size["height"]
-            self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
+            self.driver.swipe(start_x=1, start_y=1100, end_x=1, end_y=1000, duration=400)
             next_height: int = web_element.size["height"]
 
             while True:
@@ -540,11 +547,11 @@ class AdjustAd(object):
                 if next_height > previous_height:
                     """case if element is on the bottom"""
                     previous_height: int = web_element.size["height"]
-                    self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
+                    self.driver.swipe(start_x=1, start_y=1100, end_x=1, end_y=1000, duration=400)
                     next_height: int = web_element.size["height"]
 
                 else:
                     """case if element is on the top"""
                     previous_height: int = web_element.size["height"]
-                    self.driver.swipe(start_x=10, start_y=1000, end_x=10, end_y=1500, duration=400)
+                    self.driver.swipe(start_x=1, start_y=1000, end_x=1, end_y=1500, duration=400)
                     next_height: int = web_element.size["height"]

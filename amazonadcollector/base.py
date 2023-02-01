@@ -128,7 +128,7 @@ class BaseMethods(object):
         *default value is y=600
         """
         try:
-            self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1100 - y, duration=400)
+            self.driver.swipe(start_x=0, start_y=1100, end_x=0, end_y=1100 - y, duration=400)
         except WebDriverException:
             pass
 

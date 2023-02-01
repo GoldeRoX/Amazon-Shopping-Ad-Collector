@@ -36,15 +36,15 @@ def main(udid: int):
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
 
+    base_methods.get_page("Minecraft")
     # base_methods.get_page(keyword["keyword"])
-    base_methods.get_page("Tea")
     try:
         new_udid = 1
 
         base_methods.amazon_not_responding_close()
-        time.sleep(1.5)
+        time.sleep(2)
         base_methods.cookies_click()
-        time.sleep(1.5)
+        time.sleep(4)
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
         previous_page_source = session.driver.page_source
@@ -62,12 +62,10 @@ def main(udid: int):
 
         while not is_end_of_page:
             base_methods.amazon_not_responding_close()
-            base_methods.cookies_click()
             # ad_handler.collect_ad_type_1(session_id, keyword_id, new_udid)
-            # TODO naprawic video
             # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
+            # ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_1()
 
