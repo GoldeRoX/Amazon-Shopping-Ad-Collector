@@ -58,7 +58,8 @@ class MyDriver(object):
             "skipServerInstallation": skip_server_installation,
             "noReset": no_reset,
             "normalizeTagNames": normalize_tag_names,
-            "app": "/home/krzysztof/Downloads/com.amazon.mShop.android.shopping_26.1.2.100.apk"
+            "app": os.path.join(os.path.dirname(__file__),
+                                "../amazon_apk/com.amazon.mShop.android.shopping_26.1.2.100.apk")
         }
         self.driver = webdriver.Remote(command_executor="http://localhost:4723/wd/hub",
                                        desired_capabilities=desired_caps)
@@ -194,8 +195,12 @@ class BaseMethods(object):
             self.get_element_when_located(AppiumBy.XPATH, "//*[starts-with(@text, 'Country/Region:')]").click()
             self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Germany (Deutschland)']").click()
 
-            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Language: English']").click()
-            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='German']").click()
+            try:
+                self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Language: English']").click()
+                self.get_element_when_located(AppiumBy.XPATH, "//*[@text='German']").click()
+            except NoSuchElementException:
+                self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text, 'Sprache:')]").click()
+                self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Deutsch']").click()
 
             self.get_element_when_located(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/"
                                                           "android.widget.LinearLayout/android.widget.FrameLayout/"
