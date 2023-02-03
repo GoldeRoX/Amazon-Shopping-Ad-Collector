@@ -118,8 +118,56 @@ class AdHandler(object):
                     action = TouchAction(self.driver)
                     for web_element in elements:
                         if web_element.get_attribute("clickable") == "true" and \
-                                web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with) \
+                                web_element.get_attribute("text").startswith("Gesponserte Werbeanzeige von") \
                                 and web_element.get_attribute("text") not in self.ad_text_filter:
+                            webelements.append(web_element)
+
+                    for index, web_element in enumerate(webelements):
+                        """scroll through web_elements ads"""
+                        print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
+                        if index == 0:
+                            print(print("adjusting ad type 2 ..."))
+                            AdjustAd(self.driver).match_ad_visibility(web_element)
+                        else:
+                            action.press(webelements[index]) \
+                                .move_to(webelements[index - 1]) \
+                                .wait(ms=2000) \
+                                .release() \
+                                .perform()
+                            time.sleep(2.5)
+
+                        """create an object of ad"""
+                        if web_element.get_attribute("text") not in self.ad_text_filter:
+                            ad = Ad(web_element, 2)
+                            self.save_ad(session_id, ad, keyword_id, udid)
+                            print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                            if ad.text.strip() is not None:
+                                self.ad_text_filter.append(ad.text)
+        except (NoSuchElementException, IndexError):
+            pass
+
+    def collect_ad_type_2_alt(self, session_id: int, keyword_id: int, udid: int) -> None:
+        """Create, send to DB and save scr of ad"""
+
+        """
+        najpierw sprwdze czy poszczegolne pojedyncze reklamy sa juz w BD
+        nastepnie zaznacze (index) brakujace reklamy
+        dopiero po tym zaczne zbierac reklamy 
+        te rozwiazanie sprawia pominiecie niepotrzebnych czynnosci powtarzalnosci dla tego samego Web-Elementu
+        """
+        try:
+            ads_webelements: list[WebElement] = self.get_webelements_ads_2()
+
+            for webElement in ads_webelements:
+                if webElement.size["height"] > 10:
+                    elements: list[WebElement] = webElement.find_elements(AppiumBy.XPATH,
+                                                                          ".//*[@class='android.view.View']")
+                    webelements: list = []
+                    action = TouchAction(self.driver)
+                    for web_element in elements:
+                        if web_element.get_attribute("clickable") == "true" and \
+                                web_element.get_attribute("content-desc").startswith("Gesponserte Werbeanzeige von") \
+                                and web_element.get_attribute("content-desc") not in self.ad_text_filter:
                             webelements.append(web_element)
 
                     for index, web_element in enumerate(webelements):

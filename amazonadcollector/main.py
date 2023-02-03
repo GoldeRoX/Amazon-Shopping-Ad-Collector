@@ -66,7 +66,8 @@ def main(udid: int):
             # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
-            # ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
+            ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
+            ad_handler.collect_ad_type_2_alt(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_1()
 
             base_methods.scroll_down()
