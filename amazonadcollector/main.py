@@ -36,7 +36,7 @@ def main(udid: int):
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
 
-    base_methods.get_page("Minecraft")
+    base_methods.get_page("Tea")
     # base_methods.get_page(keyword["keyword"])
     try:
         new_udid = 1
@@ -48,8 +48,8 @@ def main(udid: int):
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
         previous_page_source = session.driver.page_source
-        ad_handler.collect_ad_type_7_alternative(session_id, keyword_id, new_udid)
-        ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_7_top_alternative(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_7_top(session_id, keyword_id, new_udid)
         """ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_10(session_id, keyword_id, new_udid)"""
@@ -61,16 +61,17 @@ def main(udid: int):
         print(test)"""
 
         while not is_end_of_page:
+            base_methods.scroll_down()
             base_methods.amazon_not_responding_close()
             # ad_handler.collect_ad_type_1(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
+            ad_handler.collect_ad_type_7_mid_alternative(session_id, keyword_id, new_udid)
+            ad_handler.collect_ad_type_7_mid(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_2_alt(session_id, keyword_id, new_udid)
+            """ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)"""
+            # ad_handler.collect_ad_type_2_alt(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_1()
-
-            base_methods.scroll_down()
 
             is_end_of_page = previous_page_source == session.driver.page_source
             previous_page_source = session.driver.page_source

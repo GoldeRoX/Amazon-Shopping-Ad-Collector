@@ -146,16 +146,14 @@ class BaseMethods(object):
 
     def cookies_click(self) -> None:
         try:
-            xpath = "//*[@text='Cookies akzeptieren']"
-            self.driver.find_element(AppiumBy.XPATH, xpath).click()
-
+            self.driver.find_element(AppiumBy.ID, "cc-banner-accept").click()
+            return
         except NoSuchElementException:
             try:
-                web_elements2 = self.driver.find_elements(AppiumBy.XPATH, "//*[starts-with(@text, 'Cookie')]")
-
-                web_elements2[-2].click()
-            except (NoSuchElementException, IndexError, WebDriverException):
-                pass
+                self.driver.find_element(AppiumBy.XPATH, "//*[@text='Cookies akzeptieren']").click()
+                return
+            except NoSuchElementException:
+                return
 
     def change_lang_from_eng_to_de(self):
         try:
@@ -196,8 +194,21 @@ class BaseMethods(object):
             self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Germany (Deutschland)']").click()
 
             try:
-                self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Language: English']").click()
-                self.get_element_when_located(AppiumBy.XPATH, "//*[@text='German']").click()
+                try:
+                    self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Language: English']").click()
+                except NoSuchElementException:
+                    self.driver.find_element(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/"
+                                                             "android.widget.LinearLayout/android.widget.FrameLayout/"
+                                                             "android.view.ViewGroup/android.widget.FrameLayout[2]/"
+                                                             "android.widget.FrameLayout/android.widget.RelativeLayout/"
+                                                             "android.widget.RelativeLayout/android.webkit.WebView/"
+                                                             "android.webkit.WebView/android.view.View/"
+                                                             "android.view.View/android.view.View/"
+                                                             "android.view.View[8]/android.widget.Button").click()
+                try:
+                    self.get_element_when_located(AppiumBy.XPATH, "//*[@text='German']").click()
+                except NoSuchElementException:
+                    self.driver.find_element(AppiumBy.XPATH, "//*[@text='Deutsch']").click()
             except NoSuchElementException:
                 self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text, 'Sprache:')]").click()
                 self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Deutsch']").click()
