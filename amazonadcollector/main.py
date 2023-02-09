@@ -15,7 +15,7 @@ from amazonadcollector.locators_data import DE
 def main(udid: int):
     pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://81.169.186.225:3128 -port {udid}")
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
-    time.sleep(10)
+    time.sleep(30)
     start_time = time.time()
 
     try:
@@ -36,7 +36,7 @@ def main(udid: int):
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
 
-    base_methods.get_page("Tea")
+    base_methods.get_page("Pepsi")
     # base_methods.get_page(keyword["keyword"])
     try:
         new_udid = 1
@@ -48,11 +48,9 @@ def main(udid: int):
         """scroll down through app Y and collect ads"""
         is_end_of_page = False
         previous_page_source = session.driver.page_source
-        ad_handler.collect_ad_type_7_top_alternative(session_id, keyword_id, new_udid)
         ad_handler.collect_ad_type_7_top(session_id, keyword_id, new_udid)
         """ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
-        ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)
-        ad_handler.collect_ad_type_10(session_id, keyword_id, new_udid)"""
+        ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)"""
 
         """test_1 = ad_handler.get_all_node_web_elements()
         print(len(test_1))
@@ -66,7 +64,6 @@ def main(udid: int):
             # ad_handler.collect_ad_type_1(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_7_mid_alternative(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_7_mid(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
             """ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)"""

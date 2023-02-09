@@ -16,17 +16,19 @@ class ENG(object):
 
 
 class DE(object):
+
+    ad_7 = "//*[@text='Feedback zur gesponserten Werbeanzeige geben']/parent::*/parent::*/parent::*"
+
     search_icon = '//android.widget.LinearLayout[@content-desc="Suche"]'
     search_input = 'com.amazon.mShop.android.shopping:id/rs_search_src_text'
-    BOTTOM_AD = "//*[@text='Feedback zur gesponserten Werbeanzeige geben']/parent::*/parent::*"
-    BOTTOM_AD_TEXT_ELEMENT = "//*[@text='Feedback zur gesponserten Werbeanzeige geben']/parent::*"
+    # BOTTOM_AD = "//*[@text='Feedback zur gesponserten Werbeanzeige geben']/parent::*/parent::*"
+    # BOTTOM_AD_TEXT_ELEMENT = "//*[@text='Feedback zur gesponserten Werbeanzeige geben']/parent::*"
     brands_related_to_your_search_element_node = "//*[ends-with(@text, 'mit Ihrer Suche')]/parent::*"
     ad_4_node = "//*[starts-with(@text,'Gesponserte Anzeige –')]/parent::*"
     # ad_5_node = "//*[starts-with(@text,'Gesponsert')]/parent::*/parent::*"
     ad_2_starts_with = "Gesponserte Werbeanzeige von"
     ad_video = "//*[starts-with(@text, 'Feedback zu gesponserter Anzeige geben')]/parent::*/parent::*"
     App_schlieBen = "android:id/aerr_close"
-    ad_7 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
     ad_7_alt = "//*[starts-with(@content-desc, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
     ad_8 = "//*[starts-with(@content-desc, 'Gesponserte Werbeanzeige von')]"
     ad_9 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*"

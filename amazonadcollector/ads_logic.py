@@ -100,12 +100,6 @@ class AdHandler(object):
     def get_webelements_ads_2(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.brands_related_to_your_search_element_node)
 
-    def get_webelements_ads_7(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_7)
-
-    def get_webelements_ads_7_alternative(self):
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_7_alt)
-
     def collect_ad_type_2(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
@@ -190,7 +184,8 @@ class AdHandler(object):
                                 ads: list[WebElement] = [element for element in elements if
                                                          element.get_attribute("content-desc") not in used_ads_text]
                                 for index, ad1 in enumerate(ads):
-                                    par = (ads_webelements[index].size["width"] - ads_webelements[index].size["width"] / 2)
+                                    par = (ads_webelements[index].size["width"] - ads_webelements[index].size[
+                                        "width"] / 2)
 
                                     self.action.press(ads_webelements[index]) \
                                         .move_to(ads_webelements[index - 1], x=par, y=0) \
@@ -201,7 +196,7 @@ class AdHandler(object):
                                     print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
                                     ad = Ad(ad1, 2)
                                     ad.text = webElement.get_attribute("content-desc")
-                                    self.save_ad(session_id,  ad, keyword_id, udid)
+                                    self.save_ad(session_id, ad, keyword_id, udid)
                                     print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
                                     if ad.text.strip() is not None:
                                         self.ad_text_filter.append(ad.text)
@@ -213,116 +208,68 @@ class AdHandler(object):
         except (NoSuchElementException, IndexError):
             return
 
-    def collect_ad_type_7_mid_alternative(self, session_id: int, keyword_id: int, udid: int) -> None:
-        """Create, send data to DB and save scr of ad"""
-        ads_webelements = self.get_webelements_ads_7_alternative()
-        for webElement in ads_webelements:
-            try:
-                if webElement.size["height"] > 600 and webElement.get_attribute("resource-id") != "search":
-                    result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@content-desc,"
-                                                                                " 'Gesponserte Werbeanzeige von')]") \
-                                                                                .get_attribute("content-desc")
-
-                    if result_text not in self.ad_text_filter:
-                        print("adjusting ad type 7(mid) ...")
-                        AdjustAd(self.driver).match_ad_visibility(webElement)
-                        """create ad object"""
-                        print("collecting ad \033[1;31;40mtype 7(mid)\033[0;0m ...")
-                        ad = Ad(webElement, 7)
-                        ad.text = result_text
-                        self.save_ad(session_id, ad, keyword_id, udid)
-                        print("ad \033[1;31;40mtype 7(mid)\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                        if ad.text is not None:
-                            self.ad_text_filter.append(ad.text)
-                        return
-            except (NoSuchElementException, AttributeError):
-                return
+    def get_webelements_ads_7(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_7)
 
     def collect_ad_type_7_mid(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send data to DB and save scr of ad"""
-        ads_webelements = self.get_webelements_ads_7()
+        ads_webelements: list[WebElement] = self.get_webelements_ads_7()
         for webElement in ads_webelements:
             try:
-                if webElement.size["height"] > 600 and webElement.get_attribute("resource-id") != "search":
-                    result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text, 'Gesponserte "
-                                                                                "Werbeanzeige von')]") \
-                                                                                .get_attribute("text")
-
+                condition_1: bool = webElement.get_attribute("resource-id") not in ["search", None]
+                condition_2: bool = webElement.find_element(AppiumBy.XPATH, "./" + 4 * "/child::*")\
+                    .get_attribute("content-desc")\
+                    .startswith("Gesponserte Werbeanzeige von")
+                condition_3: bool = webElement.find_element(AppiumBy.XPATH,
+                                                            ".//child::*" + (2 * "/following-sibling::*")) \
+                    .get_attribute("content-desc").__contains__("Jetzt")
+                if webElement.size["height"] > 10 and condition_1 and condition_2 and condition_3:
+                    result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@content-desc,"
+                                                                                " 'Gesponserte Werbeanzeige von')]") \
+                        .get_attribute("content-desc")
                     if result_text not in self.ad_text_filter:
                         print("adjusting ad type 7(mid) ...")
                         AdjustAd(self.driver).match_ad_visibility(webElement)
+
                         """create ad object"""
                         print("collecting ad \033[1;31;40mtype 7(mid)\033[0;0m ...")
                         ad = Ad(webElement, 7)
                         ad.text = result_text
                         self.save_ad(session_id, ad, keyword_id, udid)
                         print("ad \033[1;31;40mtype 7(mid)\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                        self.ad_text_filter.append(result_text)
                         return
             except (NoSuchElementException, AttributeError):
-                return
-
-    def collect_ad_type_7_top_alternative(self, session_id: int, keyword_id: int, udid: int) -> None:
-        """Create, send data to DB and save scr of ad"""
-        ads_webelements = self.get_webelements_ads_7_alternative()
-        for webElement in ads_webelements:
-            try:
-                if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                    result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@content-desc,"
-                                                                                " 'Gesponserte Werbeanzeige von')]") \
-                        .get_attribute("content-desc")
-                    """create ad object"""
-                    print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
-                    ad = Ad(webElement, 7)
-                    ad.text = result_text
-                    self.save_ad(session_id, ad, keyword_id, udid)
-                    print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                    return
-            except AttributeError:
                 return
 
     def collect_ad_type_7_top(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send data to DB and save scr of ad"""
-        ads_webelements = self.get_webelements_ads_7()
+        ads_webelements: list[WebElement] = self.get_webelements_ads_7()
         for webElement in ads_webelements:
             try:
-                if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                    result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text, 'Gesponserte "
-                                                                                "Werbeanzeige von')]") \
-                                                                                .get_attribute("text")
+                condition_1: bool = webElement.get_attribute("resource-id") not in ["search", None]
+                condition_2: bool = webElement.find_element(AppiumBy.XPATH, "./" + 4 * "/child::*")\
+                    .get_attribute("content-desc")\
+                    .startswith("Gesponserte Werbeanzeige von")
+                condition_3: bool = webElement.find_element(AppiumBy.XPATH,
+                                                            ".//child::*" + (2 * "/following-sibling::*")) \
+                    .get_attribute("content-desc").__contains__("Jetzt")
+                if webElement.size["height"] > 10 and condition_1 and condition_2 and condition_3:
+                    result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@content-desc,"
+                                                                                " 'Gesponserte Werbeanzeige von')]") \
+                        .get_attribute("content-desc")
                     """create ad object"""
-                    print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
+                    print("collecting ad \033[1;31;40mtype 7(top)\033[0;0m ...")
                     ad = Ad(webElement, 7)
                     ad.text = result_text
                     self.save_ad(session_id, ad, keyword_id, udid)
-                    print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                    if ad.text is not None:
-                        self.ad_text_filter.append(ad.text)
+                    print("ad \033[1;31;40mtype 7(top)\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     return
-            except AttributeError:
+            except (NoSuchElementException, AttributeError):
                 return
 
     def get_webelements_ads_10(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_10)
-
-    def collect_ad_type_10(self, session_id: int, keyword_id: int, udid: int) -> None:
-        """Create, send data to DB and save scr of ad"""
-        ads_webelements = self.get_webelements_ads_10()
-        for webElement in ads_webelements:
-            if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
-
-                result_text: str = elements[2].get_attribute("content-desc")
-                valid: str = elements[-1].get_attribute("content-desc")
-
-                if valid.__contains__("Jetzt"):
-                    """create ad object"""
-                    print("collecting ad \033[1;31;40mtype 10\033[0;0m ...")
-                    ad = Ad(webElement, 7)
-                    ad.text = result_text
-                    self.save_ad(session_id, ad, keyword_id, udid)
-                    print("ad \033[1;31;40mtype 10\033[0;0m \033[1;32;40mcollected\033[0;0m")
-            else:
-                return
 
     def get_webelements_ads_8(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_8)
