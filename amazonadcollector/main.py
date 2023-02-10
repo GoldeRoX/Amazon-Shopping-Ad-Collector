@@ -36,7 +36,7 @@ def main(udid: int):
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
 
-    base_methods.get_page("Pepsi")
+    base_methods.get_page("Monitors")
     # base_methods.get_page(keyword["keyword"])
     try:
         new_udid = 1
