@@ -36,7 +36,7 @@ def main(udid: int):
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
 
-    base_methods.get_page("Monitors")
+    base_methods.get_page("Minecraft")
     # base_methods.get_page(keyword["keyword"])
     try:
         new_udid = 1
@@ -62,12 +62,12 @@ def main(udid: int):
             base_methods.scroll_down()
             base_methods.amazon_not_responding_close()
             # ad_handler.collect_ad_type_1(session_id, keyword_id, new_udid)
-            # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
+            ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_7_mid(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
             """ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)"""
-            # ad_handler.collect_ad_type_2_alt(session_id, keyword_id, new_udid)
+            # ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_1()
 
             is_end_of_page = previous_page_source == session.driver.page_source
