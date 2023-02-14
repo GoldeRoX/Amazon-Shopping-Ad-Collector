@@ -8,7 +8,7 @@ from datetime import datetime
 
 from amazonadcollector.ads_logic import SQLAdManager, AdHandler
 from amazonadcollector.database_connector import get_random_keyword
-from amazonadcollector.base import MyDriver, BaseMethods
+from amazonadcollector.base import MyDriver, BaseMethods, Scroll
 from amazonadcollector.locators_data import DE
 
 
@@ -45,29 +45,35 @@ def main(udid: int):
         time.sleep(2)
         base_methods.cookies_click()
         time.sleep(4)
+
         """scroll down through app Y and collect ads"""
+        scroll = Scroll(session.driver)
+
         is_end_of_page = False
         previous_page_source = session.driver.page_source
         ad_handler.collect_ad_type_7_top(session_id, keyword_id, new_udid)
-        """ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
-        ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)"""
+        # ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
+        """ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)"""
 
         """test_1 = ad_handler.get_all_node_web_elements()
         print(len(test_1))
         test = ad_handler.get_filtered_complex_web_elements()
         print(len(test))
         print(test)"""
-
+        scroll.scroll_to_next_web_element()
         while not is_end_of_page:
-            base_methods.scroll_down()
+            scroll.scroll_to_next_web_element()
+            # scroll.scroll_to_next_web_element()
             base_methods.amazon_not_responding_close()
+            # ad_handler.collect_ad_type_4(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_1(session_id, keyword_id, new_udid)
-            ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
+            # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_7_mid(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
+            #ad_handler.collect_ad_type_7_mid(session_id, keyword_id, new_udid)
+            #ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
             """ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)"""
-            # ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
+            # TODO skonczyc prace nad reklama 2 zanim zaczne testowanie
+            #ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_1()
 
             is_end_of_page = previous_page_source == session.driver.page_source

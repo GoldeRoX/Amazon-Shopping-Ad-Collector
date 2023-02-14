@@ -8,12 +8,15 @@ from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException, \
     StaleElementReferenceException
-from appium.webdriver.webdriver import WebDriver
+from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 import cv2  # import opencv-python	4.5.5.64
 from amazonadcollector.Ad import Ad
+
+from appium.webdriver.common.mobileby import MobileBy as By
+from appium.webdriver.webdriver import WebDriver
 
 from amazonadcollector.locators_data import *
 
@@ -122,15 +125,6 @@ class BaseMethods(object):
             close = self.driver.find_elements(AppiumBy.ID, "android:id/aerr_close")
             close[0].click()
         except (IndexError, WebDriverException):
-            pass
-
-    def scroll_down(self, y: int = 600) -> None:
-        """scroll down through app Y axis
-        *default value is y=600
-        """
-        try:
-            self.driver.swipe(start_x=0, start_y=1100, end_x=0, end_y=1100 - y, duration=400)
-        except WebDriverException:
             pass
 
     def config_start(self) -> None:
@@ -255,3 +249,50 @@ def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
         cv2.imwrite(image_path, cropped_image)
     except cv2.error:
         pass
+
+
+class Scroll(object):
+    def __init__(self, driver):
+        self.driver: WebDriver = driver
+        self.current_element: WebElement = self.driver.find_element(AppiumBy.XPATH,
+                                                           "//*[@resource-id='search']/child::*/following-sibling::*")
+
+    def scroll_to_next_web_element(self):
+
+        current_y = self.current_element.rect["y"]
+        current_height = self.current_element.rect["height"]
+        self.current_element = self.current_element.find_element(AppiumBy.XPATH, ".//following-sibling::*/following-sibling::*")
+        next_y = self.current_element.rect["y"]
+        next_height = self.current_element.rect["height"]
+        print(current_y)
+        print(current_height)
+        print(next_y)
+        print(next_height)
+        self.driver.swipe(start_x=1, start_y=current_height+current_y, end_x=1, end_y=current_y, duration=400)
+        time.sleep(5)
+
+
+"""class Scroll(object):
+
+    __current_element: WebElement
+
+    def __init__(self, driver):
+        self.driver: WebDriver = driver
+        self.__current_element: WebElement = self.driver.find_element(AppiumBy.XPATH,
+                                                                      "//*[@resource-id='search']/child::*")
+
+    def scroll_to_next_web_element(self) -> None:
+        try:
+            next_element: WebElement = self.get_current_element().find_element(AppiumBy.XPATH,
+                                                                               ".//following-sibling::*")
+            self.set_current_element(next_element)
+
+            self.driver.execute_script("mobile: scroll", {'element': self.get_current_element(), "toVisible": True})
+        except WebDriverException:
+            pass
+
+    def set_current_element(self, next_element: WebElement):
+        self.__current_element = next_element
+
+    def get_current_element(self) -> WebElement:
+        return self.__current_element"""

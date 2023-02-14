@@ -66,7 +66,6 @@ class AdHandler(object):
                              "/android.widget.FrameLayout/android.widget.RelativeLayout/"
                              "android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/"
                              f"android.view.View[1]/android.view.View/android.view.View[{index}]")
-
         return dictionary
 
     def get_filtered_complex_web_elements(self) -> {int, WebElement}:
@@ -158,7 +157,11 @@ class AdHandler(object):
 
                 if webElement.size["height"] > 500 and gesponsert_text == "Gesponsert" \
                         and text_validation not in self.ad_text_filter:
+
                     print("adjusting ad type 2 ...")
+                    AdjustAd(self.driver).match_ad_visibility(webElement)
+
+                    """print("adjusting ad type 2 ...")
                     AdjustAd(self.driver).match_ad_visibility(webElement)
 
                     elements: list[WebElement] = node.find_elements(AppiumBy.XPATH, ".//child::*")
@@ -179,14 +182,14 @@ class AdHandler(object):
                                 .wait(ms=2000) \
                                 .release() \
                                 .perform()
-                        """create ad object"""
+                        create ad object
                         print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
                         ad = Ad(ad_web_element, 2)
                         result_text = ad_web_element.get_attribute("content-desc")
                         ad.text = result_text
                         self.save_ad(session_id, ad, keyword_id, udid)
                         print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                        self.ad_text_filter.append(result_text)
+                        self.ad_text_filter.append(result_text)"""
 
         except NoSuchElementException:
             print("no such element")
@@ -421,7 +424,7 @@ class AdHandler(object):
         try:
             ads_webelements: list[WebElement] = self.get_webelements_ads_5()
             for webElement in ads_webelements:
-                if webElement.size["height"] > 10:
+                if webElement.size["height"] > 20:
                     elements: list[WebElement] = webElement.find_elements(AppiumBy.XPATH,
                                                                           ".//*[@class='android.view.View']")
                     result_text: str = elements[4].get_attribute("content-desc")
