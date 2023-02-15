@@ -161,10 +161,7 @@ class AdHandler(object):
                     print("adjusting ad type 2 ...")
                     AdjustAd(self.driver).match_ad_visibility(webElement)
 
-                    """print("adjusting ad type 2 ...")
-                    AdjustAd(self.driver).match_ad_visibility(webElement)
-
-                    elements: list[WebElement] = node.find_elements(AppiumBy.XPATH, ".//child::*")
+                    """elements: list[WebElement] = node.find_elements(AppiumBy.XPATH, ".//child::*")
 
                     ads: list[WebElement] = [element for element in elements if
                                              element.get_attribute("content-desc") is not None
@@ -584,6 +581,7 @@ class AdjustAd(object):
     def match_ad_visibility(self, web_element: WebElement):
         if web_element.size["height"] > 10 and web_element.size["width"] > 10:
             previous_height: int = web_element.size["height"]
+
             self.driver.swipe(start_x=1, start_y=1200, end_x=1, end_y=1000, duration=400)
             next_height: int = web_element.size["height"]
 

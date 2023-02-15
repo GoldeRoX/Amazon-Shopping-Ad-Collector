@@ -3,9 +3,9 @@ import shlex
 import sys
 import time
 
-from selenium.common.exceptions import WebDriverException
 from datetime import datetime
 
+from selenium.common.exceptions import WebDriverException
 from amazonadcollector.ads_logic import SQLAdManager, AdHandler
 from amazonadcollector.database_connector import get_random_keyword
 from amazonadcollector.base import MyDriver, BaseMethods, Scroll
@@ -36,8 +36,7 @@ def main(udid: int):
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
 
-    base_methods.get_page("Minecraft")
-    # base_methods.get_page(keyword["keyword"])
+    base_methods.get_page(keyword["keyword"])
     try:
         new_udid = 1
 
@@ -49,7 +48,6 @@ def main(udid: int):
         """scroll down through app Y and collect ads"""
         scroll = Scroll(session.driver)
 
-        is_end_of_page = False
         previous_page_source = session.driver.page_source
         ad_handler.collect_ad_type_7_top(session_id, keyword_id, new_udid)
         # ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
@@ -60,24 +58,22 @@ def main(udid: int):
         test = ad_handler.get_filtered_complex_web_elements()
         print(len(test))
         print(test)"""
-        scroll.scroll_to_next_web_element()
-        while not is_end_of_page:
-            scroll.scroll_to_next_web_element()
+        scroll.scroll_down()
+        while True:
+            scroll.scroll_down()
             # scroll.scroll_to_next_web_element()
             base_methods.amazon_not_responding_close()
             # ad_handler.collect_ad_type_4(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_1(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
             # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
-            #ad_handler.collect_ad_type_7_mid(session_id, keyword_id, new_udid)
-            #ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
-            """ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)"""
+            ad_handler.collect_ad_type_7_mid(session_id, keyword_id, new_udid)
+            ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
+            # ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
             # TODO skonczyc prace nad reklama 2 zanim zaczne testowanie
             #ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
             # ad_handler.collect_ad_type_1()
 
-            is_end_of_page = previous_page_source == session.driver.page_source
-            previous_page_source = session.driver.page_source
 
     except KeyboardInterrupt:
         print("KeyboardInterrupt exception")

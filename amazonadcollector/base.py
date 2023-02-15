@@ -9,13 +9,15 @@ from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException, \
     StaleElementReferenceException
 from selenium.webdriver import ActionChains
+from selenium.webdriver.common.actions import interaction
+from selenium.webdriver.common.actions.action_builder import ActionBuilder
+from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 import cv2  # import opencv-python	4.5.5.64
 from amazonadcollector.Ad import Ad
-
-from appium.webdriver.common.mobileby import MobileBy as By
+from typing import Tuple
 from appium.webdriver.webdriver import WebDriver
 
 from amazonadcollector.locators_data import *
@@ -254,45 +256,24 @@ def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
 class Scroll(object):
     def __init__(self, driver):
         self.driver: WebDriver = driver
-        self.current_element: WebElement = self.driver.find_element(AppiumBy.XPATH,
-                                                           "//*[@resource-id='search']/child::*/following-sibling::*")
 
-    def scroll_to_next_web_element(self):
+    def scroll_down(self, y: int = 600) -> None:
+        """scroll down through app Y axis
+        *default value is y=600
+        """
+        self.press_and_move_to_location(start_location=(0, 1100), end_location=(0, 1100 - y))
 
-        current_y = self.current_element.rect["y"]
-        current_height = self.current_element.rect["height"]
-        self.current_element = self.current_element.find_element(AppiumBy.XPATH, ".//following-sibling::*/following-sibling::*")
-        next_y = self.current_element.rect["y"]
-        next_height = self.current_element.rect["height"]
-        print(current_y)
-        print(current_height)
-        print(next_y)
-        print(next_height)
-        self.driver.swipe(start_x=1, start_y=current_height+current_y, end_x=1, end_y=current_y, duration=400)
-        time.sleep(5)
+    def press_and_move_to_location(self,
+                                   start_location: Tuple[int, int],
+                                   end_location: Tuple[int, int],
+                                   ):
+        x1, y1 = start_location
+        x2, y2 = end_location
 
-
-"""class Scroll(object):
-
-    __current_element: WebElement
-
-    def __init__(self, driver):
-        self.driver: WebDriver = driver
-        self.__current_element: WebElement = self.driver.find_element(AppiumBy.XPATH,
-                                                                      "//*[@resource-id='search']/child::*")
-
-    def scroll_to_next_web_element(self) -> None:
-        try:
-            next_element: WebElement = self.get_current_element().find_element(AppiumBy.XPATH,
-                                                                               ".//following-sibling::*")
-            self.set_current_element(next_element)
-
-            self.driver.execute_script("mobile: scroll", {'element': self.get_current_element(), "toVisible": True})
-        except WebDriverException:
-            pass
-
-    def set_current_element(self, next_element: WebElement):
-        self.__current_element = next_element
-
-    def get_current_element(self) -> WebElement:
-        return self.__current_element"""
+        actions = ActionChains(self.driver)
+        actions.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(interaction.POINTER_TOUCH, "touch"))
+        actions.w3c_actions.pointer_action.move_to_location(x1, y1)
+        actions.w3c_actions.pointer_action.pointer_down()
+        actions.w3c_actions.pointer_action.move_to_location(x2, y2)
+        actions.w3c_actions.pointer_action.pointer_up()
+        actions.perform()
