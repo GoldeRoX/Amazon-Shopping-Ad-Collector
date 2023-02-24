@@ -13,9 +13,12 @@ from amazonadcollector.locators_data import DE
 
 
 def main(udid: int):
-    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://81.169.186.225:3128 -port {udid}")
+    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://142.132.181.232:50012 -port {udid}")
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
+
+    # time to start an emulator
     time.sleep(30)
+
     start_time = time.time()
 
     try:
@@ -35,7 +38,7 @@ def main(udid: int):
 
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
-
+    # base_methods.get_page("Minecraft")
     base_methods.get_page(keyword["keyword"])
     try:
         new_udid = 1
@@ -48,32 +51,26 @@ def main(udid: int):
         """scroll down through app Y and collect ads"""
         scroll = Scroll(session.driver)
 
+        is_end_of_page = False
         previous_page_source = session.driver.page_source
-        ad_handler.collect_ad_type_7_top(session_id, keyword_id, new_udid)
-        # ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
-        """ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)"""
 
-        """test_1 = ad_handler.get_all_node_web_elements()
-        print(len(test_1))
-        test = ad_handler.get_filtered_complex_web_elements()
-        print(len(test))
-        print(test)"""
-        scroll.scroll_down()
-        while True:
-            scroll.scroll_down()
-            # scroll.scroll_to_next_web_element()
+        ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_10(session_id, keyword_id, new_udid)
+        while not is_end_of_page:
             base_methods.amazon_not_responding_close()
-            # ad_handler.collect_ad_type_4(session_id, keyword_id, new_udid)
-            # ad_handler.collect_ad_type_1(session_id, keyword_id, new_udid)
-            # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
-            # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_7_mid(session_id, keyword_id, new_udid)
+            base_methods.cookies_click()
+            ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
+            ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
-            # ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
-            # TODO skonczyc prace nad reklama 2 zanim zaczne testowanie
-            #ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
-            # ad_handler.collect_ad_type_1()
+            ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
+            # TODO naprawic problem z brakiem txt w reklamie 1 (banner)
 
+            scroll.scroll_down()
+
+            is_end_of_page = previous_page_source == session.driver.page_source
+            previous_page_source = session.driver.page_source
 
     except KeyboardInterrupt:
         print("KeyboardInterrupt exception")
