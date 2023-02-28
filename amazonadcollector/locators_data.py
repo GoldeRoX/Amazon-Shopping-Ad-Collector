@@ -15,8 +15,8 @@ class ENG(object):
 
 
 class DE(object):
-    search_icon = '//android.widget.LinearLayout[@content-desc="Suche"]'
-    search_input = 'com.amazon.mShop.android.shopping:id/rs_search_src_text'
+    search_icon = "//android.widget.LinearLayout[@content-desc='Suche']"
+    search_input = "com.amazon.mShop.android.shopping:id/rs_search_src_text"
     BOTTOM_AD = "//*[@text='Feedback zur gesponserten Werbeanzeige geben']/parent::*/parent::*"
     BOTTOM_AD_TEXT_ELEMENT = "//*[@text='Feedback zur gesponserten Werbeanzeige geben']/parent::*"
     brands_related_to_your_search_element_node = "//*[ends-with(@text, 'mit Ihrer Suche')]/parent::*"

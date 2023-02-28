@@ -13,7 +13,7 @@ from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import WebDriverException, NoSuchElementException
 
 from amazonadcollector.Ad import Ad
-from amazonadcollector.base import save_cropped_scr
+from amazonadcollector.base import save_cropped_scr, Scroll
 from amazonadcollector.database_connector import SQLAdManager
 
 
@@ -21,6 +21,7 @@ class AdHandler(object):
 
     def __init__(self, driver, lang):
         self.driver: WebDriver = driver
+        self.scroll = Scroll(self.driver)
         self.ad_text_filter = []
         self.lang = lang
 
@@ -52,41 +53,35 @@ class AdHandler(object):
     def collect_ad_type_2(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
-            ads_webelements: list[WebElement] = self.get_webelements_ads_2()
+            action = TouchAction(self.driver)
+            webelements: list[WebElement] = [element for element in self.get_webelements_ads_2()
+                           if element.size["height"] > 10
+                           for web_element in element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
+                           if web_element.get_attribute("clickable") == "true"
+                           and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
+                           and web_element.get_attribute("text") not in self.ad_text_filter]
 
-            for webElement in ads_webelements:
-                if webElement.size["height"] > 10:
-                    elements: list[WebElement] = webElement.find_elements(AppiumBy.XPATH,
-                                                                          ".//*[@class='android.view.View']")
-                    webelements: list = []
-                    action = TouchAction(self.driver)
-                    for element in elements:
-                        if element.get_attribute("clickable") == "true" and \
-                                element.get_attribute("text").startswith(self.lang.ad_2_starts_with)\
-                                and element.get_attribute("text") not in self.ad_text_filter:
-                            webelements.append(element)
+            for index, web_element in enumerate(webelements):
+                """scroll through web_elements ads"""
+                print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
+                if index == 0:
+                    print(print("adjusting ad type 2 ..."))
+                    AdjustAd(self.driver).match_ad_visibility(web_element)
+                else:
+                    action.press(webelements[index])\
+                        .move_to(webelements[index - 1])\
+                        .wait(ms=2000)\
+                        .release()\
+                        .perform()
+                    time.sleep(2.5)
 
-                    for index, web_element in enumerate(webelements):
-                        """scroll through web_elements ads"""
-                        print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
-                        if index == 0:
-                            print(print("adjusting ad type 2 ..."))
-                            AdjustAd(self.driver).match_ad_visibility(web_element)
-                        else:
-                            action.press(webelements[index])\
-                                .move_to(webelements[index - 1])\
-                                .wait(ms=2000)\
-                                .release()\
-                                .perform()
-                            time.sleep(2.5)
-
-                        """create an object of ad"""
-                        if web_element.get_attribute("text") not in self.ad_text_filter:
-                            ad = Ad(web_element, 2)
-                            self.save_ad(session_id, ad, keyword_id, udid)
-                            print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                            if ad.text.strip() is not None:
-                                self.ad_text_filter.append(ad.text)
+                """create an object of ad"""
+                if web_element.get_attribute("text") not in self.ad_text_filter:
+                    ad = Ad(web_element, 2)
+                    self.save_ad(session_id, ad, keyword_id, udid)
+                    print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                    if ad.text.strip() is not None:
+                        self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, IndexError):
             pass
 
@@ -273,43 +268,6 @@ class AdHandler(object):
 
     def get_webelements_ads_5(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_5_node)
-
-    def collect_ad_type_4(self, session_id: int, keyword_id: int, udid: int):
-        """Create, send to DB and save scr of ad"""
-        try:
-            ads_webelements: list[WebElement] = self.get_webelements_ads_4()
-            for element in ads_webelements:
-                if element.size["height"] > 50:
-                    action = TouchAction(self.driver)
-                    for i, web_element in enumerate(ads_webelements):
-                        path: str = ".//child::*" + 3 * "/following-sibling::*"
-                        text: str = web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
-                        if text not in self.ad_text_filter and text != "product-detail":
-                            """scroll through web_elements ads"""
-                            print("collecting ad \033[1;31;40mtype 4\033[0;0m ...")
-                            if i == 0:
-                                AdjustAd(self.driver).match_ad_visibility(element)
-                            else:
-                                par = (ads_webelements[i].size["width"] - ads_webelements[i].size["width"] / 2)
-
-                                action.press(ads_webelements[i])\
-                                    .move_to(ads_webelements[i - 1], x=par, y=0)\
-                                    .wait(ms=2000)\
-                                    .release()\
-                                    .perform()
-                                print("adjusting ad type 4 ...")
-                                AdjustAd(self.driver).match_ad_visibility(element)
-                            """create an object of ad"""
-                            ad = Ad(web_element, 4)
-                            ad.text = text
-                            if ad.width > 300 and ad.height > 300:
-                                self.save_ad(session_id, ad, keyword_id, udid)
-                                print("ad \033[1;31;40mtype 4\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                                if ad.text is not None:
-                                    self.ad_text_filter.append(ad.text)
-                    break
-        except WebDriverException:
-            pass
 
     def collect_ad_type_5(self, session_id: int, keyword_id: int, udid: int):
         """Create, send to DB and save scr of ad"""

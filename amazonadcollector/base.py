@@ -136,34 +136,38 @@ class BaseMethods(object):
                 return
 
     def change_lang_from_eng_to_de(self):
-        self.get_element_when_located(AppiumBy.ACCESSIBILITY_ID, "Menu. Contains your orders, your account, shop by"
-                                                                 " department, programs and features, settings,"
-                                                                 " and customer service Tab 4 of 4").click()
-
-        self.get_element_when_located(AppiumBy.ACCESSIBILITY_ID, "Settings menu header. "
-                                                                 "Tap to expand and hear list of settings", 60).click()
-        self.get_element_when_located(AppiumBy.ACCESSIBILITY_ID, "Country and Language selector").click()
-
-        self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Country/Region: United States']").click()
-        self.get_element_when_located(AppiumBy.XPATH, "//*[starts-with(@text,'Germany')]").click()
-
-        self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Language: English']").click()
-        self.get_element_when_located(AppiumBy.XPATH, "//*[starts-with(@text,'German')]").click()
-
-        self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Währung: $ - USD - US-Dollar']").click()
         try:
-            self.get_element_when_located(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/"
-                                                          "android.widget.LinearLayout/android.widget.FrameLayout/"
-                                                          "android.view.ViewGroup/android.widget.FrameLayout[2]/"
-                                                          "android.widget.FrameLayout/android.widget.RelativeLayout/"
-                                                          "android.widget.RelativeLayout/android.webkit.WebView/"
-                                                          "android.webkit.WebView/android.view.View[1]/"
-                                                          "android.view.View/android.view.View[7]/"
-                                                          "android.widget.RadioButton[3]").click()
-        except NoSuchElementException:
-            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='€ - EUR - Euro']").click()
+            self.get_element_when_located(AppiumBy.ACCESSIBILITY_ID, "Menu. Contains your orders, your account, shop by"
+                                                                     " department, programs and features, settings,"
+                                                                     " and customer service Tab 4 of 4").click()
 
-        self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Fertig']").click()
+            self.get_element_when_located(AppiumBy.ACCESSIBILITY_ID, "Settings menu header. Tap to expand and hear "
+                                                                     "list of settings", 60).click()
+            self.get_element_when_located(AppiumBy.ACCESSIBILITY_ID, "Country and Language selector").click()
+
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Country/Region: United States']").click()
+            self.get_element_when_located(AppiumBy.XPATH, "//*[starts-with(@text,'Germany')]").click()
+
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Language: English']").click()
+            self.get_element_when_located(AppiumBy.XPATH, "//*[starts-with(@text,'German')]").click()
+
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Währung: $ - USD - US-Dollar']").click()
+            try:
+                self.get_element_when_located(AppiumBy.XPATH, "/hierarchy/android.widget.FrameLayout/"
+                                                              "android.widget.LinearLayout/android.widget.FrameLayout/"
+                                                              "android.view.ViewGroup/android.widget.FrameLayout[2]/"
+                                                              "android.widget.FrameLayout/android.widget"
+                                                              ".RelativeLayout/"
+                                                              "android.widget.RelativeLayout/android.webkit.WebView/"
+                                                              "android.webkit.WebView/android.view.View[1]/"
+                                                              "android.view.View/android.view.View[7]/"
+                                                              "android.widget.RadioButton[3]").click()
+            except NoSuchElementException:
+                self.get_element_when_located(AppiumBy.XPATH, "//*[@text='€ - EUR - Euro']").click()
+
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Fertig']").click()
+        except WebDriverException:
+            return
 
 
 def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
@@ -195,6 +199,7 @@ def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
 class Scroll(object):
     def __init__(self, driver):
         self.driver: WebDriver = driver
+        self.actions = ActionChains(self.driver)
 
     def scroll_down(self, y: int = 600) -> None:
         """scroll down through app Y axis
@@ -209,10 +214,9 @@ class Scroll(object):
         x1, y1 = start_location
         x2, y2 = end_location
 
-        actions = ActionChains(self.driver)
-        actions.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(interaction.POINTER_TOUCH, "touch"))
-        actions.w3c_actions.pointer_action.move_to_location(x1, y1)
-        actions.w3c_actions.pointer_action.pointer_down()
-        actions.w3c_actions.pointer_action.move_to_location(x2, y2)
-        actions.w3c_actions.pointer_action.pointer_up()
-        actions.perform()
+        self.actions.w3c_actions = ActionBuilder(self.driver, mouse=PointerInput(interaction.POINTER_TOUCH, "touch"))
+        self.actions.w3c_actions.pointer_action.move_to_location(x1, y1)
+        self.actions.w3c_actions.pointer_action.pointer_down()
+        self.actions.w3c_actions.pointer_action.move_to_location(x2, y2)
+        self.actions.w3c_actions.pointer_action.pointer_up()
+        self.actions.perform()
