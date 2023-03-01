@@ -1,5 +1,6 @@
 class ENG(object):
-    search_icon = '(//android.widget.LinearLayout[@content-desc="Search"])[1]/android.widget.LinearLayout/android.widget.TextView '
+    search_icon = '(//android.widget.LinearLayout[@content-desc="Search"])[1]/' \
+                  'android.widget.LinearLayout/android.widget.TextView '
     search_input = 'com.amazon.mShop.android.shopping:id/rs_search_src_text'
     BOTTOM_AD = "//*[@text='Leave feedback on Sponsored ad']/parent::*/parent::*"
     BOTTOM_AD_TEXT_ELEMENT = "//*[@text='Leave feedback on Sponsored ad']"

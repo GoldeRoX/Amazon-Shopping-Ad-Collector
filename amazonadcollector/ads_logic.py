@@ -11,6 +11,8 @@ from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import WebDriverException, NoSuchElementException
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from amazonadcollector.Ad import Ad
 from amazonadcollector.base import save_cropped_scr, Scroll
@@ -55,23 +57,28 @@ class AdHandler(object):
         try:
             action = TouchAction(self.driver)
             webelements: list[WebElement] = [element for element in self.get_webelements_ads_2()
-                           if element.size["height"] > 10
-                           for web_element in element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
-                           if web_element.get_attribute("clickable") == "true"
-                           and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
-                           and web_element.get_attribute("text") not in self.ad_text_filter]
+                                             if element.size["height"] > 10
+                                             for web_element in
+                                             element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
+                                             if web_element.get_attribute("clickable") == "true"
+                                             and web_element.get_attribute("text").startswith(
+                                             self.lang.ad_2_starts_with)
+                                             and web_element.get_attribute("text") not in self.ad_text_filter]
+
+            print("adjusting ad type 2 ...")
+            AdjustAd(self.driver).match_ad_visibility(webelements[0])
 
             for index, web_element in enumerate(webelements):
                 """scroll through web_elements ads"""
                 print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
                 if index == 0:
-                    print(print("adjusting ad type 2 ..."))
-                    AdjustAd(self.driver).match_ad_visibility(web_element)
+                    pass
                 else:
-                    action.press(webelements[index])\
-                        .move_to(webelements[index - 1])\
-                        .wait(ms=2000)\
-                        .release()\
+                    # self.scroll.press_and_move_to_location(start_location=[])
+                    action.press(webelements[index]) \
+                        .move_to(webelements[index - 1]) \
+                        .wait(ms=2000) \
+                        .release() \
                         .perform()
                     time.sleep(2.5)
 
@@ -83,7 +90,7 @@ class AdHandler(object):
                     if ad.text.strip() is not None:
                         self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, IndexError):
-            pass
+            return
 
     def collect_ad_type_7(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send data to DB and save scr of ad"""
@@ -113,7 +120,7 @@ class AdHandler(object):
                 elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
 
                 result_text: str = elements[2].get_attribute("content-desc")
-                valid: str = elements[len(elements)-1].get_attribute("content-desc")
+                valid: str = elements[len(elements) - 1].get_attribute("content-desc")
 
                 if valid.__contains__("Jetzt"):
                     """create ad object"""
@@ -431,6 +438,7 @@ class AdjustAd(object):
 
     def __init__(self, driver):
         self.driver = driver
+        self.scroll = Scroll(self.driver)
 
     # TODO remake and repair match_ad_visibility(). It must adjust with windowed architecture of the site
     def match_ad_visibility(self, web_element: WebElement):
@@ -455,3 +463,33 @@ class AdjustAd(object):
                     previous_height = web_element.size["height"]
                     self.driver.swipe(start_x=10, start_y=1000, end_x=10, end_y=1500, duration=400)
                     next_height = web_element.size["height"]
+
+    def match_ad_visibility_test(self, web_element: WebElement):
+        if web_element.size["height"] > 10 and web_element.size["width"] > 10:
+            previous_height: int = web_element.size["height"]
+            self.scroll.press_and_move_to_location(start_location=(10, 1100), end_location=(10, 1000))
+            # self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
+            next_height: int = web_element.size["height"]
+
+            wait = WebDriverWait(self.driver, timeout=30)
+
+            while True:
+                if math.isclose(previous_height, next_height, abs_tol=1) and web_element.size["height"] > 100:
+                    return
+
+                if next_height > previous_height:
+                    """case if element is on the bottom"""
+                    previous_height = web_element.size["height"]
+                    self.scroll.press_and_move_to_location(start_location=(10, 1100), end_location=(10, 1000))
+                    # self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
+                    next_height = web_element.size["height"]
+
+                else:
+                    """case if element is on the top"""
+                    previous_height = web_element.size["height"]
+                    self.scroll.press_and_move_to_location(start_location=(10, 1000), end_location=(10, 1500))
+                    # self.driver.swipe(start_x=10, start_y=1000, end_x=10, end_y=1500, duration=400)
+                    next_height = web_element.size["height"]
+
+                # Wait for the element to become visible
+                wait.until(EC.visibility_of_element_located((AppiumBy.ID, web_element.id)))
