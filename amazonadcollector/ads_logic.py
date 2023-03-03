@@ -55,7 +55,6 @@ class AdHandler(object):
     def collect_ad_type_2(self, session_id: int, keyword_id: int, udid: int) -> None:
         """Create, send to DB and save scr of ad"""
         try:
-            action = TouchAction(self.driver)
             webelements: list[WebElement] = [element for element in self.get_webelements_ads_2()
                                              if element.size["height"] > 10
                                              for web_element in
@@ -65,15 +64,15 @@ class AdHandler(object):
                                              self.lang.ad_2_starts_with)
                                              and web_element.get_attribute("text") not in self.ad_text_filter]
 
-            print("adjusting ad type 2 ...")
-            AdjustAd(self.driver).match_ad_visibility(webelements[0])
-
             for index, web_element in enumerate(webelements):
                 """scroll through web_elements ads"""
                 print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
                 if index == 0:
-                    pass
+                    print(webelements)
+                    print("adjusting ad type 2 ...")
+                    AdjustAd(self.driver).match_ad_visibility(webelements[0])
                 else:
+                    action = TouchAction(self.driver)
                     # self.scroll.press_and_move_to_location(start_location=[])
                     action.press(webelements[index]) \
                         .move_to(webelements[index - 1]) \
@@ -290,7 +289,8 @@ class AdHandler(object):
                     if var1 and var2 and result_text not in self.ad_text_filter:
                         """create ad object"""
                         print("adjusting ad type 5 ...")
-                        AdjustAd(self.driver).match_ad_visibility(webElement)
+                        AdjustAd(self.driver).match_ad_visibility_test(webElement)
+                        # AdjustAd(self.driver).match_ad_visibility(webElement)
                         print("collecting ad \033[1;31;40mtype 5\033[0;0m ...")
                         ad = Ad(webElement, 5)
                         ad.text = result_text
@@ -299,7 +299,7 @@ class AdHandler(object):
                         if ad.text is not None:
                             self.ad_text_filter.append(ad.text)
 
-        except (WebDriverException, IndexError):
+        except (NoSuchElementException, IndexError):
             pass
 
     def save_cropped_scr_for_videos(self, ad: Ad, filename: str) -> None:
@@ -437,8 +437,15 @@ class AdHandler(object):
 class AdjustAd(object):
 
     def __init__(self, driver):
-        self.driver = driver
+        self.driver: WebDriver = driver
         self.scroll = Scroll(self.driver)
+        self.test_element = self.driver.find_element(AppiumBy.XPATH,
+                                        "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/"
+                                        "android.widget.FrameLayout/android.view.ViewGroup/"
+                                        "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
+                                        "android.widget.RelativeLayout/android.widget.RelativeLayout/"
+                                        "android.webkit.WebView/android.webkit.WebView/android.view.View[1]/"
+                                        "android.view.View")
 
     # TODO remake and repair match_ad_visibility(). It must adjust with windowed architecture of the site
     def match_ad_visibility(self, web_element: WebElement):
@@ -493,3 +500,56 @@ class AdjustAd(object):
 
                 # Wait for the element to become visible
                 wait.until(EC.visibility_of_element_located((AppiumBy.ID, web_element.id)))
+
+    def is_fully_visible(self, element: WebElement) -> bool:
+        # Get the element's location and size
+        location = element.location
+        size = element.size
+
+        # Get the size of the viewport
+        viewport_size = self.driver.get_window_size()
+
+        # Calculate the position and size of the viewport in the coordinate system of the element
+        viewport_position = self.driver.get_window_rect()
+        viewport_position['x'] = location['x'] + viewport_size['width'] / 2
+        viewport_size_in_element = {
+            'width': viewport_size['width'],
+            'height': viewport_size['height'] - viewport_position['y']
+        }
+
+        # Check if the viewport is fully contained within the element
+        return (location['x'] <= viewport_position['x']
+                and location['y'] <= viewport_position['y']
+                and location['x'] + size['width'] >= viewport_position['x'] + viewport_size_in_element['width']
+                and location['y'] + size['height'] >= viewport_position['y'] + viewport_size_in_element['height'])
+
+    def custom_scroll_to_element(self, target_element: WebElement) -> None:
+        # Get the size of the viewport
+        viewport_size = self.driver.get_window_size()
+
+        # Get the location and size of the target element
+        target_location = target_element.location
+        target_size = target_element.size
+
+        # Calculate the center point of the target element
+        target_center = {
+            'x': target_location['x'] + target_size['width'] / 2,
+            'y': target_location['y'] + target_size['height'] / 2
+        }
+
+        # Calculate the destination point for the scroll action
+        destination = {
+            'x': target_center['x'],
+            'y': target_center['y'] - viewport_size['height'] / 3
+        }
+
+        # Create a TouchAction instance and perform the scroll action
+        actions = TouchAction(self.driver)
+        actions.press(x=viewport_size['width'] / 2, y=viewport_size['height'] - 1)
+        actions.wait(200)
+        actions.move_to(x=destination['x'], y=destination['y'])
+        actions.release()
+        actions.perform()
+
+        # Wait until the target element is visible
+        WebDriverWait(self.driver, 10).until(EC.visibility_of(target_element))
