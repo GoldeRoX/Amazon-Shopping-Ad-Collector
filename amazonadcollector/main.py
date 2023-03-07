@@ -1,3 +1,4 @@
+import os
 import subprocess
 import shlex
 import sys
@@ -5,7 +6,6 @@ import time
 
 from datetime import datetime
 
-from appium.webdriver.common.appiumby import AppiumBy
 from selenium.common.exceptions import WebDriverException
 from amazonadcollector.ads_logic import SQLAdManager, AdHandler
 from amazonadcollector.database_connector import get_random_keyword
@@ -64,10 +64,10 @@ def main(udid: int):
             base_methods.amazon_not_responding_close()
             base_methods.cookies_click()
 
-            ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
-            ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
+            # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
+            # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
-            # ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
+            ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
 
             scroll.scroll_down()
 

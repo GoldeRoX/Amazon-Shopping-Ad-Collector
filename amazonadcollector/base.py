@@ -48,7 +48,7 @@ class MyDriver(object):
             "noReset": no_reset,
             "normalizeTagNames": normalize_tag_names,
             "videoCodec": 'libx264',
-            "app": os.path.join(os.path.dirname(__file__), "../amazon_apk/base.apk")
+            "app": os.path.join(os.path.dirname(__file__), "../amazon_apk/amazon.apk")
         }
         self.driver = webdriver.Remote(command_executor="http://localhost:4723/wd/hub",
                                        desired_capabilities=desired_caps)

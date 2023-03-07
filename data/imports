@@ -3,7 +3,6 @@ pip install Appium-Python-Client==2.2.0
 pip install mysqlclient==2.0.3
 sudo apt-get install python-dev libmysqlclient-dev
 pip install PyYAML==6.0
-pip install Appium-Python-Client==2.2.0
 sudo apt install ffmpeg   ###Installing FFmpeg on Ubuntu###
 
 
