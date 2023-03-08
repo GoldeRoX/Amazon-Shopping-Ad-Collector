@@ -65,7 +65,7 @@ class AdHandler(object):
                                              element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                                              if web_element.get_attribute("clickable") == "true"
                                              and web_element.get_attribute("text").startswith(
-                    self.lang.ad_2_starts_with)
+                                             self.lang.ad_2_starts_with)
                                              and web_element.get_attribute("text") not in self.ad_text_filter]
 
             for index, web_element in enumerate(webelements):
@@ -456,11 +456,13 @@ class AdjustAd(object):
         self.driver: WebDriver = driver
         self.scroll = Scroll(self.driver)
         self.test_element = self.driver.find_element(AppiumBy.XPATH,
-                                                     "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/"
+                                                     "/hierarchy/android.widget.FrameLayout/"
+                                                     "android.widget.LinearLayout/"
                                                      "android.widget.FrameLayout/android.view.ViewGroup/"
                                                      "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
                                                      "android.widget.RelativeLayout/android.widget.RelativeLayout/"
-                                                     "android.webkit.WebView/android.webkit.WebView/android.view.View[1]/"
+                                                     "android.webkit.WebView/android.webkit.WebView/"
+                                                     "android.view.View[1]/"
                                                      "android.view.View")
 
     # TODO remake and repair match_ad_visibility(). It must adjust with windowed architecture of the site

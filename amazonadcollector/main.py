@@ -1,4 +1,3 @@
-import os
 import subprocess
 import shlex
 import sys
@@ -55,19 +54,18 @@ def main(udid: int):
         is_end_of_page = False
         previous_page_source = session.driver.page_source
 
-        ad_handler.collect_ad_type_7() # works
+        ad_handler.collect_ad_type_7()  # works
         ad_handler.collect_ad_type_9()
         ad_handler.collect_ad_type_9_alternative()
         ad_handler.collect_ad_type_10()
 
         while not is_end_of_page:
-
             base_methods.amazon_not_responding_close()
             base_methods.cookies_click()
 
-            # ad_handler.collect_video_ad() # works
-            # ad_handler.collect_video_ad_alternative() # works
-            ad_handler.collect_ad_type_5() # works
+            # ad_handler.collect_video_ad()  # works
+            # ad_handler.collect_video_ad_alternative()  # works
+            ad_handler.collect_ad_type_5()  # works
             ad_handler.collect_ad_type_2()
             ad_handler.collect_ad_type_8()
 
