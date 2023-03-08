@@ -166,6 +166,9 @@ class AdHandler(object):
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
 
+    def get_webelements_ads_8_alt(self):
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_8_alt)
+
     def get_webelements_ads_9(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_9)
 
@@ -275,30 +278,39 @@ class AdHandler(object):
     def get_webelements_ads_5(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_5_node)
 
-    def collect_ad_type_5(self, session_id: int, keyword_id: int, udid: int):
-        """Create, send to DB and save scr of ad"""
+    def collect_ad_type_5(self, session_id: int, keyword_id: int, udid: int) -> None:
+        """
+        Collect and save ad of type 5 with the given session, keyword, and user device IDs.
+        """
         try:
-            ads_webelements: list[WebElement] = self.get_webelements_ads_5()
-            for webElement in ads_webelements:
-                if webElement.size["height"] > 10:
-                    elements: list[WebElement] = webElement.find_elements(AppiumBy.XPATH,
-                                                                          ".//*[@class='android.view.View']")
-                    result_text: str = elements[4].get_attribute("text")
-                    var1: bool = result_text.startswith(self.lang.ad_5_starts_with)
-                    var2: bool = elements[7].get_attribute("text") == "product-detail"
-                    if var1 and var2 and result_text not in self.ad_text_filter:
-                        """create ad object"""
-                        print("adjusting ad type 5 ...")
-                        AdjustAd(self.driver).match_ad_visibility_test(webElement)
-                        # AdjustAd(self.driver).match_ad_visibility(webElement)
-                        print("collecting ad \033[1;31;40mtype 5\033[0;0m ...")
-                        ad = Ad(webElement, 5)
-                        ad.text = result_text
-                        self.save_ad(session_id, ad, keyword_id, udid)
-                        print("ad \033[1;31;40mtype 5\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                        if ad.text is not None:
-                            self.ad_text_filter.append(ad.text)
+            ad_elements: list[WebElement] = self.get_webelements_ads_5()
+            for ad_element in ad_elements:
+                if ad_element.size["height"] <= 10:
+                    continue
 
+                text_elements: list[WebElement] = ad_element.find_elements(AppiumBy.XPATH,
+                                                                           ".//*[@class='android.view.View']")
+                if len(text_elements) < 8:
+                    continue
+
+                result_text: str = text_elements[4].get_attribute("text")
+                if not result_text.startswith(self.lang.ad_5_starts_with):
+                    continue
+
+                if text_elements[7].get_attribute("text") != "product-detail":
+                    continue
+
+                if result_text in self.ad_text_filter:
+                    continue
+
+                print("Adjusting ad type 5...")
+                AdjustAd(self.driver).match_ad_visibility(ad_element)
+                print("Collecting ad type 5...")
+                ad = Ad(ad_element, 5)
+                ad.text = result_text
+                self.save_ad(session_id, ad, keyword_id, udid)
+                self.ad_text_filter.append(ad.text)
+                print("Ad type 5 collected.")
         except (NoSuchElementException, IndexError):
             pass
 

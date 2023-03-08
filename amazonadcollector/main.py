@@ -39,7 +39,8 @@ def main(udid: int):
 
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
-    base_methods.get_page(keyword["keyword"])
+    base_methods.get_page("Lego")
+    # base_methods.get_page(keyword["keyword"])
     try:
         new_udid = 1
 
@@ -68,6 +69,7 @@ def main(udid: int):
             # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
             ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
+            ad_handler.collect_ad_type_8(session_id, keyword_id, new_udid)
 
             scroll.scroll_down()
 
