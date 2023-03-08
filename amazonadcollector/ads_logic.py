@@ -21,25 +21,29 @@ from amazonadcollector.database_connector import SQLAdManager
 
 class AdHandler(object):
 
-    def __init__(self, driver, lang):
+    def __init__(self, driver, lang, session_id: int, keyword_id: int, udid: int):
         self.driver: WebDriver = driver
+        self.lang = lang
+        self.session_id = session_id
+        self.keyword_id = keyword_id
+        self.udid = udid
+
         self.scroll = Scroll(self.driver)
         self.ad_text_filter = []
-        self.lang = lang
 
-    def save_ad(self, session_id: int, ad: Ad, keyword_id, udid: int) -> None:
+    def save_ad(self, ad: Ad) -> None:
         Manager = SQLAdManager()
         Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                ad.ad_type, session_id, keyword_id, udid)
+                                ad.ad_type, self.session_id, self.keyword_id, self.udid)
         save_cropped_scr(self.driver, ad, str(Manager.get_last_saved_id_from_db()))
 
-    def collect_ad_type_1(self, session_id: int, keyword_id: int, udid: int) -> None:
+    def collect_ad_type_1(self) -> None:
         """Create, send to DB and save scr of ad"""
         try:
             ads_list: [Ad] = self.collect_ads_1()
             for ad in ads_list:
                 print("collecting ad \033[1;31;40mtype 1\033[0;0m ...")
-                self.save_ad(session_id, ad, keyword_id, udid)
+                self.save_ad(ad)
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
                 print("ad \033[1;31;40mtype 1\033[0;0m \033[1;32;40mcollected\033[0;0m")
@@ -52,7 +56,7 @@ class AdHandler(object):
     def get_webelements_ads_7(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_7)
 
-    def collect_ad_type_2(self, session_id: int, keyword_id: int, udid: int) -> None:
+    def collect_ad_type_2(self) -> None:
         """Create, send to DB and save scr of ad"""
         try:
             webelements: list[WebElement] = [element for element in self.get_webelements_ads_2()
@@ -61,7 +65,7 @@ class AdHandler(object):
                                              element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                                              if web_element.get_attribute("clickable") == "true"
                                              and web_element.get_attribute("text").startswith(
-                                             self.lang.ad_2_starts_with)
+                    self.lang.ad_2_starts_with)
                                              and web_element.get_attribute("text") not in self.ad_text_filter]
 
             for index, web_element in enumerate(webelements):
@@ -84,14 +88,14 @@ class AdHandler(object):
                 """create an object of ad"""
                 if web_element.get_attribute("text") not in self.ad_text_filter:
                     ad = Ad(web_element, 2)
-                    self.save_ad(session_id, ad, keyword_id, udid)
+                    self.save_ad(ad)
                     print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text.strip() is not None:
                         self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, IndexError):
             return
 
-    def collect_ad_type_7(self, session_id: int, keyword_id: int, udid: int) -> None:
+    def collect_ad_type_7(self) -> None:
         """Create, send data to DB and save scr of ad"""
         ads_webelements = self.get_webelements_ads_7()
         for webElement in ads_webelements:
@@ -102,7 +106,7 @@ class AdHandler(object):
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
                 ad = Ad(webElement, 7)
                 ad.text = result_text
-                self.save_ad(session_id, ad, keyword_id, udid)
+                self.save_ad(ad)
                 print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
@@ -111,7 +115,7 @@ class AdHandler(object):
     def get_webelements_ads_10(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_10)
 
-    def collect_ad_type_10(self, session_id: int, keyword_id: int, udid: int) -> None:
+    def collect_ad_type_10(self) -> None:
         """Create, send data to DB and save scr of ad"""
         ads_webelements = self.get_webelements_ads_10()
         for webElement in ads_webelements:
@@ -126,7 +130,7 @@ class AdHandler(object):
                     print("collecting ad \033[1;31;40mtype 10\033[0;0m ...")
                     ad = Ad(webElement, 7)
                     ad.text = result_text
-                    self.save_ad(session_id, ad, keyword_id, udid)
+                    self.save_ad(ad)
                     print("ad \033[1;31;40mtype 10\033[0;0m \033[1;32;40mcollected\033[0;0m")
             else:
                 return
@@ -134,7 +138,7 @@ class AdHandler(object):
     def get_webelements_ads_8(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_8)
 
-    def collect_ad_type_8(self, session_id: int, keyword_id: int, udid: int) -> None:
+    def collect_ad_type_8(self) -> None:
         """Create ad type 8 | the same type of ad type 7 (type 7 is only for TOP presenting),
         send to DB and save scr of ad"""
 
@@ -161,7 +165,7 @@ class AdHandler(object):
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
                 ad = Ad(webElement, 7)
                 ad.text = result_text
-                self.save_ad(session_id, ad, keyword_id, udid)
+                self.save_ad(ad)
                 print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
@@ -172,7 +176,7 @@ class AdHandler(object):
     def get_webelements_ads_9(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_9)
 
-    def collect_ad_type_9(self, session_id: int, keyword_id: int, udid: int) -> None:
+    def collect_ad_type_9(self) -> None:
         """Create ad type 9 | the same type of ad type 7 (type 7 is only for TOP presenting),
         send to DB and save scr of ad"""
 
@@ -200,7 +204,7 @@ class AdHandler(object):
                     print("collecting ad \033[1;31;40mtype 9\033[0;0m ...")
                     ad = Ad(webElement, 7)
                     ad.text = result_text
-                    self.save_ad(session_id, ad, keyword_id, udid)
+                    self.save_ad(ad)
                     print("ad \033[1;31;40mtype 9\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
@@ -209,7 +213,7 @@ class AdHandler(object):
     def get_webelements_ads_9_alt(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_9_alt)
 
-    def collect_ad_type_9_alternative(self, session_id: int, keyword_id: int, udid: int) -> None:
+    def collect_ad_type_9_alternative(self) -> None:
         """Create ad type 9 | the same type of ad type 7 (type 7 is only for TOP presenting),
         send to DB and save scr of ad"""
 
@@ -237,7 +241,7 @@ class AdHandler(object):
                     print("collecting ad \033[1;31;40mtype 9_alt\033[0;0m ...")
                     ad = Ad(webElement, 7)
                     ad.text = result_text
-                    self.save_ad(session_id, ad, keyword_id, udid)
+                    self.save_ad(ad)
                     print("ad \033[1;31;40mtype 9_alt\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
@@ -278,7 +282,7 @@ class AdHandler(object):
     def get_webelements_ads_5(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_5_node)
 
-    def collect_ad_type_5(self, session_id: int, keyword_id: int, udid: int) -> None:
+    def collect_ad_type_5(self) -> None:
         """
         Collect and save ad of type 5 with the given session, keyword, and user device IDs.
         """
@@ -308,7 +312,7 @@ class AdHandler(object):
                 print("Collecting ad type 5...")
                 ad = Ad(ad_element, 5)
                 ad.text = result_text
-                self.save_ad(session_id, ad, keyword_id, udid)
+                self.save_ad(ad)
                 self.ad_text_filter.append(ad.text)
                 print("Ad type 5 collected.")
         except (NoSuchElementException, IndexError):
@@ -380,7 +384,7 @@ class AdHandler(object):
             f'{video_ad_web_element.location["y"]}" {path}/{date_folder_name}/{video_name}.mp4')
         os.system(f"unlink {path}/{date_folder_name}/test_{video_name}.mp4")
 
-    def collect_video_ad(self, session_id: int, keyword_id: int, udid: int):
+    def collect_video_ad(self):
         """Collecting video, scr and modified scr for ad of type 6 - video_ad"""
         try:
             video_ad_web_element = self.driver.find_element(AppiumBy.XPATH, self.lang.ad_video)
@@ -398,7 +402,7 @@ class AdHandler(object):
 
                 Manager = SQLAdManager()
                 Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                        ad.ad_type, session_id, keyword_id, udid)
+                                        ad.ad_type, self.session_id, self.keyword_id, self.udid)
 
                 self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
 
@@ -412,7 +416,7 @@ class AdHandler(object):
         except NoSuchElementException:
             pass
 
-    def collect_video_ad_alternative(self, session_id: int, keyword_id: int, udid: int):
+    def collect_video_ad_alternative(self):
         """Collecting video, scr and modified scr for ad of type 6 - video_ad"""
         try:
             video_ad_web_element = self.driver.find_element(AppiumBy.XPATH, self.lang.ad_video)
@@ -431,7 +435,7 @@ class AdHandler(object):
 
                 Manager = SQLAdManager()
                 Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                        ad.ad_type, session_id, keyword_id, udid)
+                                        ad.ad_type, self.session_id, self.keyword_id, self.udid)
 
                 self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
 
@@ -452,12 +456,12 @@ class AdjustAd(object):
         self.driver: WebDriver = driver
         self.scroll = Scroll(self.driver)
         self.test_element = self.driver.find_element(AppiumBy.XPATH,
-                                        "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/"
-                                        "android.widget.FrameLayout/android.view.ViewGroup/"
-                                        "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
-                                        "android.widget.RelativeLayout/android.widget.RelativeLayout/"
-                                        "android.webkit.WebView/android.webkit.WebView/android.view.View[1]/"
-                                        "android.view.View")
+                                                     "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/"
+                                                     "android.widget.FrameLayout/android.view.ViewGroup/"
+                                                     "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
+                                                     "android.widget.RelativeLayout/android.widget.RelativeLayout/"
+                                                     "android.webkit.WebView/android.webkit.WebView/android.view.View[1]/"
+                                                     "android.view.View")
 
     # TODO remake and repair match_ad_visibility(). It must adjust with windowed architecture of the site
     def match_ad_visibility(self, web_element: WebElement):

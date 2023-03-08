@@ -35,15 +35,15 @@ def main(udid: int):
 
     session_id = SQLAdManager().get_last_saved_session_id_from_db() + 1
 
-    ad_handler = AdHandler(session.driver, lang=DE)
-
     keyword = get_random_keyword()
     keyword_id = keyword["id"]
-    base_methods.get_page("Lego")
+    new_udid = 1
+
+    ad_handler = AdHandler(session.driver, lang=DE, session_id=session_id, keyword_id=keyword_id, udid=new_udid)
+
+    base_methods.get_page("Tea")
     # base_methods.get_page(keyword["keyword"])
     try:
-        new_udid = 1
-
         base_methods.amazon_not_responding_close()
         time.sleep(2)
         base_methods.cookies_click()
@@ -55,21 +55,21 @@ def main(udid: int):
         is_end_of_page = False
         previous_page_source = session.driver.page_source
 
-        ad_handler.collect_ad_type_7(session_id, keyword_id, new_udid)
-        ad_handler.collect_ad_type_9(session_id, keyword_id, new_udid)
-        ad_handler.collect_ad_type_9_alternative(session_id, keyword_id, new_udid)
-        ad_handler.collect_ad_type_10(session_id, keyword_id, new_udid)
+        ad_handler.collect_ad_type_7() # works
+        ad_handler.collect_ad_type_9()
+        ad_handler.collect_ad_type_9_alternative()
+        ad_handler.collect_ad_type_10()
 
         while not is_end_of_page:
 
             base_methods.amazon_not_responding_close()
             base_methods.cookies_click()
 
-            # ad_handler.collect_video_ad(session_id, keyword_id, new_udid)
-            # ad_handler.collect_video_ad_alternative(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_5(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_2(session_id, keyword_id, new_udid)
-            ad_handler.collect_ad_type_8(session_id, keyword_id, new_udid)
+            # ad_handler.collect_video_ad() # works
+            # ad_handler.collect_video_ad_alternative() # works
+            ad_handler.collect_ad_type_5() # works
+            ad_handler.collect_ad_type_2()
+            ad_handler.collect_ad_type_8()
 
             scroll.scroll_down()
 
