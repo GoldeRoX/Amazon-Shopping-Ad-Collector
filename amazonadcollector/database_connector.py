@@ -105,15 +105,11 @@ class SQLAdManager(object):
 
     @staticmethod
     def get_last_saved_session_id_from_db() -> int:
-        query = "SELECT MAX(id_session) FROM ads_meta_data;"
-
+        query = "SELECT COALESCE(MAX(id_session), 0) FROM ads_meta_data;"
         with cursor(**db_credentials) as c:
             c.execute(query)
-            result = c.fetchone()
-
-        if result[0] is None:
-            return 0
-        return int(result[0])
+            result = c.fetchone()[0]
+        return int(result)
 
 
 def get_random_keyword() -> {}:
@@ -124,7 +120,8 @@ def get_random_keyword() -> {}:
     """
 
     query = """
-        SELECT id, keyword FROM keywords
+        SELECT id, keyword 
+        FROM keywords
         ORDER BY RAND()
         LIMIT 1;
         """

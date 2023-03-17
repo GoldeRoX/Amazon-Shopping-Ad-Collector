@@ -81,13 +81,6 @@ class BaseMethods(object):
         except (NoSuchElementException, TimeoutException):
             pass
 
-    """def change_lang_if_must(self):
-        self.get_element_when_located(AppiumBy.XPATH,
-                                      '//android.widget.ImageView[@content-desc='
-                                      '"Menu. Contains your orders, your account, '
-                                      'shop by department, programs and features, settings,'
-                                      ' and customer service Tab 4 of 4"]').click()"""
-
     def get_page(self, phrase_to_search: str) -> None:
         """search item phrase on the app"""
         try:
