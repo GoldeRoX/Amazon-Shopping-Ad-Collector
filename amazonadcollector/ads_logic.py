@@ -66,6 +66,10 @@ class AdHandler(object):
                                                  self.lang.ad_2_starts_with)
                                                  and web_element.get_attribute("text") not in self.ad_text_filter]
 
+            # for web_element in ad_web_elements:
+            #    if web_element.text
+
+
             for index, web_element in enumerate(ad_web_elements):
                 """scroll through web_elements ads"""
                 print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
@@ -300,10 +304,10 @@ class AdHandler(object):
                 if not result_text.startswith(self.lang.ad_5_starts_with):
                     continue
 
-                if text_elements[7].get_attribute("text") != "product-detail":
-                    continue
+                # if text_elements[7].get_attribute("text") != "product-detail":
+                #   continue
 
-                if result_text in self.ad_text_filter:
+                if result_text in self.ad_text_filter or result_text is None:
                     continue
 
                 print("Adjusting ad type 5...")
@@ -407,10 +411,10 @@ class AdHandler(object):
 
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
-                """In case of error in recording screen, save ad info and continue"""
 
                 self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
                 print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                return None
 
         except NoSuchElementException:
             return None
@@ -421,45 +425,11 @@ class AdjustAd(object):
     def __init__(self, driver):
         self.driver: WebDriver = driver
         self.scroll = Scroll(self.driver)
-        self.test_element = self.driver.find_element(AppiumBy.XPATH,
-                                                     "/hierarchy/android.widget.FrameLayout/"
-                                                     "android.widget.LinearLayout/"
-                                                     "android.widget.FrameLayout/android.view.ViewGroup/"
-                                                     "android.widget.FrameLayout[2]/android.widget.FrameLayout/"
-                                                     "android.widget.RelativeLayout/android.widget.RelativeLayout/"
-                                                     "android.webkit.WebView/android.webkit.WebView/"
-                                                     "android.view.View[1]/"
-                                                     "android.view.View")
-
-    # TODO remake and repair match_ad_visibility(). It must adjust with windowed architecture of the site
-    def match_ad_visibility_test(self, web_element: WebElement):
-        if web_element.size["height"] > 10 and web_element.size["width"] > 10:
-            previous_height: int = web_element.size["height"]
-            self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
-            next_height: int = web_element.size["height"]
-
-            while True:
-
-                if math.isclose(previous_height, next_height, abs_tol=1) and web_element.size["height"] > 100:
-                    return
-
-                if next_height > previous_height:
-                    """case if element is on the bottom"""
-                    previous_height = web_element.size["height"]
-                    self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
-                    next_height = web_element.size["height"]
-
-                else:
-                    """case if element is on the top"""
-                    previous_height = web_element.size["height"]
-                    self.driver.swipe(start_x=10, start_y=1000, end_x=10, end_y=1500, duration=400)
-                    next_height = web_element.size["height"]
 
     def match_ad_visibility(self, web_element: WebElement) -> None:
         if web_element.size["height"] > 10 and web_element.size["width"] > 10:
             previous_height: int = web_element.size["height"]
             self.scroll.press_and_move_to_location(start_location=(10, 1100), end_location=(10, 1000))
-            # self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
             next_height: int = web_element.size["height"]
 
             while True:

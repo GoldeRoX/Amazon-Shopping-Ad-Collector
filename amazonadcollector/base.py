@@ -87,8 +87,8 @@ class BaseMethods(object):
             self.get_element_when_located(AppiumBy.XPATH, DE.search_icon, time_to_wait=30).click()
         except (NoSuchElementException, TimeoutException):
             try:
-                self.get_element_when_located(AppiumBy.XPATH, ENG.search_icon)
-                self.driver.find_element(AppiumBy.XPATH, ENG.search_icon).click()
+                self.get_element_when_located(AppiumBy.XPATH, UK.search_icon)
+                self.driver.find_element(AppiumBy.XPATH, UK.search_icon).click()
             except (NoSuchElementException, TimeoutException):
                 self.get_element_when_located(AppiumBy.ID,
                                               "com.amazon.mShop.android.shopping:id/"

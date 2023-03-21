@@ -5,6 +5,8 @@ class UK(object):
     ad_5_node = "//*[starts-with(@text,'Sponsored')]/parent::*"
     ad_5_starts_with = "Sponsored"
     ad_video = "//*[starts-with(@text, 'Sponsored video')]/parent::*/parent::*"
+    brands_related_to_your_search_element_node = "//*[@text='Brands related to your search']/parent::*"
+    ad_2_starts_with = "Sponsored ad from"
 
 
 class DE(object):
