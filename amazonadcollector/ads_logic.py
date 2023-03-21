@@ -8,11 +8,8 @@ import yaml
 from datetime import datetime
 from appium.webdriver import WebElement
 from appium.webdriver.common.appiumby import AppiumBy
-from appium.webdriver.common.touch_action import TouchAction
 from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import WebDriverException, NoSuchElementException
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 from amazonadcollector.Ad import Ad
 from amazonadcollector.base import save_cropped_scr, Scroll
@@ -416,40 +413,7 @@ class AdHandler(object):
                 print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
 
         except NoSuchElementException:
-            pass
-
-    def collect_video_ad_alternative(self) -> None:
-        """Collecting video, scr and modified scr for ad of type 6 - video_ad"""
-        try:
-            video_ad_web_element = self.driver.find_element(AppiumBy.XPATH, self.lang.ad_video)
-
-            path: str = ".//child::*" + 7 * "/following-sibling::*"
-            text: str = video_ad_web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
-            if video_ad_web_element.size["height"] > 10 and text not in self.ad_text_filter:
-
-                print("adjusting video ad ...")
-                AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
-
-                """create ad object"""
-                print("collecting ad \033[1;31;40mvideo type 6\033[0;0m ...")
-                ad = Ad(video_ad_web_element, 6)
-                ad.text = text
-
-                Manager = SQLAdManager()
-                Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                        ad.ad_type, self.session_id, self.keyword_id, self.udid)
-
-                self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
-
-                if ad.text is not None:
-                    self.ad_text_filter.append(ad.text)
-                """In case of error in recording screen, save ad info and continue"""
-
-                self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
-                print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
-
-        except NoSuchElementException:
-            pass
+            return None
 
 
 class AdjustAd(object):
@@ -498,8 +462,6 @@ class AdjustAd(object):
             # self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
             next_height: int = web_element.size["height"]
 
-            wait = WebDriverWait(self.driver, timeout=30)
-
             while True:
                 if math.isclose(previous_height, next_height, abs_tol=1) and web_element.size["height"] > 100:
                     return
@@ -508,68 +470,10 @@ class AdjustAd(object):
                     """case if element is on the bottom"""
                     previous_height = web_element.size["height"]
                     self.scroll.press_and_move_to_location(start_location=(10, 1100), end_location=(10, 1000))
-                    # self.driver.swipe(start_x=10, start_y=1100, end_x=10, end_y=1000, duration=400)
                     next_height = web_element.size["height"]
 
                 else:
                     """case if element is on the top"""
                     previous_height = web_element.size["height"]
                     self.scroll.press_and_move_to_location(start_location=(10, 1000), end_location=(10, 1500))
-                    # self.driver.swipe(start_x=10, start_y=1000, end_x=10, end_y=1500, duration=400)
                     next_height = web_element.size["height"]
-
-                # Wait for the element to become visible
-                # wait.until(EC.visibility_of_element_located((AppiumBy.ID, web_element.id)))
-
-    def is_fully_visible(self, element: WebElement) -> bool:
-        # Get the element's location and size
-        location = element.location
-        size = element.size
-
-        # Get the size of the viewport
-        viewport_size = self.driver.get_window_size()
-
-        # Calculate the position and size of the viewport in the coordinate system of the element
-        viewport_position = self.driver.get_window_rect()
-        viewport_position['x'] = location['x'] + viewport_size['width'] / 2
-        viewport_size_in_element = {
-            'width': viewport_size['width'],
-            'height': viewport_size['height'] - viewport_position['y']
-        }
-
-        # Check if the viewport is fully contained within the element
-        return (location['x'] <= viewport_position['x']
-                and location['y'] <= viewport_position['y']
-                and location['x'] + size['width'] >= viewport_position['x'] + viewport_size_in_element['width']
-                and location['y'] + size['height'] >= viewport_position['y'] + viewport_size_in_element['height'])
-
-    def custom_scroll_to_element(self, target_element: WebElement) -> None:
-        # Get the size of the viewport
-        viewport_size = self.driver.get_window_size()
-
-        # Get the location and size of the target element
-        target_location = target_element.location
-        target_size = target_element.size
-
-        # Calculate the center point of the target element
-        target_center = {
-            'x': target_location['x'] + target_size['width'] / 2,
-            'y': target_location['y'] + target_size['height'] / 2
-        }
-
-        # Calculate the destination point for the scroll action
-        destination = {
-            'x': target_center['x'],
-            'y': target_center['y'] - viewport_size['height'] / 3
-        }
-
-        # Create a TouchAction instance and perform the scroll action
-        actions = TouchAction(self.driver)
-        actions.press(x=viewport_size['width'] / 2, y=viewport_size['height'] - 1)
-        actions.wait(200)
-        actions.move_to(x=destination['x'], y=destination['y'])
-        actions.release()
-        actions.perform()
-
-        # Wait until the target element is visible
-        WebDriverWait(self.driver, 10).until(EC.visibility_of(target_element))

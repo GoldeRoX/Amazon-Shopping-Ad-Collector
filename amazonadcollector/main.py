@@ -9,11 +9,12 @@ from selenium.common.exceptions import WebDriverException
 from amazonadcollector.ads_logic import SQLAdManager, AdHandler
 from amazonadcollector.database_connector import get_random_keyword
 from amazonadcollector.base import MyDriver, BaseMethods, Scroll
-from amazonadcollector.locators_data import DE
+from amazonadcollector.locators_data import DE, UK
 
 
 def main(udid: int):
-    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://142.132.181.232:50012 -port {udid}")
+    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://46.17.63.210:3128 -port {udid}") # UK
+    # pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://142.132.181.232:50012 -port {udid}") # DE
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
     # time to start an emulator
@@ -30,7 +31,7 @@ def main(udid: int):
     base_methods = BaseMethods(session.driver)
     base_methods.amazon_not_responding_close()
     base_methods.first_launch()
-    base_methods.change_lang_from_eng_to_de()
+    # base_methods.change_lang_from_eng_to_de()
 
     session_id = SQLAdManager().get_last_saved_session_id_from_db() + 1
 
@@ -38,7 +39,7 @@ def main(udid: int):
     keyword_id = keyword["id"]
     new_udid = 1
 
-    ad_handler = AdHandler(session.driver, lang=DE, session_id=session_id, keyword_id=keyword_id, udid=new_udid)
+    ad_handler = AdHandler(session.driver, lang=UK, session_id=session_id, keyword_id=keyword_id, udid=new_udid)
 
     base_methods.get_page("Monitor")
     # base_methods.get_page(keyword["keyword"])
@@ -55,18 +56,17 @@ def main(udid: int):
         previous_page_source = session.driver.page_source
 
         # ad_handler.collect_ad_type_7()  # works
-        ad_handler.collect_ad_type_9()
-        ad_handler.collect_ad_type_9_alternative()
-        ad_handler.collect_ad_type_10()
+        # ad_handler.collect_ad_type_9()
+        # ad_handler.collect_ad_type_9_alternative()
+        # ad_handler.collect_ad_type_10()
 
         while not is_end_of_page:
             base_methods.amazon_not_responding_close()
             base_methods.cookies_click()
 
-            # ad_handler.collect_video_ad()  # works
-            # ad_handler.collect_video_ad_alternative()  # works
-            # ad_handler.collect_ad_type_5()  # works
-            ad_handler.collect_ad_type_2()
+            ad_handler.collect_video_ad()  # works
+            ad_handler.collect_ad_type_5()  # works
+            #ad_handler.collect_ad_type_2()
             # ad_handler.collect_ad_type_8()
 
             scroll.scroll_down()
