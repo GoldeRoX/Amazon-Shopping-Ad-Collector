@@ -50,8 +50,54 @@ class AdHandler(object):
     def get_webelements_ads_2(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.brands_related_to_your_search_element_node)
 
+    def get_webelements_ads_2_alt(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.Items_related_to_your_search_element_node)
+
     def get_webelements_ads_7(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_7)
+
+    def collect_ad_type_2_alt(self) -> None:
+        """Create, send to DB and save scr of ad"""
+        try:
+            ad_web_elements: list[WebElement] = [web_element for element in self.get_webelements_ads_2_alt()
+                                                 if element.size["height"] > 10
+                                                 for web_element in
+                                                 element.find_elements(AppiumBy.XPATH,
+                                                                       ".//*[@class='android.view.View']")
+                                                 if web_element.get_attribute("clickable") == "true"
+                                                 and web_element.get_attribute("text").startswith(
+                                                 self.lang.ad_2_starts_with)
+                                                 and web_element.get_attribute("text") not in self.ad_text_filter]
+
+            # for web_element in ad_web_elements:
+            #    if web_element.text
+
+            for index, web_element in enumerate(ad_web_elements):
+                """scroll through web_elements ads"""
+                print("collecting ad \033[1;31;40mtype 2 ALT\033[0;0m ...")
+                if index == 0:
+                    print(ad_web_elements)
+                    print("adjusting ad type 2 ALT ...")
+                    AdjustAd(self.driver).match_ad_visibility(web_element)
+                else:
+                    x, y, width, height = web_element.rect["x"], web_element.rect["y"],\
+                        web_element.rect["width"], web_element.rect["height"]
+
+                    self.scroll.press_and_move_to_location(
+                        start_location=(x, (height/2)+y),
+                        end_location=(ad_web_elements[index-1].rect["x"], (height/2)+y)
+                    )
+                    time.sleep(2)
+
+                """create an object of ad"""
+                if web_element.get_attribute("text") not in self.ad_text_filter:
+                    ad = Ad(web_element, 2)
+                    self.save_ad(ad)
+                    print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                    if ad.text.strip() is not None:
+                        self.ad_text_filter.append(ad.text)
+        except (NoSuchElementException, IndexError):
+            return
 
     def collect_ad_type_2(self) -> None:
         """Create, send to DB and save scr of ad"""
@@ -66,15 +112,14 @@ class AdHandler(object):
                                                  self.lang.ad_2_starts_with)
                                                  and web_element.get_attribute("text") not in self.ad_text_filter]
 
-            # for web_element in ad_web_elements:
-            #    if web_element.text
-
+            ad_texts = [web_element.get_attribute("text") for web_element in ad_web_elements]
+            if not any(text not in self.ad_text_filter for text in ad_texts):
+                return None
 
             for index, web_element in enumerate(ad_web_elements):
                 """scroll through web_elements ads"""
                 print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
                 if index == 0:
-                    print(ad_web_elements)
                     print("adjusting ad type 2 ...")
                     AdjustAd(self.driver).match_ad_visibility(web_element)
                 else:
@@ -85,7 +130,7 @@ class AdHandler(object):
                         start_location=(x, (height/2)+y),
                         end_location=(ad_web_elements[index-1].rect["x"], (height/2)+y)
                     )
-                    time.sleep(2.5)
+                    time.sleep(2)
 
                 """create an object of ad"""
                 if web_element.get_attribute("text") not in self.ad_text_filter:
@@ -102,8 +147,9 @@ class AdHandler(object):
         ads_webelements = self.get_webelements_ads_7()
         for webElement in ads_webelements:
             if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                result_text: str = self.driver.find_element(AppiumBy.XPATH, "//*[starts-with(@text, 'Gesponserte "
-                                                                            "Werbeanzeige von')]").get_attribute("text")
+                result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
+                                                                            f"{self.lang.ad_7_text_starts_with}')]")\
+                                                                            .get_attribute("text")
                 """create ad object"""
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
                 ad = Ad(webElement, 7)

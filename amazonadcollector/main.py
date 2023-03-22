@@ -41,7 +41,7 @@ def main(udid: int):
 
     ad_handler = AdHandler(session.driver, lang=UK, session_id=session_id, keyword_id=keyword_id, udid=new_udid)
 
-    base_methods.get_page("Monitor")
+    base_methods.get_page("LEGO")
     # base_methods.get_page(keyword["keyword"])
     try:
         base_methods.amazon_not_responding_close()
@@ -55,7 +55,7 @@ def main(udid: int):
         is_end_of_page = False
         previous_page_source = session.driver.page_source
 
-        # ad_handler.collect_ad_type_7()  # works
+        ad_handler.collect_ad_type_7()  # works
         # ad_handler.collect_ad_type_9()
         # ad_handler.collect_ad_type_9_alternative()
         # ad_handler.collect_ad_type_10()
@@ -66,7 +66,8 @@ def main(udid: int):
 
             ad_handler.collect_video_ad()  # works
             ad_handler.collect_ad_type_5()  # works
-            #ad_handler.collect_ad_type_2()
+            ad_handler.collect_ad_type_2()
+            ad_handler.get_webelements_ads_2_alt()
             # ad_handler.collect_ad_type_8()
 
             scroll.scroll_down()

@@ -6,7 +6,10 @@ class UK(object):
     ad_5_starts_with = "Sponsored"
     ad_video = "//*[starts-with(@text, 'Sponsored video')]/parent::*/parent::*"
     brands_related_to_your_search_element_node = "//*[@text='Brands related to your search']/parent::*"
+    Items_related_to_your_search_element_node = "//*[@text='Items related to your search']/parent::*"
     ad_2_starts_with = "Sponsored ad from"
+    ad_7 = "//*[starts-with(@text, 'Sponsored ad from')]/parent::*/parent::*"
+    ad_7_text_starts_with = "Sponsored ad from"
 
 
 class DE(object):
@@ -22,6 +25,7 @@ class DE(object):
     ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]/parent::*/parent::*" # zmienic wyszukiwanie po samym sponsored video a nie po mute sponsored video
     App_schlieBen = "android:id/aerr_close"
     ad_7 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
+    ad_7_text_starts_with = "Gesponserte Werbeanzeige von"
     ad_8 = "//*[starts-with(@content-desc, 'Gesponserte Werbeanzeige von')]"
     ad_8_alt = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]"
     ad_9 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*"
