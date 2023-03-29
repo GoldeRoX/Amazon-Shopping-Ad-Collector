@@ -56,8 +56,9 @@ class MyDriver(object):
 
 class BaseMethods(object):
 
-    def __init__(self, driver):
+    def __init__(self, driver, lang):
         self.driver: WebDriver = driver
+        self.lang = lang
 
     def get_element_when_located(self, by_type, path: str, time_to_wait: int = 5) -> WebElement:
         return WebDriverWait(self.driver, time_to_wait).until(
@@ -123,12 +124,46 @@ class BaseMethods(object):
             return
         except NoSuchElementException:
             try:
-                self.driver.find_element(AppiumBy.XPATH, "//*[@text='Cookies akzeptieren']").click()
+                self.driver.find_element(AppiumBy.XPATH, self.lang.accept_cookies).click()
                 return
             except NoSuchElementException:
                 return
 
-    def change_lang_from_eng_to_de(self):
+    def change_setting_to_uk(self):
+        self.get_element_when_located(AppiumBy.ACCESSIBILITY_ID, "Menu. Contains your orders, your account, shop by"
+                                                                 " department, programs and features, settings,"
+                                                                 " and customer service Tab 4 of 4").click()
+
+        time.sleep(10)
+        while True:
+            try:
+                self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Settings']", time_to_wait=1).click()
+                break
+            except (NoSuchElementException, TimeoutException):
+                Scroll(self.driver).scroll_down()
+
+        Scroll(self.driver).scroll_down()
+        self.get_element_when_located(AppiumBy.XPATH, "//*[starts-with(@text,'Country')]", time_to_wait=10).click()
+
+        try:
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Country/Region: United States']",
+                                          time_to_wait=10).click()
+        except (NoSuchElementException, TimeoutException):
+            self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Done']").click()
+            return
+        TouchAction(self.driver).tap(x=403, y=330).perform()
+
+        for i in range(8):
+            Scroll(self.driver).scroll_down()
+        TouchAction(self.driver).tap(x=403, y=330).perform()
+
+        self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Currency: US$ - USD - US Dollar']").click()
+        TouchAction(self.driver).tap(x=354, y=603).perform()
+
+        self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Done']").click()
+        return
+
+    def change_setting_to_de(self) -> None:
         try:
             self.get_element_when_located(AppiumBy.ACCESSIBILITY_ID, "Menu. Contains your orders, your account, shop by"
                                                                      " department, programs and features, settings,"
@@ -159,7 +194,7 @@ class BaseMethods(object):
                 self.get_element_when_located(AppiumBy.XPATH, "//*[@text='€ - EUR - Euro']").click()
 
             self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Fertig']").click()
-        except WebDriverException:
+        except (NoSuchElementException, TimeoutException):
             return
 
 
@@ -185,8 +220,10 @@ def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
                     ]
     try:
         cv2.imwrite(image_path, cropped_image)
-    except cv2.error:
-        pass
+        return
+    except cv2.error as error:
+        print(error)
+        return
 
 
 class Scroll(object):

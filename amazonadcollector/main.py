@@ -18,7 +18,7 @@ def main(udid: int):
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
     # time to start an emulator
-    time.sleep(30)
+    time.sleep(15)
 
     start_time = time.time()
 
@@ -28,10 +28,15 @@ def main(udid: int):
         session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid),
                            skip_device_initialization=False, skip_server_installation=False, no_reset=False)
 
-    base_methods = BaseMethods(session.driver)
+    time.sleep(5)
+
+    base_methods = BaseMethods(session.driver, lang=UK)
     base_methods.amazon_not_responding_close()
     base_methods.first_launch()
+    base_methods.cookies_click()
+
     # base_methods.change_lang_from_eng_to_de()
+    base_methods.change_setting_to_uk()
 
     session_id = SQLAdManager().get_last_saved_session_id_from_db() + 1
 
@@ -40,9 +45,9 @@ def main(udid: int):
     new_udid = 1
 
     ad_handler = AdHandler(session.driver, lang=UK, session_id=session_id, keyword_id=keyword_id, udid=new_udid)
-
-    base_methods.get_page("LEGO")
+    base_methods.get_page("Laptops")
     # base_methods.get_page(keyword["keyword"])
+
     try:
         base_methods.amazon_not_responding_close()
         time.sleep(2)

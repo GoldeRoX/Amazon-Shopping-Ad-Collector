@@ -9,7 +9,7 @@ from datetime import datetime
 from appium.webdriver import WebElement
 from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.webdriver import WebDriver
-from selenium.common.exceptions import WebDriverException, NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException
 
 from amazonadcollector.Ad import Ad
 from amazonadcollector.base import save_cropped_scr, Scroll
@@ -44,17 +44,23 @@ class AdHandler(object):
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
                 print("ad \033[1;31;40mtype 1\033[0;0m \033[1;32;40mcollected\033[0;0m")
-        except WebDriverException:
+        except NoSuchElementException:
             pass
 
     def get_webelements_ads_2(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.brands_related_to_your_search_element_node)
 
     def get_webelements_ads_2_alt(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.Items_related_to_your_search_element_node)
+        try:
+            return self.driver.find_elements(AppiumBy.XPATH, self.lang.Items_related_to_your_search_element_node)
+        except NoSuchElementException:
+            return None
 
     def get_webelements_ads_7(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_7)
+        try:
+            return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_7)
+        except NoSuchElementException:
+            return None
 
     def collect_ad_type_2_alt(self) -> None:
         """Create, send to DB and save scr of ad"""
@@ -69,15 +75,11 @@ class AdHandler(object):
                                                  self.lang.ad_2_starts_with)
                                                  and web_element.get_attribute("text") not in self.ad_text_filter]
 
-            # for web_element in ad_web_elements:
-            #    if web_element.text
-
             for index, web_element in enumerate(ad_web_elements):
                 """scroll through web_elements ads"""
-                print("collecting ad \033[1;31;40mtype 2 ALT\033[0;0m ...")
+                print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
                 if index == 0:
-                    print(ad_web_elements)
-                    print("adjusting ad type 2 ALT ...")
+                    print("adjusting ad type 2 ...")
                     AdjustAd(self.driver).match_ad_visibility(web_element)
                 else:
                     x, y, width, height = web_element.rect["x"], web_element.rect["y"],\
@@ -87,15 +89,14 @@ class AdHandler(object):
                         start_location=(x, (height/2)+y),
                         end_location=(ad_web_elements[index-1].rect["x"], (height/2)+y)
                     )
-                    time.sleep(2)
+                    time.sleep(3)
 
                 """create an object of ad"""
-                if web_element.get_attribute("text") not in self.ad_text_filter:
-                    ad = Ad(web_element, 2)
-                    self.save_ad(ad)
-                    print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                    if ad.text.strip() is not None:
-                        self.ad_text_filter.append(ad.text)
+                ad = Ad(web_element, 2)
+                self.save_ad(ad)
+                print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                if ad.text.strip() is not None:
+                    self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, IndexError):
             return
 
@@ -112,10 +113,6 @@ class AdHandler(object):
                                                  self.lang.ad_2_starts_with)
                                                  and web_element.get_attribute("text") not in self.ad_text_filter]
 
-            ad_texts = [web_element.get_attribute("text") for web_element in ad_web_elements]
-            if not any(text not in self.ad_text_filter for text in ad_texts):
-                return None
-
             for index, web_element in enumerate(ad_web_elements):
                 """scroll through web_elements ads"""
                 print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
@@ -130,15 +127,14 @@ class AdHandler(object):
                         start_location=(x, (height/2)+y),
                         end_location=(ad_web_elements[index-1].rect["x"], (height/2)+y)
                     )
-                    time.sleep(2)
+                    time.sleep(3)
 
                 """create an object of ad"""
-                if web_element.get_attribute("text") not in self.ad_text_filter:
-                    ad = Ad(web_element, 2)
-                    self.save_ad(ad)
-                    print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                    if ad.text.strip() is not None:
-                        self.ad_text_filter.append(ad.text)
+                ad = Ad(web_element, 2)
+                self.save_ad(ad)
+                print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                if ad.text.strip() is not None:
+                    self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, IndexError):
             return
 
@@ -349,9 +345,6 @@ class AdHandler(object):
                 result_text: str = text_elements[4].get_attribute("text")
                 if not result_text.startswith(self.lang.ad_5_starts_with):
                     continue
-
-                # if text_elements[7].get_attribute("text") != "product-detail":
-                #   continue
 
                 if result_text in self.ad_text_filter or result_text is None:
                     continue

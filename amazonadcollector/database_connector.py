@@ -151,3 +151,28 @@ def get_proxy_address() -> str:
         """
 
     return query
+
+def get_emulators_info():
+    query = """
+    SELECT * FROM host;
+    """
+
+    with cursor(**db_credentials) as c:
+        c.execute(query)
+        result_of_query = c.fetchall()
+
+    return result_of_query
+
+def update_host():
+    query_update = f"""
+                    INSERT INTO 
+                            host
+                            (ip)
+                        VALUES
+                            ('10.20.10.104');
+                    """
+
+    with cursor(**db_credentials) as c:
+        c.execute(
+            query_update,
+        )

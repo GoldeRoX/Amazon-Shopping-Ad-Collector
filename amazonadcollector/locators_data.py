@@ -10,6 +10,7 @@ class UK(object):
     ad_2_starts_with = "Sponsored ad from"
     ad_7 = "//*[starts-with(@text, 'Sponsored ad from')]/parent::*/parent::*"
     ad_7_text_starts_with = "Sponsored ad from"
+    accept_cookies = "//*[@text='Accept Cookies']"
 
 
 class DE(object):
@@ -31,3 +32,4 @@ class DE(object):
     ad_9 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*"
     ad_9_alt = "//*[starts-with(@content-desc, 'Gesponserte Werbeanzeige von')]/parent::*"
     ad_10 = "//*[starts-with(@content-desc, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
+    accept_cookies = "//*[@text='Cookies akzeptieren']"
