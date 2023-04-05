@@ -13,7 +13,7 @@ from amazonadcollector.locators_data import DE, UK
 
 
 def main(udid: int):
-    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://46.17.63.210:3128 -port {udid}") # UK
+    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://46.17.63.210:3128 -port {udid}") # UK
     # pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://142.132.181.232:50012 -port {udid}") # DE
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
@@ -45,46 +45,48 @@ def main(udid: int):
     new_udid = 1
 
     ad_handler = AdHandler(session.driver, lang=UK, session_id=session_id, keyword_id=keyword_id, udid=new_udid)
-    base_methods.get_page("Laptops")
-    # base_methods.get_page(keyword["keyword"])
 
-    try:
-        base_methods.amazon_not_responding_close()
-        time.sleep(2)
-        base_methods.cookies_click()
-        time.sleep(4)
+    for i in range(30):
 
-        """scroll down through app Y and collect ads"""
-        scroll = Scroll(session.driver)
+        base_methods.get_page(keyword["keyword"])
 
-        is_end_of_page = False
-        previous_page_source = session.driver.page_source
-
-        ad_handler.collect_ad_type_7()  # works
-        # ad_handler.collect_ad_type_9()
-        # ad_handler.collect_ad_type_9_alternative()
-        # ad_handler.collect_ad_type_10()
-
-        while not is_end_of_page:
+        try:
             base_methods.amazon_not_responding_close()
+            time.sleep(2)
             base_methods.cookies_click()
+            time.sleep(4)
 
-            ad_handler.collect_video_ad()  # works
-            ad_handler.collect_ad_type_5()  # works
-            ad_handler.collect_ad_type_2()
-            ad_handler.get_webelements_ads_2_alt()
-            # ad_handler.collect_ad_type_8()
+            """scroll down through app Y and collect ads"""
+            scroll = Scroll(session.driver)
 
-            scroll.scroll_down()
-
-            is_end_of_page = previous_page_source == session.driver.page_source
+            is_end_of_page = False
             previous_page_source = session.driver.page_source
 
-    except KeyboardInterrupt:
-        print("KeyboardInterrupt exception")
-        sys.exit()
-    finally:
-        session.driver.quit()
-        process_emulator.terminate()
-        print(f"end of session {session_id} : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print("--- %s seconds running ---" % (time.time() - start_time))
+            ad_handler.collect_ad_type_7()  # works
+            # ad_handler.collect_ad_type_9()
+            # ad_handler.collect_ad_type_9_alternative()
+            # ad_handler.collect_ad_type_10()
+
+            while not is_end_of_page:
+                base_methods.amazon_not_responding_close()
+                base_methods.cookies_click()
+
+                ad_handler.collect_video_ad()  # works
+                ad_handler.collect_ad_type_5()  # works
+                ad_handler.collect_ad_type_2()
+                ad_handler.get_webelements_ads_2_alt()
+                # ad_handler.collect_ad_type_8()
+
+                scroll.scroll_down()
+
+                is_end_of_page = previous_page_source == session.driver.page_source
+                previous_page_source = session.driver.page_source
+
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt exception")
+            sys.exit()
+        finally:
+            session.driver.quit()
+            process_emulator.terminate()
+            print(f"end of session {session_id} : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            print("--- %s seconds running ---" % (time.time() - start_time))

@@ -25,7 +25,7 @@ from amazonadcollector.locators_data import *
 
 class MyDriver(object):
 
-    def __init__(self, platform_name="Android", platform_version="11",
+    def __init__(self, platform_name="Android", platform_version="10",
                  automation_name="UiAutomator2", app_package="com.amazon.mShop.android.shopping",
                  app_activity="com.amazon.mShop.home.HomeActivity", device_name="emulator-5554",
                  uiautomator_2_server_launch_timeout=40000, ios_install_pause=8000,
@@ -156,8 +156,10 @@ class BaseMethods(object):
         for i in range(8):
             Scroll(self.driver).scroll_down()
         TouchAction(self.driver).tap(x=403, y=330).perform()
+        time.sleep(3)
 
         self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Currency: US$ - USD - US Dollar']").click()
+        time.sleep(3)
         TouchAction(self.driver).tap(x=354, y=603).perform()
 
         self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Done']").click()
