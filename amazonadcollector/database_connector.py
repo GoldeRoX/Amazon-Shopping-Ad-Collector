@@ -94,8 +94,9 @@ class SQLAdManager(object):
                 (width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, keyword_id, ip, udid)
             )
 
-    def send_data_to_db(self, width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id,
-                        udid):
+    def send_data_to_db(self, width, height, location_x, location_y, text, timestamp, ad_type, id_session,
+                        keyword_id, udid):
+
         self.insert_empty_query()
         self.update_query(width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id,
                           config["COMPUTER"]["IP"], udid)

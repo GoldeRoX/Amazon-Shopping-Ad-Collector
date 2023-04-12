@@ -127,7 +127,7 @@ class AdHandler(object):
                         start_location=(x, (height/2)+y),
                         end_location=(ad_web_elements[index-1].rect["x"], (height/2)+y)
                     )
-                    time.sleep(3)
+                    time.sleep(1.5)
 
                 """create an object of ad"""
                 ad = Ad(web_element, 2)
