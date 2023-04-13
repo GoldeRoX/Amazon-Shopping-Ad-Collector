@@ -1,5 +1,6 @@
 import os
 import time
+import cv2
 
 import yaml
 from appium import webdriver  # import Appium-Python-Client 2.2.0
@@ -15,7 +16,6 @@ from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
-import cv2  # import opencv-python	4.5.5.64
 from amazonadcollector.Ad import Ad
 from typing import Tuple
 from appium.webdriver.webdriver import WebDriver

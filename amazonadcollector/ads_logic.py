@@ -28,6 +28,10 @@ class AdHandler(object):
         self.scroll = Scroll(self.driver)
         self.ad_text_filter = []
 
+        path: str = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
+        with open(path, "r") as file:
+            self.config = yaml.safe_load(file)
+
     def save_ad(self, ad: Ad) -> None:
         Manager = SQLAdManager()
         Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
@@ -139,7 +143,7 @@ class AdHandler(object):
             return
 
     def collect_ad_type_7(self) -> None:
-        """Create, send data to DB and save scr of ad"""
+        """Create and send data to DB, then save scr of ad"""
         ads_webelements = self.get_webelements_ads_7()
         for webElement in ads_webelements:
             if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
@@ -361,12 +365,9 @@ class AdHandler(object):
             pass
 
     def save_cropped_scr_for_videos(self, ad: Ad, filename: str) -> None:
-        PATH: str = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
-        with open(PATH, "r") as file:
-            config = yaml.safe_load(file)
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
-        path = config["COMPUTER"]["SAVE_PATH"]
+        path = self.config["COMPUTER"]["SAVE_PATH"]
         if not os.path.exists(f"{path}/{date_folder_name}"):
             os.mkdir(f"{path}/{date_folder_name}")
 
@@ -404,13 +405,9 @@ class AdHandler(object):
             pass
 
     def create_and_crop_video(self, video_ad_web_element: WebElement, db_id: int) -> None:
-
-        PATH = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
-        with open(PATH, "r") as file:
-            config = yaml.safe_load(file)
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
-        path = config["COMPUTER"]["SAVE_PATH"]
+        path = self.config["COMPUTER"]["SAVE_PATH"]
         if not os.path.exists(f"{path}/{date_folder_name}"):
             os.mkdir(f"{path}/{date_folder_name}")
         self.driver.start_recording_screen()
