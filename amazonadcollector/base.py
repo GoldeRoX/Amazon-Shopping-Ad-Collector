@@ -25,7 +25,7 @@ from amazonadcollector.locators_data import *
 
 class MyDriver(object):
 
-    def __init__(self, platform_name="Android", platform_version="10",
+    def __init__(self, platform_name="Android", platform_version="9",
                  automation_name="UiAutomator2", app_package="com.amazon.mShop.android.shopping",
                  app_activity="com.amazon.mShop.home.HomeActivity", device_name="emulator-5554",
                  uiautomator_2_server_launch_timeout=40000, ios_install_pause=8000,
