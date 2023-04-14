@@ -3,7 +3,7 @@ import time
 import cv2
 
 import yaml
-from appium import webdriver  # import Appium-Python-Client 2.2.0
+from appium import webdriver
 from appium.webdriver import WebElement
 from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.common.touch_action import TouchAction
