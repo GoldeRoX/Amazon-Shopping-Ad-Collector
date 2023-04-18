@@ -2,10 +2,11 @@ from datetime import datetime
 from appium.webdriver.webelement import WebElement
 
 from dataclasses import dataclass
+from abc import ABC, abstractmethod
 
 
 @dataclass
-class Ad(object):
+class Ad(ABC):
     filename: str
     width: int
     height: int
@@ -25,3 +26,29 @@ class Ad(object):
         self.text = element.get_attribute("text")
         self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.ad_type = ad_type
+
+
+class SearchedAdBottomBanner(Ad):
+    ...
+
+
+class BrandsRelatedToYourSearch(Ad):
+    ...
+
+
+class SearchedProductCarouselOfAds(Ad):
+    ...
+
+
+class SearchedProductAd(Ad):
+    ...
+
+
+class SearchedProductAdVideo(Ad):
+    ...
+
+
+class SearchedProductSponsoredBrandTop(Ad):
+    ...
+
+

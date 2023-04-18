@@ -139,19 +139,43 @@ def get_random_keyword() -> {}:
     return result
 
 
-# TODO wprowadzic system auto proxy
-def get_proxy_address() -> str:
+# TODO wprowadzic system auto proxy na podstawie emu i ip
+def get_proxy_address(emulator_id: int) -> str:
     """
     Returns: proxy_address
     """
 
-    query = """
-        SELECT id, keyword FROM keywords
-        ORDER BY RAND()
-        LIMIT 1;
+    query = f"""
+        SELECT proxy 
+        FROM emulators
+        WHERE id_host_ip = {config["COMPUTER"]["IP"]}
+        AND udid = {emulator_id}
         """
 
-    return query
+    with cursor(**db_credentials) as c:
+        c.execute(query)
+        result = c.fetchone()
+
+    return result
+
+
+def get_proxy_port(emulator_id: int) -> str:
+    """
+    Returns: proxy_port
+    """
+
+    query = f"""
+        SELECT proxy_port
+        FROM emulators
+        WHERE id_host_ip = {config["COMPUTER"]["IP"]}
+        AND udid = {emulator_id}
+        """
+
+    with cursor(**db_credentials) as c:
+        c.execute(query)
+        result = c.fetchone()
+
+    return result
 
 
 def get_emulators_info():
@@ -165,17 +189,3 @@ def get_emulators_info():
 
     return result_of_query
 
-
-def update_host():
-    query_update = f"""
-                    INSERT INTO 
-                            host
-                            (ip)
-                        VALUES
-                            ('10.20.10.104');
-                    """
-
-    with cursor(**db_credentials) as c:
-        c.execute(
-            query_update,
-        )
