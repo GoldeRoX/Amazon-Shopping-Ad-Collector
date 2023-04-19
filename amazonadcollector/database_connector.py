@@ -92,8 +92,8 @@ class SQLAdManager(object):
     def send_data_to_db(self, width, height, location_x, location_y, text,
                         timestamp, ad_type, id_session, keyword_id, udid) -> None:
         self.insert_empty_query()
-        self.update_query(width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id,
-                          self.config["COMPUTER"]["IP"], udid)
+        self.update_query(width, height, location_x, location_y, text, timestamp, ad_type,
+                          id_session, keyword_id, self.config["COMPUTER"]["IP"], udid)
 
     def get_last_saved_id_from_db(self) -> int:
         return self.data_set_id
@@ -132,7 +132,8 @@ class SQLAdManager(object):
 
     def get_proxy_address(self, emulator_id: int) -> str:
         """
-        Returns: proxy_address
+        Returns:
+            proxy_address
         """
 
         query = f"""
@@ -144,13 +145,14 @@ class SQLAdManager(object):
 
         with cursor(**self.db_credentials) as c:
             c.execute(query)
-            result = c.fetchone()
+            result = c.fetchone()[0]
 
-        return result[0]
+        return result
 
     def get_proxy_port(self, emulator_id: int) -> str:
         """
-        Returns: proxy_port
+        Returns:
+            proxy_port
         """
 
         query = f"""
@@ -162,6 +164,6 @@ class SQLAdManager(object):
 
         with cursor(**self.db_credentials) as c:
             c.execute(query)
-            result = c.fetchone()
+            result = c.fetchone()[0]
 
-        return result[0]
+        return result
