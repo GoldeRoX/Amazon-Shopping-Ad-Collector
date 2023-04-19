@@ -16,5 +16,5 @@ DATABASE:
 #  CHARSET: 'utf8mb4'
 
 COMPUTER:
-  IP: "2"
+  IP: "1"
   SAVE_PATH: "/home/krzysztof/nfs/Screenshots"

@@ -1,7 +1,7 @@
 import MySQLdb
 from MySQLdb.connections import Connection
 from MySQLdb.cursors import \
-    Cursor  # pip install mysqlclient~=2.0.3 | sudo apt-get install python-dev libmysqlclient-dev
+    Cursor
 import contextlib
 from typing import (
     ContextManager,
@@ -34,24 +34,19 @@ def cursor(*args, **kwargs) -> ContextManager[Cursor]:
             cur.close()
 
 
-PATH = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
-
-with open(PATH, "r") as file:
-    config = yaml.safe_load(file)
-
-db_credentials = {
-    'host': config["DATABASE"]["HOST"],
-    'database': config["DATABASE"]["DB"],
-    'user': config["DATABASE"]["USERNAME"],
-    'password': config["DATABASE"]["PASSWORD"],
-    'charset': config["DATABASE"]["CHARSET"]
-}
-
-
 class SQLAdManager(object):
-
     def __init__(self):
         self.data_set_id = None
+        self.path = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
+        with open(self.path, "r") as file:
+            self.config = yaml.safe_load(file)
+        self.db_credentials = {
+            'host': self.config["DATABASE"]["HOST"],
+            'database': self.config["DATABASE"]["DB"],
+            'user': self.config["DATABASE"]["USERNAME"],
+            'password': self.config["DATABASE"]["PASSWORD"],
+            'charset': self.config["DATABASE"]["CHARSET"]
+        }
 
     def insert_empty_query(self):
         query_insert = """
@@ -63,7 +58,7 @@ class SQLAdManager(object):
                             (0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL);
                         """
 
-        with cursor(**db_credentials) as c:
+        with cursor(**self.db_credentials) as c:
             c.execute(query_insert)
         self.data_set_id = str(c.lastrowid)
 
@@ -85,7 +80,7 @@ class SQLAdManager(object):
                 id_emulator = %s
                 WHERE id = {self.data_set_id};
                 """
-        with cursor(**db_credentials) as c:
+        with cursor(**self.db_credentials) as c:
             if not text:
                 text = None
 
@@ -96,96 +91,77 @@ class SQLAdManager(object):
 
     def send_data_to_db(self, width, height, location_x, location_y, text,
                         timestamp, ad_type, id_session, keyword_id, udid) -> None:
-
         self.insert_empty_query()
         self.update_query(width, height, location_x, location_y, text, timestamp, ad_type, id_session, keyword_id,
-                          config["COMPUTER"]["IP"], udid)
+                          self.config["COMPUTER"]["IP"], udid)
 
     def get_last_saved_id_from_db(self) -> int:
         return self.data_set_id
 
-    @staticmethod
-    def get_last_saved_session_id_from_db() -> int:
+    def get_last_saved_session_id_from_db(self) -> int:
         query = "SELECT COALESCE(MAX(id_session), 0) FROM ads_meta_data;"
-        with cursor(**db_credentials) as c:
+        with cursor(**self.db_credentials) as c:
             c.execute(query)
             result = c.fetchone()[0]
         return int(result)
 
+    def get_random_keyword(self) -> {}:
+        """get random keyword and id of this keyword form database
 
-def get_random_keyword() -> {}:
-    """get random keyword and id of this keyword form database
-
-    Returns:
-        returns a dictionary (id, keyword) of random keyword from database
-    """
-
-    query = """
-        SELECT id, keyword 
-        FROM keywords
-        ORDER BY RAND()
-        LIMIT 1;
+        Returns:
+            returns a dictionary (id, keyword) of random keyword from database
         """
 
-    with cursor(**db_credentials) as c:
-        c.execute(query)
-        result_of_query = c.fetchone()
+        query = """
+            SELECT id, keyword 
+            FROM keywords
+            ORDER BY RAND()
+            LIMIT 1;
+            """
 
-    result: dict[str, str | int] = {
-        "id": int(result_of_query[0]),
-        "keyword": str(result_of_query[1])
-    }
+        with cursor(**self.db_credentials) as c:
+            c.execute(query)
+            result_of_query = c.fetchone()
 
-    return result
+        result: dict[str, str | int] = {
+            "id": int(result_of_query[0]),
+            "keyword": str(result_of_query[1])
+        }
 
+        return result
 
-# TODO wprowadzic system auto proxy na podstawie emu i ip
-def get_proxy_address(emulator_id: int) -> str:
-    """
-    Returns: proxy_address
-    """
-
-    query = f"""
-        SELECT proxy 
-        FROM emulators
-        WHERE id_host_ip = {config["COMPUTER"]["IP"]}
-        AND udid = {emulator_id}
+    def get_proxy_address(self, emulator_id: int) -> str:
+        """
+        Returns: proxy_address
         """
 
-    with cursor(**db_credentials) as c:
-        c.execute(query)
-        result = c.fetchone()
+        query = f"""
+            SELECT proxy 
+            FROM emulators
+            WHERE id_host_ip = {self.config["COMPUTER"]["IP"]}
+            AND udid = {emulator_id}
+            """
 
-    return result
+        with cursor(**self.db_credentials) as c:
+            c.execute(query)
+            result = c.fetchone()
 
+        return result[0]
 
-def get_proxy_port(emulator_id: int) -> str:
-    """
-    Returns: proxy_port
-    """
-
-    query = f"""
-        SELECT proxy_port
-        FROM emulators
-        WHERE id_host_ip = {config["COMPUTER"]["IP"]}
-        AND udid = {emulator_id}
+    def get_proxy_port(self, emulator_id: int) -> str:
+        """
+        Returns: proxy_port
         """
 
-    with cursor(**db_credentials) as c:
-        c.execute(query)
-        result = c.fetchone()
+        query = f"""
+            SELECT proxy_port
+            FROM emulators
+            WHERE id_host_ip = {self.config["COMPUTER"]["IP"]}
+            AND udid = {emulator_id}
+            """
 
-    return result
+        with cursor(**self.db_credentials) as c:
+            c.execute(query)
+            result = c.fetchone()
 
-
-def get_emulators_info():
-    query = """
-    SELECT * FROM host;
-    """
-
-    with cursor(**db_credentials) as c:
-        c.execute(query)
-        result_of_query = c.fetchall()
-
-    return result_of_query
-
+        return result[0]

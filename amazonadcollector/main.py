@@ -7,13 +7,15 @@ from datetime import datetime
 
 from selenium.common.exceptions import WebDriverException
 from amazonadcollector.ads_logic import SQLAdManager, AdHandler
-from amazonadcollector.database_connector import get_random_keyword
 from amazonadcollector.base import MyDriver, BaseMethods, Scroll
 from amazonadcollector.locators_data import DE, UK
 
 
 def main(udid: int):
-    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://46.17.63.210:3128 -port {udid}") # UK
+
+    sql_manager = SQLAdManager()
+
+    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid)}:{sql_manager.get_proxy_port(udid)} -port {udid}") # UK
     # pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -http-proxy http://142.132.181.232:50012 -port {udid}") # DE
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
@@ -40,7 +42,7 @@ def main(udid: int):
 
     session_id = SQLAdManager().get_last_saved_session_id_from_db() + 1
 
-    keyword = get_random_keyword()
+    keyword = sql_manager.get_random_keyword()
     keyword_id = keyword["id"]
     new_udid = 1
 
