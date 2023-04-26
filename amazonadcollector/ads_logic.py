@@ -11,7 +11,8 @@ from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
 
-from amazonadcollector.Ad import Ad, SearchedProductSponsoredBrandTop, SearchedProductAd, SearchedProductAdVideo, SearchedAdBottomBanner, BrandsRelatedToYourSearch, SearchedProductCarouselOfAds
+from amazonadcollector.Ad import Ad, SearchedProductSponsoredBrandTop, SearchedProductAd, SearchedProductAdVideo,\
+    SearchedAdBottomBanner, BrandsRelatedToYourSearch, SearchedProductCarouselOfAds
 from amazonadcollector.base import save_cropped_scr, Scroll
 from amazonadcollector.database_connector import SQLAdManager
 
@@ -32,11 +33,11 @@ class AdHandler(object):
         with open(path, "r") as file:
             self.config = yaml.safe_load(file)
 
-    def save_ad(self, ad: Ad) -> None:
-        Manager = SQLAdManager()
-        Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
+    def save_ad(self, ad) -> None:
+        manager = SQLAdManager()
+        manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
                                 ad.ad_type, self.session_id, self.keyword_id, self.udid)
-        save_cropped_scr(self.driver, ad, str(Manager.get_last_saved_id_from_db()))
+        save_cropped_scr(self.driver, ad, str(manager.get_last_saved_id_from_db()))
 
     def collect_ad_type_1(self) -> None:
         """Create, send to DB and save scr of ad"""
@@ -96,7 +97,6 @@ class AdHandler(object):
                     time.sleep(3)
 
                 """create an object of ad"""
-                #ad = Ad(web_element, 2)
                 ad = BrandsRelatedToYourSearch(web_element)
                 self.save_ad(ad)
                 print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
@@ -154,9 +154,7 @@ class AdHandler(object):
                                                                             .get_attribute("text")
                 """create ad object"""
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
-                # ad = Ad(webElement, 7)
                 ad = SearchedProductSponsoredBrandTop(webElement)
-                print(type(ad))
                 ad.text = result_text
                 self.save_ad(ad)
                 print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
@@ -181,7 +179,6 @@ class AdHandler(object):
                 if valid.__contains__("Jetzt"):
                     """create ad object"""
                     print("collecting ad \033[1;31;40mtype 10\033[0;0m ...")
-                    #ad = Ad(webElement, 7)
                     ad = SearchedProductSponsoredBrandTop(webElement)
                     ad.text = result_text
                     self.save_ad(ad)
@@ -216,7 +213,6 @@ class AdHandler(object):
 
                 """create ad object"""
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
-                #ad = Ad(webElement, 7)
                 ad = SearchedProductSponsoredBrandTop(webElement)
                 ad.text = result_text
                 self.save_ad(ad)
@@ -256,7 +252,6 @@ class AdHandler(object):
 
                     """create ad object"""
                     print("collecting ad \033[1;31;40mtype 9\033[0;0m ...")
-                    #ad = Ad(webElement, 7)
                     ad = SearchedProductSponsoredBrandTop(webElement)
                     ad.text = result_text
                     self.save_ad(ad)
@@ -295,7 +290,6 @@ class AdHandler(object):
 
                     """create ad object"""
                     print("collecting ad \033[1;31;40mtype 9_alt\033[0;0m ...")
-                    #ad = Ad(web_element, 7)
                     ad = SearchedProductSponsoredBrandTop(web_element)
                     ad.text = result_text
                     self.save_ad(ad)
@@ -320,7 +314,6 @@ class AdHandler(object):
 
         for webElement in webelements:
             """create an object of ad"""
-            #ad = Ad(webElement, 1)
             ad = SearchedAdBottomBanner(webElement)
             ads.append(ad)
         return ads
@@ -330,7 +323,6 @@ class AdHandler(object):
         ads_webelements = self.get_webelements_ads_2()
         for web_element in ads_webelements:
             """create an object of ad"""
-            #ad = Ad(web_element, 2)
             ad = BrandsRelatedToYourSearch(web_element)
             ads.append(ad)
         return ads
@@ -366,10 +358,7 @@ class AdHandler(object):
                 print("Adjusting ad type 5...")
                 AdjustAd(self.driver).match_ad_visibility(ad_element)
                 print("Collecting ad type 5...")
-                # ad = Ad(ad_element)
                 ad = SearchedProductAd(ad_element)
-
-                print(type(ad))
                 ad.text = result_text
                 self.save_ad(ad)
                 self.ad_text_filter.append(ad.text)
@@ -449,20 +438,19 @@ class AdHandler(object):
 
                 """create ad object"""
                 print("collecting ad \033[1;31;40mvideo type 6\033[0;0m ...")
-                #ad = Ad(video_ad_web_element, 6)
                 ad = SearchedProductAdVideo(video_ad_web_element)
                 ad.text = text
 
-                Manager = SQLAdManager()
-                Manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
+                manager = SQLAdManager()
+                manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
                                         ad.ad_type, self.session_id, self.keyword_id, self.udid)
 
-                self.save_cropped_scr_for_videos(ad, str(Manager.get_last_saved_id_from_db()))
+                self.save_cropped_scr_for_videos(ad, str(manager.get_last_saved_id_from_db()))
 
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
 
-                self.create_and_crop_video(video_ad_web_element, Manager.data_set_id)
+                self.create_and_crop_video(video_ad_web_element, manager.data_set_id)
                 print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 return None
 
