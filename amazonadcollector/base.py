@@ -82,6 +82,7 @@ class BaseMethods(object):
         except (NoSuchElementException, TimeoutException):
             pass
 
+    #TODO zmodyfikować wyszukiwanie po uniwersalnym języku
     def get_page(self, phrase_to_search: str) -> None:
         """search item phrase on the app"""
         try:

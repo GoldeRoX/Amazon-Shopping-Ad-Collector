@@ -11,7 +11,7 @@ from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
 
-from amazonadcollector.Ad import Ad
+from amazonadcollector.Ad import Ad, SearchedProductSponsoredBrandTop, SearchedProductAd, SearchedProductAdVideo, SearchedAdBottomBanner, BrandsRelatedToYourSearch, SearchedProductCarouselOfAds
 from amazonadcollector.base import save_cropped_scr, Scroll
 from amazonadcollector.database_connector import SQLAdManager
 
@@ -41,7 +41,7 @@ class AdHandler(object):
     def collect_ad_type_1(self) -> None:
         """Create, send to DB and save scr of ad"""
         try:
-            ads_list: [Ad] = self.collect_ads_1()
+            ads_list: [SearchedAdBottomBanner] = self.collect_ads_1()
             for ad in ads_list:
                 print("collecting ad \033[1;31;40mtype 1\033[0;0m ...")
                 self.save_ad(ad)
@@ -96,7 +96,8 @@ class AdHandler(object):
                     time.sleep(3)
 
                 """create an object of ad"""
-                ad = Ad(web_element, 2)
+                #ad = Ad(web_element, 2)
+                ad = BrandsRelatedToYourSearch(web_element)
                 self.save_ad(ad)
                 print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text.strip() is not None:
@@ -134,7 +135,8 @@ class AdHandler(object):
                     time.sleep(1.5)
 
                 """create an object of ad"""
-                ad = Ad(web_element, 2)
+                # ad = Ad(web_element, 2)
+                ad = BrandsRelatedToYourSearch(web_element)
                 self.save_ad(ad)
                 print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text.strip() is not None:
@@ -152,7 +154,9 @@ class AdHandler(object):
                                                                             .get_attribute("text")
                 """create ad object"""
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
-                ad = Ad(webElement, 7)
+                # ad = Ad(webElement, 7)
+                ad = SearchedProductSponsoredBrandTop(webElement)
+                print(type(ad))
                 ad.text = result_text
                 self.save_ad(ad)
                 print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
@@ -177,7 +181,8 @@ class AdHandler(object):
                 if valid.__contains__("Jetzt"):
                     """create ad object"""
                     print("collecting ad \033[1;31;40mtype 10\033[0;0m ...")
-                    ad = Ad(webElement, 7)
+                    #ad = Ad(webElement, 7)
+                    ad = SearchedProductSponsoredBrandTop(webElement)
                     ad.text = result_text
                     self.save_ad(ad)
                     print("ad \033[1;31;40mtype 10\033[0;0m \033[1;32;40mcollected\033[0;0m")
@@ -211,7 +216,8 @@ class AdHandler(object):
 
                 """create ad object"""
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
-                ad = Ad(webElement, 7)
+                #ad = Ad(webElement, 7)
+                ad = SearchedProductSponsoredBrandTop(webElement)
                 ad.text = result_text
                 self.save_ad(ad)
                 print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
@@ -250,7 +256,8 @@ class AdHandler(object):
 
                     """create ad object"""
                     print("collecting ad \033[1;31;40mtype 9\033[0;0m ...")
-                    ad = Ad(webElement, 7)
+                    #ad = Ad(webElement, 7)
+                    ad = SearchedProductSponsoredBrandTop(webElement)
                     ad.text = result_text
                     self.save_ad(ad)
                     print("ad \033[1;31;40mtype 9\033[0;0m \033[1;32;40mcollected\033[0;0m")
@@ -288,7 +295,8 @@ class AdHandler(object):
 
                     """create ad object"""
                     print("collecting ad \033[1;31;40mtype 9_alt\033[0;0m ...")
-                    ad = Ad(web_element, 7)
+                    #ad = Ad(web_element, 7)
+                    ad = SearchedProductSponsoredBrandTop(web_element)
                     ad.text = result_text
                     self.save_ad(ad)
                     print("ad \033[1;31;40mtype 9_alt\033[0;0m \033[1;32;40mcollected\033[0;0m")
@@ -306,22 +314,24 @@ class AdHandler(object):
                 webelements.append(element)
         return webelements
 
-    def collect_ads_1(self) -> [Ad]:
+    def collect_ads_1(self) -> [SearchedAdBottomBanner]:
         ads = []
         webelements = self.get_webelements_ads_1()
 
         for webElement in webelements:
             """create an object of ad"""
-            ad = Ad(webElement, 1)
+            #ad = Ad(webElement, 1)
+            ad = SearchedAdBottomBanner(webElement)
             ads.append(ad)
         return ads
 
-    def collect_ads_2(self) -> [Ad]:
+    def collect_ads_2(self) -> [BrandsRelatedToYourSearch]:
         ads = []
         ads_webelements = self.get_webelements_ads_2()
         for web_element in ads_webelements:
             """create an object of ad"""
-            ad = Ad(web_element, 2)
+            #ad = Ad(web_element, 2)
+            ad = BrandsRelatedToYourSearch(web_element)
             ads.append(ad)
         return ads
 
@@ -356,7 +366,10 @@ class AdHandler(object):
                 print("Adjusting ad type 5...")
                 AdjustAd(self.driver).match_ad_visibility(ad_element)
                 print("Collecting ad type 5...")
-                ad = Ad(ad_element, 5)
+                # ad = Ad(ad_element)
+                ad = SearchedProductAd(ad_element)
+
+                print(type(ad))
                 ad.text = result_text
                 self.save_ad(ad)
                 self.ad_text_filter.append(ad.text)
@@ -436,7 +449,8 @@ class AdHandler(object):
 
                 """create ad object"""
                 print("collecting ad \033[1;31;40mvideo type 6\033[0;0m ...")
-                ad = Ad(video_ad_web_element, 6)
+                #ad = Ad(video_ad_web_element, 6)
+                ad = SearchedProductAdVideo(video_ad_web_element)
                 ad.text = text
 
                 Manager = SQLAdManager()
