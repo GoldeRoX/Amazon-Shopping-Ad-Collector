@@ -15,6 +15,7 @@ def main(udid: int):
 
     sql_manager = SQLAdManager()
 
+
     pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid)}:{sql_manager.get_proxy_port(udid)} -port {udid}") # UK
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
@@ -72,7 +73,7 @@ def main(udid: int):
                 base_methods.amazon_not_responding_close()
                 base_methods.cookies_click()
 
-                ad_handler.collect_video_ad()  # works
+                #ad_handler.collect_video_ad()  # works
                 ad_handler.collect_ad_type_5()  # works
                 ad_handler.collect_ad_type_2()
                 ad_handler.get_webelements_ads_2_alt()

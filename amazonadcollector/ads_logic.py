@@ -135,7 +135,6 @@ class AdHandler(object):
                     time.sleep(1.5)
 
                 """create an object of ad"""
-                # ad = Ad(web_element, 2)
                 ad = BrandsRelatedToYourSearch(web_element)
                 self.save_ad(ad)
                 print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")

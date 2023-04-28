@@ -152,7 +152,7 @@ class SQLAdManager(object):
     def get_proxy_port(self, emulator_id: int) -> str:
         """
         Returns:
-            proxy_port
+            proxy_port from db
         """
 
         query = f"""

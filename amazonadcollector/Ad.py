@@ -1,11 +1,10 @@
 from datetime import datetime
 from appium.webdriver.webelement import WebElement
 from dataclasses import dataclass
-from abc import ABC
 
 
 @dataclass
-class Ad(ABC):
+class Ad(object):
     """
     Represents a generic advertisement.
     """
@@ -52,3 +51,7 @@ class SearchedProductSponsoredBrandTop(Ad):
     def __init__(self, element: WebElement):
         super().__init__(element)
         self.ad_type: int = 7
+
+
+class AdFactory(object):
+    ...
