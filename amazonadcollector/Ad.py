@@ -20,18 +20,31 @@ class Ad(object):
         self.text: str = element.get_attribute("text")
         self.timestamp: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    def save_cropped_scr(self, driver, filename):
-        save_cropped_scr(driver, self, filename)
-
 
 class SearchedAdBottomBanner(Ad):
     def __init__(self, element: WebElement):
         super().__init__(element)
         self.ad_type: int = 1
 
-    def send_data_to_db(self, id_session, keyword_id, udid):
-        SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
-                                     self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+    def send_data_to_db(self, id_session: int, keyword_id: int, udid: int) -> int:
+        """
+
+        Args:
+            id_session: id of current session
+            keyword_id: id of keyword that was used for searching an ad
+            udid: Android Device ID
+
+        Returns:
+            data_set_id: int
+        """
+        return SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
+                                            self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+
+    def save_cropped_scr(self, driver, data_set_id: int):
+        save_cropped_scr(driver, self, str(data_set_id))
+
+    def save_ad(self, driver, id_session: int, keyword_id: int, udid: int):
+        self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
 
 
 class BrandsRelatedToYourSearch(Ad):
@@ -39,9 +52,25 @@ class BrandsRelatedToYourSearch(Ad):
         super().__init__(element)
         self.ad_type: int = 2
 
-    def send_data_to_db(self, id_session, keyword_id, udid):
-        SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
-                                     self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+    def send_data_to_db(self, id_session: int, keyword_id: int, udid: int) -> int:
+        """
+
+        Args:
+            id_session: id of current session
+            keyword_id: id of keyword that was used for searching an ad
+            udid: Android Device ID
+
+        Returns:
+            data_set_id: int
+        """
+        return SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
+                                            self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+
+    def save_cropped_scr(self, driver, data_set_id: int):
+        save_cropped_scr(driver, self, str(data_set_id))
+
+    def save_ad(self, driver, id_session: int, keyword_id: int, udid: int):
+        self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
 
 
 class SearchedProductCarouselOfAds(Ad):
@@ -49,9 +78,25 @@ class SearchedProductCarouselOfAds(Ad):
         super().__init__(element)
         self.ad_type: int = 4
 
-    def send_data_to_db(self, id_session, keyword_id, udid):
-        SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
-                                     self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+    def send_data_to_db(self, id_session: int, keyword_id: int, udid: int) -> int:
+        """
+
+        Args:
+            id_session: id of current session
+            keyword_id: id of keyword that was used for searching an ad
+            udid: Android Device ID
+
+        Returns:
+            data_set_id: int
+        """
+        return SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
+                                            self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+
+    def save_cropped_scr(self, driver, data_set_id: int):
+        save_cropped_scr(driver, self, str(data_set_id))
+
+    def save_ad(self, driver, id_session: int, keyword_id: int, udid: int):
+        self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
 
 
 class SearchedProductAd(Ad):
@@ -59,9 +104,25 @@ class SearchedProductAd(Ad):
         super().__init__(element)
         self.ad_type: int = 5
 
-    def send_data_to_db(self, id_session, keyword_id, udid):
-        SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
-                                     self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+    def send_data_to_db(self, id_session: int, keyword_id: int, udid: int) -> int:
+        """
+
+        Args:
+            id_session: id of current session
+            keyword_id: id of keyword that was used for searching an ad
+            udid: Android Device ID
+
+        Returns:
+            data_set_id: int
+        """
+        return SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
+                                            self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+
+    def save_cropped_scr(self, driver, data_set_id: int):
+        save_cropped_scr(driver, self, str(data_set_id))
+
+    def save_ad(self, driver, id_session: int, keyword_id: int, udid: int):
+        self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
 
 
 class SearchedProductAdVideo(Ad):
@@ -69,9 +130,25 @@ class SearchedProductAdVideo(Ad):
         super().__init__(element)
         self.ad_type: int = 6
 
-    def send_data_to_db(self, id_session, keyword_id, udid):
-        SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
-                                     self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+    def send_data_to_db(self, id_session: int, keyword_id: int, udid: int) -> int:
+        """
+
+        Args:
+            id_session: id of current session
+            keyword_id: id of keyword that was used for searching an ad
+            udid: Android Device ID
+
+        Returns:
+            data_set_id: int
+        """
+        return SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
+                                            self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+
+    def save_cropped_scr(self, driver, data_set_id: int):
+        save_cropped_scr(driver, self, str(data_set_id))
+
+    def save_ad(self, driver, id_session: int, keyword_id: int, udid: int):
+        self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
 
 
 class SearchedProductSponsoredBrandTop(Ad):
@@ -79,9 +156,25 @@ class SearchedProductSponsoredBrandTop(Ad):
         super().__init__(element)
         self.ad_type: int = 7
 
-    def send_data_to_db(self, id_session, keyword_id, udid):
-        SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
-                                     self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+    def send_data_to_db(self, id_session: int, keyword_id: int, udid: int) -> int:
+        """
+
+        Args:
+            id_session: id of current session
+            keyword_id: id of keyword that was used for searching an ad
+            udid: Android Device ID
+
+        Returns:
+            data_set_id: int
+        """
+        return SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
+                                            self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
+
+    def save_cropped_scr(self, driver, data_set_id: int):
+        save_cropped_scr(driver, self, str(data_set_id))
+
+    def save_ad(self, driver, id_session: int, keyword_id: int, udid: int):
+        self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
 
 
 class AdFactory(object):

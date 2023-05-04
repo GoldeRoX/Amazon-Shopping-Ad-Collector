@@ -89,11 +89,30 @@ class SQLAdManager(object):
                 (width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, keyword_id, ip, udid)
             )
 
-    def send_data_to_db(self, width, height, location_x, location_y, text,
-                        timestamp, ad_type, id_session, keyword_id, udid) -> None:
+    def send_data_to_db(self, width: int, height: int, location_x: int, location_y: int, text: str,
+                        timestamp, ad_type: int, id_session: int, keyword_id: int, udid: int) -> int:
+        """
+        Sends collected data to database and return id of that data set
+
+        Args:
+            width:
+            height:
+            location_x:
+            location_y:
+            text:
+            timestamp:
+            ad_type:
+            id_session:
+            keyword_id:
+            udid:
+
+        Returns:
+            data_set_id: int
+        """
         self.insert_empty_query()
         self.update_query(width, height, location_x, location_y, text, timestamp, ad_type,
                           id_session, keyword_id, self.config["COMPUTER"]["IP"], udid)
+        return self.data_set_id
 
     def get_last_saved_id_from_db(self) -> int:
         return self.data_set_id

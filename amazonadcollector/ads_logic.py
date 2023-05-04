@@ -33,11 +33,11 @@ class AdHandler(object):
         with open(path, "r") as file:
             self.config = yaml.safe_load(file)
 
-    def save_ad(self, ad) -> None:
+    """def save_ad(self, ad) -> None:
         manager = SQLAdManager()
         manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
                                 ad.ad_type, self.session_id, self.keyword_id, self.udid)
-        save_cropped_scr(self.driver, ad, str(manager.get_last_saved_id_from_db()))
+        save_cropped_scr(self.driver, ad, str(manager.get_last_saved_id_from_db()))"""
 
     def collect_ad_type_1(self) -> None:
         """Create, send to DB and save scr of ad"""
@@ -155,9 +155,7 @@ class AdHandler(object):
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
                 ad = SearchedProductSponsoredBrandTop(webElement)
                 ad.text = result_text
-                ad.send_data_to_db(self.session_id, self.keyword_id, self.udid)
-                ad.save_cropped_scr(self.driver, "text")
-                # self.save_ad(ad)
+                ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
                 print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
