@@ -178,4 +178,4 @@ class SearchedProductSponsoredBrandTop(Ad):
 
 
 class AdFactory(object):
-    ...
+    raise NotImplementedError

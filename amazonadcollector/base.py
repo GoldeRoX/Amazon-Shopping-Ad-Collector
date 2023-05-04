@@ -83,7 +83,15 @@ class BaseMethods(object):
 
     #TODO zmodyfikować wyszukiwanie po uniwersalnym języku
     def get_page(self, phrase_to_search: str) -> None:
-        """search item phrase on the app"""
+        """
+        
+        Args:
+            phrase_to_search: phrase used for going to next page
+
+        Returns:
+            None
+
+        """""
         try:
             self.get_element_when_located(AppiumBy.XPATH, DE.search_icon, time_to_wait=10).click()
         except (NoSuchElementException, TimeoutException, WebDriverException):

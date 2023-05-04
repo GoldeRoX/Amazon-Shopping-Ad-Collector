@@ -15,7 +15,6 @@ def main(udid: int):
 
     sql_manager = SQLAdManager()
 
-
     pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid)}:{sql_manager.get_proxy_port(udid)} -port {udid}") # UK
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
