@@ -155,7 +155,8 @@ class AdHandler(object):
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
                 ad = SearchedProductSponsoredBrandTop(webElement)
                 ad.text = result_text
-                self.save_ad(ad)
+                ad.send_data_to_db(self.session_id, self.keyword_id, self.udid)
+                # self.save_ad(ad)
                 print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
@@ -359,7 +360,8 @@ class AdHandler(object):
                 print("Collecting ad type 5...")
                 ad = SearchedProductAd(ad_element)
                 ad.text = result_text
-                self.save_ad(ad)
+                ad.send_data_to_db(self.session_id, self.keyword_id, self.udid)
+                #self.save_ad(ad)
                 self.ad_text_filter.append(ad.text)
                 print("Ad type 5 collected.")
         except (NoSuchElementException, IndexError):
