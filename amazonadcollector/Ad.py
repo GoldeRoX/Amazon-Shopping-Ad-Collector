@@ -1,7 +1,9 @@
 from datetime import datetime
 from appium.webdriver.webelement import WebElement
 from dataclasses import dataclass
+
 from amazonadcollector.database_connector import SQLAdManager
+from amazonadcollector.base import save_cropped_scr
 
 
 @dataclass
@@ -9,6 +11,7 @@ class Ad(object):
     """
     Represents a generic advertisement.
     """
+
     def __init__(self, element: WebElement):
         self.width: int = element.size["width"]
         self.height: int = element.size["height"]
@@ -16,6 +19,9 @@ class Ad(object):
         self.location_y: int = element.location["y"]
         self.text: str = element.get_attribute("text")
         self.timestamp: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    def save_cropped_scr(self, driver, filename):
+        save_cropped_scr(driver, self, filename)
 
 
 class SearchedAdBottomBanner(Ad):

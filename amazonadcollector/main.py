@@ -74,7 +74,7 @@ def main(udid: int):
                 base_methods.cookies_click()
 
                 #ad_handler.collect_video_ad()  # works
-                ad_handler.collect_ad_type_5()  # works
+                # ad_handler.collect_ad_type_5()  # works
                 #ad_handler.collect_ad_type_2()
                 #ad_handler.get_webelements_ads_2_alt()
                 # ad_handler.collect_ad_type_8()

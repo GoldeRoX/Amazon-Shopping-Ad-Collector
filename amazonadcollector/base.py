@@ -16,7 +16,6 @@ from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
-from amazonadcollector.Ad import Ad
 from typing import Tuple
 from appium.webdriver.webdriver import WebDriver
 
@@ -201,7 +200,7 @@ class BaseMethods(object):
             return
 
 
-def save_cropped_scr(driver, ad: Ad, filename: str) -> None:
+def save_cropped_scr(driver, ad, filename: str) -> None:
     PATH = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
     with open(PATH, "r") as file:
         config = yaml.safe_load(file)

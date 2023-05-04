@@ -156,6 +156,7 @@ class AdHandler(object):
                 ad = SearchedProductSponsoredBrandTop(webElement)
                 ad.text = result_text
                 ad.send_data_to_db(self.session_id, self.keyword_id, self.udid)
+                ad.save_cropped_scr(self.driver, "text")
                 # self.save_ad(ad)
                 print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text is not None:
