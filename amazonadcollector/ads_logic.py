@@ -98,7 +98,7 @@ class AdHandler(object):
 
                 """create an object of ad"""
                 ad = BrandsRelatedToYourSearch(web_element)
-                self.save_ad(ad)
+                ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
                 print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
@@ -136,7 +136,7 @@ class AdHandler(object):
 
                 """create an object of ad"""
                 ad = BrandsRelatedToYourSearch(web_element)
-                self.save_ad(ad)
+                ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
                 print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
@@ -359,8 +359,7 @@ class AdHandler(object):
                 print("Collecting ad type 5...")
                 ad = SearchedProductAd(ad_element)
                 ad.text = result_text
-                ad.send_data_to_db(self.session_id, self.keyword_id, self.udid)
-                #self.save_ad(ad)
+                ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
                 self.ad_text_filter.append(ad.text)
                 print("Ad type 5 collected.")
         except (NoSuchElementException, IndexError):

@@ -173,7 +173,7 @@ class SearchedProductSponsoredBrandTop(Ad):
     def save_cropped_scr(self, driver, data_set_id: int):
         save_cropped_scr(driver, self, str(data_set_id))
 
-    def save_ad(self, driver, id_session: int, keyword_id: int, udid: int):
+    def save_ad(self, driver, id_session: int, keyword_id: int, udid: int) -> None:
         self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
 
 
