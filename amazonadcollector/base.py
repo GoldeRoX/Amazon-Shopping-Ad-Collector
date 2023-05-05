@@ -242,8 +242,10 @@ class Scroll(object):
         self.actions = ActionChains(self.driver)
 
     def scroll_down(self, y: int = 600) -> None:
-        """scroll down through app Y axis
-        *default value is y=600
+        """
+            scroll down through app Y axis
+
+            default: value is y=600
         """
         self.press_and_move_to_location(start_location=(0, 1100), end_location=(0, 1100 - y))
 

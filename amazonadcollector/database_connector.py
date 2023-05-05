@@ -90,7 +90,7 @@ class SQLAdManager(object):
             )
 
     def send_data_to_db(self, width: int, height: int, location_x: int, location_y: int, text: str,
-                        timestamp, ad_type: int, id_session: int, keyword_id: int, udid: int) -> int:
+                        timestamp: str, ad_type: int, id_session: int, keyword_id: int, udid: int) -> int:
         """
         Sends collected data to database and return id of that data set
 

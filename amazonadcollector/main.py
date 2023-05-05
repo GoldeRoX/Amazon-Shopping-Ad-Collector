@@ -76,7 +76,7 @@ def main(udid: int):
                 ad_handler.collect_ad_type_5()  # works
                 ad_handler.collect_ad_type_2()
                 ad_handler.collect_ad_type_2_alt()
-                # ad_handler.collect_ad_type_8()
+                ad_handler.collect_ad_type_8()
 
                 scroll.scroll_down()
 

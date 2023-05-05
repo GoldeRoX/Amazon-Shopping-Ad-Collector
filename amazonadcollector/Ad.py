@@ -178,4 +178,28 @@ class SearchedProductSponsoredBrandTop(Ad):
 
 
 class AdFactory(object):
-    raise NotImplementedError
+
+    @staticmethod
+    def create_ad(element: WebElement) -> Ad:
+        """
+        Creates and returns an Ad object based on the type of advertisement element passed to it.
+        :param element: WebElement representing an advertisement on Amazon search results page
+        :return: Ad object corresponding to the advertisement type
+        """
+        ad_type = element.get_attribute("data-ad-type")
+
+        if ad_type == "bottom_ad_banner":
+            return SearchedAdBottomBanner(element)
+        elif ad_type == "carousel_of_ads":
+            return SearchedProductCarouselOfAds(element)
+        elif ad_type == "sponsored_brand_top":
+            return SearchedProductSponsoredBrandTop(element)
+        elif ad_type == "sponsored_product_ad":
+            return SearchedProductAd(element)
+        elif ad_type == "sponsored_product_video_ad":
+            return SearchedProductAdVideo(element)
+        elif ad_type == "text_links":
+            return BrandsRelatedToYourSearch(element)
+        else:
+            raise ValueError(f"Invalid ad type '{ad_type}'")
+

@@ -19,7 +19,7 @@ from amazonadcollector.database_connector import SQLAdManager
 
 class AdHandler(object):
 
-    def __init__(self, driver, lang, session_id: int, keyword_id: int, udid: int):
+    def __init__(self, driver: WebDriver, lang, session_id: int, keyword_id: int, udid: int):
         self.driver: WebDriver = driver
         self.lang = lang
         self.session_id = session_id
@@ -214,7 +214,7 @@ class AdHandler(object):
                 print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
                 ad = SearchedProductSponsoredBrandTop(webElement)
                 ad.text = result_text
-                self.save_ad(ad)
+                ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
                 print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
