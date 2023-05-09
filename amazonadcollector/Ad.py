@@ -188,6 +188,8 @@ class AdFactory(object):
         """
         ad_type = element.get_attribute("data-ad-type")
 
+        #TODO testy fabryki
+
         if ad_type == "bottom_ad_banner":
             return SearchedAdBottomBanner(element)
         elif ad_type == "carousel_of_ads":
