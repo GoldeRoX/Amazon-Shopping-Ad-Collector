@@ -175,33 +175,3 @@ class SearchedProductSponsoredBrandTop(Ad):
 
     def save_ad(self, driver, id_session: int, keyword_id: int, udid: int) -> None:
         self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
-
-
-class AdFactory(object):
-
-    @staticmethod
-    def create_ad(element: WebElement) -> Ad:
-        """
-        Creates and returns an Ad object based on the type of advertisement element passed to it.
-        :param element: WebElement representing an advertisement on Amazon search results page
-        :return: Ad object corresponding to the advertisement type
-        """
-        ad_type = element.get_attribute("data-ad-type")
-
-        #TODO testy fabryki
-
-        if ad_type == "bottom_ad_banner":
-            return SearchedAdBottomBanner(element)
-        elif ad_type == "carousel_of_ads":
-            return SearchedProductCarouselOfAds(element)
-        elif ad_type == "sponsored_brand_top":
-            return SearchedProductSponsoredBrandTop(element)
-        elif ad_type == "sponsored_product_ad":
-            return SearchedProductAd(element)
-        elif ad_type == "sponsored_product_video_ad":
-            return SearchedProductAdVideo(element)
-        elif ad_type == "text_links":
-            return BrandsRelatedToYourSearch(element)
-        else:
-            raise ValueError(f"Invalid ad type '{ad_type}'")
-
