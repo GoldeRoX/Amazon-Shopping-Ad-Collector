@@ -28,7 +28,7 @@ class AdFactory(object):
         self.ad_collector = AdCollector(self.driver, self.lang)
         self.adHandler = AdHandler(self.driver, self.lang, self.session_id, self.keyword_id, self.udid)
 
-    def collect_ads_mid(self):
+    def collect_ads_mid(self) -> {WebElement: int}:
         dict_of_ads = {}
 
         for ad in self.ad_collector.get_webelements_ads_2():
@@ -42,6 +42,8 @@ class AdFactory(object):
 
         for ad in self.ad_collector.get_webelements_ads_8():
             dict_of_ads.update({ad: 8})
+
+        return dict_of_ads
 
     @staticmethod
     def create_and_save_ads(element: WebElement) -> Ad:
