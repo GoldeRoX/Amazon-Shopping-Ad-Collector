@@ -209,18 +209,18 @@ class BaseMethods(object):
 
 
 def save_cropped_scr(driver, ad, filename: str) -> None:
-    PATH = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
-    with open(PATH, "r") as file:
+    config_path = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
+    with open(config_path, "r") as file:
         config = yaml.safe_load(file)
     date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
-    path = config["COMPUTER"]["SAVE_PATH"]
-    if not os.path.exists(f"{path}/{date_folder_name}"):
-        os.mkdir(f"{path}/{date_folder_name}")
+    save_path = config["COMPUTER"]["SAVE_PATH"]
+    if not os.path.exists(f"{save_path}/{date_folder_name}"):
+        os.mkdir(f"{save_path}/{date_folder_name}")
 
     img_name = filename
 
-    image_path = f"{path}/{date_folder_name}/{str(img_name)}.png"
+    image_path = f"{save_path}/{date_folder_name}/{str(img_name)}.png"
     driver.save_screenshot(image_path)
     img = cv2.imread(image_path)
 

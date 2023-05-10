@@ -11,7 +11,7 @@ class UK(object):
     ad_7 = "//*[starts-with(@text, 'Sponsored ad from')]/parent::*/parent::*"
     ad_7_text_starts_with = "Sponsored ad from"
     accept_cookies = "//*[@text='Accept Cookies']"
-#TODO dodać nowe
+
 
 class DE(object):
     search_icon = "//android.widget.LinearLayout[@content-desc='Suche']"
