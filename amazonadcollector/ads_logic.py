@@ -2,9 +2,9 @@ import base64
 import math
 import os
 import time
-
 import cv2
 import yaml
+
 from datetime import datetime
 from appium.webdriver import WebElement
 from appium.webdriver.common.appiumby import AppiumBy
@@ -13,8 +13,96 @@ from selenium.common.exceptions import NoSuchElementException
 
 from amazonadcollector.Ad import Ad, SearchedProductSponsoredBrandTop, SearchedProductAd, SearchedProductAdVideo,\
     SearchedAdBottomBanner, BrandsRelatedToYourSearch, SearchedProductCarouselOfAds
-from amazonadcollector.base import save_cropped_scr, Scroll
+from amazonadcollector.base import Scroll
 from amazonadcollector.database_connector import SQLAdManager
+
+
+class AdFactory(object):
+
+    def __init__(self, driver: WebDriver, lang, session_id: int, keyword_id: int, udid: int):
+        self.driver = driver
+        self.lang = lang
+        self.session_id = session_id
+        self.keyword_id = keyword_id
+        self.udid = udid
+        self.ad_collector = AdCollector(self.driver, self.lang)
+        self.adHandler = AdHandler(self.driver, self.lang, self.session_id, self.keyword_id, self.udid)
+
+    def collect_ads_mid(self):
+        dict_of_ads = {}
+
+        for ad in self.ad_collector.get_webelements_ads_2():
+            dict_of_ads.update({ad: 2})
+
+        for ad in self.ad_collector.get_webelements_ads_2_alt():
+            dict_of_ads.update({ad: 2})
+
+        for ad in self.ad_collector.get_webelements_ads_5():
+            dict_of_ads.update({ad: 5})
+
+        for ad in self.ad_collector.get_webelements_ads_8():
+            dict_of_ads.update({ad: 8})
+
+    @staticmethod
+    def create_and_save_ads(element: WebElement) -> Ad:
+        """
+        Creates and saves an Ad object based on the type of advertisement element passed to it.
+        :param element: WebElement representing an advertisement on Amazon search results page
+        :return: Ad object corresponding to the advertisement type
+        """
+        ad_type = element.get_attribute("data-ad-type")
+
+        if ad_type == "bottom_ad_banner":
+            return SearchedAdBottomBanner(element)
+        elif ad_type == "carousel_of_ads":
+            return SearchedProductCarouselOfAds(element)
+        elif ad_type == "sponsored_brand_top":
+            return SearchedProductSponsoredBrandTop(element)
+        elif ad_type == "sponsored_product_ad":
+            return SearchedProductAd(element)
+        elif ad_type == "sponsored_product_video_ad":
+            return SearchedProductAdVideo(element)
+        elif ad_type == "text_links":
+            return BrandsRelatedToYourSearch(element)
+        else:
+            raise ValueError(f"Invalid ad type '{ad_type}'")
+
+
+class AdCollector(object):
+
+    def __init__(self, driver: WebDriver, lang):
+        self.driver = driver
+        self.lang = lang
+
+    def get_webelements_ads_2(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.brands_related_to_your_search_element_node)
+
+    def get_webelements_ads_2_alt(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.Items_related_to_your_search_element_node)
+
+    def get_webelements_ads_4(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_4_node)
+
+    def get_webelements_ads_5(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_5_node)
+
+    def get_webelements_ads_7(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_7)
+
+    def get_webelements_ads_8(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_8)
+
+    def get_webelements_ads_8_alt(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_8_alt)
+
+    def get_webelements_ads_9(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_9)
+
+    def get_webelements_ads_9_alt(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_9_alt)
+
+    def get_webelements_ads_10(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_10)
 
 
 class AdHandler(object):
@@ -33,12 +121,6 @@ class AdHandler(object):
         with open(path, "r") as file:
             self.config = yaml.safe_load(file)
 
-    """def save_ad(self, ad) -> None:
-        manager = SQLAdManager()
-        manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text, ad.timestamp,
-                                ad.ad_type, self.session_id, self.keyword_id, self.udid)
-        save_cropped_scr(self.driver, ad, str(manager.get_last_saved_id_from_db()))"""
-
     def collect_ad_type_1(self) -> None:
         """Create, send to DB and save scr of ad"""
         try:
@@ -56,16 +138,10 @@ class AdHandler(object):
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.brands_related_to_your_search_element_node)
 
     def get_webelements_ads_2_alt(self) -> [WebElement]:
-        try:
-            return self.driver.find_elements(AppiumBy.XPATH, self.lang.Items_related_to_your_search_element_node)
-        except NoSuchElementException:
-            return None
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.Items_related_to_your_search_element_node)
 
     def get_webelements_ads_7(self) -> [WebElement]:
-        try:
-            return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_7)
-        except NoSuchElementException:
-            return None
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_7)
 
     def collect_ad_type_2_alt(self) -> None:
         """Create, send to DB and save scr of ad"""
@@ -180,7 +256,7 @@ class AdHandler(object):
                     print("collecting ad \033[1;31;40mtype 10\033[0;0m ...")
                     ad = SearchedProductSponsoredBrandTop(webElement)
                     ad.text = result_text
-                    self.save_ad(ad)
+                    ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
                     print("ad \033[1;31;40mtype 10\033[0;0m \033[1;32;40mcollected\033[0;0m")
             else:
                 return
@@ -253,7 +329,7 @@ class AdHandler(object):
                     print("collecting ad \033[1;31;40mtype 9\033[0;0m ...")
                     ad = SearchedProductSponsoredBrandTop(webElement)
                     ad.text = result_text
-                    self.save_ad(ad)
+                    ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
                     print("ad \033[1;31;40mtype 9\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
@@ -291,7 +367,7 @@ class AdHandler(object):
                     print("collecting ad \033[1;31;40mtype 9_alt\033[0;0m ...")
                     ad = SearchedProductSponsoredBrandTop(web_element)
                     ad.text = result_text
-                    self.save_ad(ad)
+                    ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
                     print("ad \033[1;31;40mtype 9_alt\033[0;0m \033[1;32;40mcollected\033[0;0m")
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
@@ -484,3 +560,4 @@ class AdjustAd(object):
                     previous_height = web_element.size["height"]
                     self.scroll.press_and_move_to_location(start_location=(10, 1000), end_location=(10, 1500))
                     next_height = web_element.size["height"]
+
