@@ -95,16 +95,16 @@ class SQLAdManager(object):
         Sends collected data to database and return id of that data set
 
         Args:
-            width:
-            height:
-            location_x:
-            location_y:
-            text:
-            timestamp:
-            ad_type:
-            id_session:
-            keyword_id:
-            udid:
+            width: width of ad
+            height: height of ad
+            location_x: location_x of ad
+            location_y: location_y of ad
+            text: text of ad
+            timestamp: timestamp of ad creation
+            ad_type: type of ad
+            id_session: id of current session
+            keyword_id: id of keyword used to locating ad
+            udid: udid of android emulator
 
         Returns:
             data_set_id: int
