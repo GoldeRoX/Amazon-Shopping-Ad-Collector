@@ -20,6 +20,7 @@ from amazonadcollector.database_connector import SQLAdManager
 class AdFactory(object):
 
     def __init__(self, driver: WebDriver, lang, session_id: int, keyword_id: int, udid: int):
+        self.dict_of_ads: {WebElement: int} = {}
         self.driver = driver
         self.lang = lang
         self.session_id = session_id
@@ -29,43 +30,41 @@ class AdFactory(object):
         self.adHandler = AdHandler(self.driver, self.lang, self.session_id, self.keyword_id, self.udid)
 
     def collect_ads_mid(self) -> {WebElement: int}:
-        dict_of_ads = {}
 
         for ad in self.ad_collector.get_webelements_ads_2():
-            dict_of_ads.update({ad: 2})
+            self.dict_of_ads.update({ad: 2})
 
+        # sprawdzić typ reklamy w db lub w lokatorach
         for ad in self.ad_collector.get_webelements_ads_2_alt():
-            dict_of_ads.update({ad: 2})
+            self.dict_of_ads.update({ad: 2})
 
         for ad in self.ad_collector.get_webelements_ads_5():
-            dict_of_ads.update({ad: 5})
+            self.dict_of_ads.update({ad: 5})
 
         for ad in self.ad_collector.get_webelements_ads_8():
-            dict_of_ads.update({ad: 8})
+            self.dict_of_ads.update({ad: 8})
 
-        return dict_of_ads
+        return self.dict_of_ads
 
-    @staticmethod
-    def create_and_save_ads(element: WebElement) -> Ad:
+    def create_and_save_ads(self) -> Ad:
         """
         Creates and saves an Ad object based on the type of advertisement element passed to it.
-        :param element: WebElement representing an advertisement on Amazon search results page
         :return: Ad object corresponding to the advertisement type
         """
-        ad_type = element.get_attribute("data-ad-type")
+        ad_type = self.dict_of_ads
 
         if ad_type == "bottom_ad_banner":
-            return SearchedAdBottomBanner(element)
+            return SearchedAdBottomBanner(ad_type[1])
         elif ad_type == "carousel_of_ads":
-            return SearchedProductCarouselOfAds(element)
+            return SearchedProductCarouselOfAds(ad_type)
         elif ad_type == "sponsored_brand_top":
-            return SearchedProductSponsoredBrandTop(element)
+            return SearchedProductSponsoredBrandTop(ad_type)
         elif ad_type == "sponsored_product_ad":
-            return SearchedProductAd(element)
+            return SearchedProductAd(ad_type)
         elif ad_type == "sponsored_product_video_ad":
-            return SearchedProductAdVideo(element)
+            return SearchedProductAdVideo(ad_type)
         elif ad_type == "text_links":
-            return BrandsRelatedToYourSearch(element)
+            return BrandsRelatedToYourSearch(ad_type)
         else:
             raise ValueError(f"Invalid ad type '{ad_type}'")
 
