@@ -53,20 +53,22 @@ class AdFactory(object):
         """
         ad_type = self.dict_of_ads
 
-        if ad_type == "bottom_ad_banner":
-            return SearchedAdBottomBanner(ad_type[1])
-        elif ad_type == "carousel_of_ads":
-            return SearchedProductCarouselOfAds(ad_type)
-        elif ad_type == "sponsored_brand_top":
-            return SearchedProductSponsoredBrandTop(ad_type)
-        elif ad_type == "sponsored_product_ad":
-            return SearchedProductAd(ad_type)
-        elif ad_type == "sponsored_product_video_ad":
-            return SearchedProductAdVideo(ad_type)
-        elif ad_type == "text_links":
-            return BrandsRelatedToYourSearch(ad_type)
-        else:
-            raise ValueError(f"Invalid ad type '{ad_type}'")
+        for ad in ad_type:
+
+            if ad_type == "bottom_ad_banner":
+                return SearchedAdBottomBanner(ad_type[1])
+            elif ad_type == "carousel_of_ads":
+                return SearchedProductCarouselOfAds(ad_type)
+            elif ad_type == "sponsored_brand_top":
+                return SearchedProductSponsoredBrandTop(ad_type)
+            elif ad_type == "sponsored_product_ad":
+                return SearchedProductAd(ad_type)
+            elif ad_type == "sponsored_product_video_ad":
+                return SearchedProductAdVideo(ad_type)
+            elif ad_type == "text_links":
+                return BrandsRelatedToYourSearch(ad_type)
+            else:
+                raise ValueError(f"Invalid ad type '{ad_type}'")
 
 
 class AdCollector(object):
@@ -134,15 +136,6 @@ class AdHandler(object):
                 print("ad \033[1;31;40mtype 1\033[0;0m \033[1;32;40mcollected\033[0;0m")
         except NoSuchElementException:
             pass
-
-    def get_webelements_ads_2(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.brands_related_to_your_search_element_node)
-
-    def get_webelements_ads_2_alt(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.Items_related_to_your_search_element_node)
-
-    def get_webelements_ads_7(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_7)
 
     def collect_ad_type_2_alt(self) -> None:
         """Create, send to DB and save scr of ad"""
@@ -239,9 +232,6 @@ class AdHandler(object):
 
                 return None
 
-    def get_webelements_ads_10(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_10)
-
     def collect_ad_type_10(self) -> None:
         """Create, send data to DB and save scr of ad"""
         ads_webelements = self.get_webelements_ads_10()
@@ -261,9 +251,6 @@ class AdHandler(object):
                     print("ad \033[1;31;40mtype 10\033[0;0m \033[1;32;40mcollected\033[0;0m")
             else:
                 return
-
-    def get_webelements_ads_8(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_8)
 
     def collect_ad_type_8(self) -> None:
         """Create ad type 8 | the same type of ad type 7 (type 7 is only for TOP presenting),
@@ -295,12 +282,6 @@ class AdHandler(object):
                 print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
-
-    def get_webelements_ads_8_alt(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_8_alt)
-
-    def get_webelements_ads_9(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_9)
 
     def collect_ad_type_9(self) -> None:
         """Create ad type 9 | the same type of ad type 7 (type 7 is only for TOP presenting),
@@ -335,9 +316,6 @@ class AdHandler(object):
                     if ad.text is not None:
                         self.ad_text_filter.append(ad.text)
                     return
-
-    def get_webelements_ads_9_alt(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_9_alt)
 
     def collect_ad_type_9_alternative(self) -> None:
         """Create ad type 9 | the same type of ad type 7 (type 7 is only for TOP presenting),
@@ -402,12 +380,6 @@ class AdHandler(object):
             ad = BrandsRelatedToYourSearch(web_element)
             ads.append(ad)
         return ads
-
-    def get_webelements_ads_4(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_4_node)
-
-    def get_webelements_ads_5(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_5_node)
 
     def collect_ad_type_5(self) -> None:
         """

@@ -81,7 +81,7 @@ class BaseMethods(object):
         except (NoSuchElementException, TimeoutException):
             pass
 
-    #TODO zmodyfikować wyszukiwanie po uniwersalnym języku
+    # TODO modify search from universal lang
     def get_page(self, phrase_to_search: str) -> None:
         """
         
