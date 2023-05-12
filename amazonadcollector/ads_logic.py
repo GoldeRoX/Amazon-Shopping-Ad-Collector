@@ -34,7 +34,6 @@ class AdFactory(object):
         for ad in self.ad_collector.get_webelements_ads_2():
             self.dict_of_ads.update({ad: 2})
 
-        # sprawdzić typ reklamy w db lub w lokatorach
         for ad in self.ad_collector.get_webelements_ads_2_alt():
             self.dict_of_ads.update({ad: 2})
 
