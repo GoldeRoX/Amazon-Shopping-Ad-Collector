@@ -50,7 +50,7 @@ class AdFactory(object):
         Creates and saves an Ad object based on the type of advertisement element passed to it.
         :return: Ad object corresponding to the advertisement type
         """
-        ad_type = self.dict_of_ads
+        ad_type: {WebElement: int} = self.dict_of_ads
 
         for ad in ad_type:
 
