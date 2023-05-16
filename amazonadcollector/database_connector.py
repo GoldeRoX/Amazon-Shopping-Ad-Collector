@@ -8,7 +8,6 @@ from typing import (
 )
 import yaml
 import os
-# test
 
 
 @contextlib.contextmanager

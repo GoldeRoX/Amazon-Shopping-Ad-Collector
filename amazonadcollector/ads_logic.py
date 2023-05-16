@@ -50,24 +50,24 @@ class AdFactory(object):
         Creates and saves an Ad object based on the type of advertisement element passed to it.
         :return: Ad object corresponding to the advertisement type
         """
-        ad_type: {WebElement: int} = self.dict_of_ads
+        ad_collection: {WebElement: int} = self.dict_of_ads
 
-        for ad in ad_type:
-
-            if ad_type == "bottom_ad_banner":
-                return SearchedAdBottomBanner(ad_type[1])
-            elif ad_type == "carousel_of_ads":
-                return SearchedProductCarouselOfAds(ad_type)
-            elif ad_type == "sponsored_brand_top":
-                return SearchedProductSponsoredBrandTop(ad_type)
-            elif ad_type == "sponsored_product_ad":
-                return SearchedProductAd(ad_type)
-            elif ad_type == "sponsored_product_video_ad":
-                return SearchedProductAdVideo(ad_type)
-            elif ad_type == "text_links":
-                return BrandsRelatedToYourSearch(ad_type)
+        for ad in ad_collection:
+            # TODO create switch instead of if
+            if ad == 1:
+                return SearchedAdBottomBanner(ad[1])
+            elif ad == 4:
+                return SearchedProductCarouselOfAds(ad)
+            elif ad == 7:
+                return SearchedProductSponsoredBrandTop(ad)
+            elif ad == 5:
+                return SearchedProductAd(ad)
+            elif ad == 6:
+                return SearchedProductAdVideo(ad)
+            elif ad == 2:
+                return BrandsRelatedToYourSearch(ad)
             else:
-                raise ValueError(f"Invalid ad type '{ad_type}'")
+                raise ValueError(f"Invalid ad type '{ad}'")
 
 
 class AdCollector(object):
@@ -459,9 +459,11 @@ class AdHandler(object):
         path = self.config["COMPUTER"]["SAVE_PATH"]
         if not os.path.exists(f"{path}/{date_folder_name}"):
             os.mkdir(f"{path}/{date_folder_name}")
+
         self.driver.start_recording_screen()
         time.sleep(60)
         video_rawdata = self.driver.stop_recording_screen()
+
         video_name = str(db_id)
         filepath = os.path.join(f"{path}/{date_folder_name}", "test_" + video_name + ".mp4")
         with open(filepath, "wb+") as vd:
@@ -507,7 +509,7 @@ class AdHandler(object):
 
 class AdjustAd(object):
 
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         self.driver: WebDriver = driver
         self.scroll = Scroll(self.driver)
 
