@@ -208,7 +208,7 @@ class BaseMethods(object):
             return
 
 
-def save_cropped_scr(driver, ad, filename: str) -> None:
+def save_cropped_scr(driver: WebDriver, ad, filename: str) -> None:
     config_path = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
     with open(config_path, "r") as file:
         config = yaml.safe_load(file)
