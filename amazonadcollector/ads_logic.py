@@ -11,7 +11,7 @@ from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
 
-from amazonadcollector.Ad import Ad, SearchedProductSponsoredBrandTop, SearchedProductAd, SearchedProductAdVideo,\
+from amazonadcollector.Ad import Ad, SearchedProductSponsoredBrandTop, SearchedProductAd, SearchedProductAdVideo, \
     SearchedAdBottomBanner, BrandsRelatedToYourSearch, SearchedProductCarouselOfAds
 from amazonadcollector.base import Scroll
 from amazonadcollector.database_connector import SQLAdManager
@@ -71,7 +71,6 @@ class AdFactory(object):
 
 
 class AdCollector(object):
-
     def __init__(self, driver: WebDriver, lang):
         self.driver = driver
         self.lang = lang
@@ -108,7 +107,6 @@ class AdCollector(object):
 
 
 class AdHandler(object):
-
     def __init__(self, driver: WebDriver, lang, session_id: int, keyword_id: int, udid: int):
         self.driver: WebDriver = driver
         self.lang = lang
@@ -146,7 +144,7 @@ class AdHandler(object):
                                                                        ".//*[@class='android.view.View']")
                                                  if web_element.get_attribute("clickable") == "true"
                                                  and web_element.get_attribute("text").startswith(
-                                                 self.lang.ad_2_starts_with)
+                                                self.lang.ad_2_starts_with)
                                                  and web_element.get_attribute("text") not in self.ad_text_filter]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -156,12 +154,12 @@ class AdHandler(object):
                     print("adjusting ad type 2 ...")
                     AdjustAd(self.driver).match_ad_visibility(web_element)
                 else:
-                    x, y, width, height = web_element.rect["x"], web_element.rect["y"],\
+                    x, y, width, height = web_element.rect["x"], web_element.rect["y"], \
                         web_element.rect["width"], web_element.rect["height"]
 
                     self.scroll.press_and_move_to_location(
-                        start_location=(x, (height/2)+y),
-                        end_location=(ad_web_elements[index-1].rect["x"], (height/2)+y)
+                        start_location=(x, (height / 2) + y),
+                        end_location=(ad_web_elements[index - 1].rect["x"], (height / 2) + y)
                     )
                     time.sleep(3)
 
@@ -194,12 +192,11 @@ class AdHandler(object):
                     print("adjusting ad type 2 ...")
                     AdjustAd(self.driver).match_ad_visibility(web_element)
                 else:
-                    x, y, width, height = web_element.rect["x"], web_element.rect["y"],\
-                        web_element.rect["width"], web_element.rect["height"]
+                    x, y, height = web_element.rect["x"], web_element.rect["y"], web_element.rect["height"]
 
                     self.scroll.press_and_move_to_location(
-                        start_location=(x, (height/2)+y),
-                        end_location=(ad_web_elements[index-1].rect["x"], (height/2)+y)
+                        start_location=(x, (height / 2) + y),
+                        end_location=(ad_web_elements[index - 1].rect["x"], (height / 2) + y)
                     )
                     time.sleep(1.5)
 
@@ -212,144 +209,133 @@ class AdHandler(object):
         except (NoSuchElementException, IndexError):
             return
 
-    def collect_ad_type_7(self) -> None:
+    def collect_ad_type_7(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
-        ads_webelements = self.get_webelements_ads_7()
-        for webElement in ads_webelements:
-            if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
-                                                                            f"{self.lang.ad_7_text_starts_with}')]")\
-                                                                            .get_attribute("text")
+        if ad_web_element.size["height"] > 10 and ad_web_element.get_attribute("resource-id") != "search":
+            result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
+                                                                        f"{self.lang.ad_7_text_starts_with}')]") \
+                .get_attribute("text")
+
+            """create ad object"""
+            print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
+            ad = SearchedProductSponsoredBrandTop(ad_web_element)
+            ad.text = result_text
+            ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
+            print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+
+            if ad.text is not None:
+                self.ad_text_filter.append(ad.text)
+
+            return None
+
+    def collect_ad_type_10(self, ad_web_element: WebElement) -> None:
+        """Create, send data to DB and save scr of ad"""
+        if ad_web_element.size["height"] > 10 and ad_web_element.get_attribute("resource-id") != "search":
+            elements: [WebElement] = ad_web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
+
+            result_text: str = elements[2].get_attribute("content-desc")
+            valid: str = elements[len(elements) - 1].get_attribute("content-desc")
+
+            if valid.__contains__("Jetzt"):
                 """create ad object"""
-                print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
-                ad = SearchedProductSponsoredBrandTop(webElement)
+                print("collecting ad \033[1;31;40mtype 10\033[0;0m ...")
+                ad = SearchedProductSponsoredBrandTop(ad_web_element)
                 ad.text = result_text
                 ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                if ad.text is not None:
-                    self.ad_text_filter.append(ad.text)
+                print("ad \033[1;31;40mtype 10\033[0;0m \033[1;32;40mcollected\033[0;0m")
+        else:
+            return
 
-                return None
-
-    def collect_ad_type_10(self) -> None:
-        """Create, send data to DB and save scr of ad"""
-        ads_webelements = self.get_webelements_ads_10()
-        for webElement in ads_webelements:
-            if webElement.size["height"] > 10 and webElement.get_attribute("resource-id") != "search":
-                elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
-
-                result_text: str = elements[2].get_attribute("content-desc")
-                valid: str = elements[len(elements) - 1].get_attribute("content-desc")
-
-                if valid.__contains__("Jetzt"):
-                    """create ad object"""
-                    print("collecting ad \033[1;31;40mtype 10\033[0;0m ...")
-                    ad = SearchedProductSponsoredBrandTop(webElement)
-                    ad.text = result_text
-                    ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                    print("ad \033[1;31;40mtype 10\033[0;0m \033[1;32;40mcollected\033[0;0m")
-            else:
-                return
-
-    def collect_ad_type_8(self) -> None:
+    def collect_ad_type_8(self, ad_web_element: WebElement) -> None:
         """Create ad type 8 | the same type of ad type 7 (type 7 is only for TOP presenting),
         send to DB and save scr of ad"""
 
-        ads_webelements = self.get_webelements_ads_8()
-        for webElement in ads_webelements:
+        result_text: str = ad_web_element.get_attribute('content-desc')
+        print(result_text)
 
-            result_text: str = webElement.get_attribute('content-desc')
-            print(result_text)
+        element_1_gesponsert: WebElement = ad_web_element.find_element(AppiumBy.XPATH,
+                                                                   ".//following-sibling::*/following-sibling::*")
+        element_1_gesponsert_text: str = element_1_gesponsert.get_attribute("text")
+        print(element_1_gesponsert_text)
 
-            element_1_gesponsert: WebElement = webElement.find_element(AppiumBy.XPATH,
-                                                                       ".//following-sibling::*/following-sibling::*")
-            element_1_gesponsert_text: str = element_1_gesponsert.get_attribute("text")
-            print(element_1_gesponsert_text)
+        element_2_Jetzt_einkaufen: WebElement = element_1_gesponsert.find_element(
+            ".//following-sibling::*/following-sibling::*/child::*/following-sibling::*/child::*")
+        element_2_Jetzt_einkaufen_text: str = element_2_Jetzt_einkaufen.get_attribute('content-desc')
+        print(element_2_Jetzt_einkaufen_text)
 
-            element_2_Jetzt_einkaufen: WebElement = element_1_gesponsert.find_element(
-                ".//following-sibling::*/following-sibling::*/child::*/following-sibling::*/child::*")
-            element_2_Jetzt_einkaufen_text: str = element_2_Jetzt_einkaufen.get_attribute('content-desc')
-            print(element_2_Jetzt_einkaufen_text)
+        if ad_web_element.size["height"] > 10 and result_text not in self.ad_text_filter:
 
-            if webElement.size["height"] > 10 and result_text not in self.ad_text_filter:
+            """create ad object"""
+            print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
+            ad = SearchedProductSponsoredBrandTop(ad_web_element)
+            ad.text = result_text
+            ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
+            print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+            if ad.text is not None:
+                self.ad_text_filter.append(ad.text)
+
+    def collect_ad_type_9(self, ad_web_element: WebElement) -> None:
+        """Create ad type 9 | the same type of ad type 7 (type 7 is only for TOP presenting),
+        send to DB and save scr of ad"""
+        if ad_web_element.size["height"] > 40:
+
+            elements: [WebElement] = ad_web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
+
+            try:
+                result_text: str = elements[1].get_attribute("text")
+                element_with_gesponsert: str = elements[1].get_attribute("text").strip()
+                element_wit_Jetzt_einkaufen: str = elements[7].get_attribute("text").strip()
+            except IndexError:
+                return
+
+            element_with_gesponsert_validation: bool = element_with_gesponsert.__contains__("Gesponsert")
+            element_wit_Jetzt_einkaufen_validation: bool = element_wit_Jetzt_einkaufen.startswith("Jetzt")
+
+            if result_text not in self.ad_text_filter \
+                    and element_with_gesponsert_validation \
+                    and element_wit_Jetzt_einkaufen_validation:
 
                 """create ad object"""
-                print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
-                ad = SearchedProductSponsoredBrandTop(webElement)
+                print("collecting ad \033[1;31;40mtype 9\033[0;0m ...")
+                ad = SearchedProductSponsoredBrandTop(ad_web_element)
                 ad.text = result_text
                 ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                print("ad \033[1;31;40mtype 9\033[0;0m \033[1;32;40mcollected\033[0;0m")
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
+                return
 
-    def collect_ad_type_9(self) -> None:
+    def collect_ad_type_9_alternative(self, ad_web_element: WebElement) -> None:
         """Create ad type 9 | the same type of ad type 7 (type 7 is only for TOP presenting),
         send to DB and save scr of ad"""
+        if ad_web_element.size["height"] > 40:
 
-        ads_webelements: list[WebElement] = self.get_webelements_ads_9()
-        for webElement in ads_webelements:
-            if webElement.size["height"] > 40:
+            elements: list[WebElement] = ad_web_element.find_elements(AppiumBy.XPATH,
+                                                                   "//*[@class='android.view.View']")
 
-                elements: [WebElement] = webElement.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
+            try:
+                result_text: str = elements[1].get_attribute("content-desc")
+                element_with_gesponsert: str = elements[1].get_attribute("content-desc").strip()
+                element_wit_Jetzt_einkaufen: str = elements[4].get_attribute("content-desc").strip()
+            except IndexError:
+                return
 
-                try:
-                    result_text: str = elements[1].get_attribute("text")
-                    element_with_gesponsert: str = elements[1].get_attribute("text").strip()
-                    element_wit_Jetzt_einkaufen: str = elements[7].get_attribute("text").strip()
-                except IndexError:
-                    return
+            element_with_gesponsert_validation: bool = element_with_gesponsert.__contains__("Gesponsert")
+            element_with_Jetzt_einkaufen_validation: bool = element_wit_Jetzt_einkaufen.startswith("Jetzt")
 
-                element_with_gesponsert_validation: bool = element_with_gesponsert.__contains__("Gesponsert")
-                element_wit_Jetzt_einkaufen_validation: bool = element_wit_Jetzt_einkaufen.startswith("Jetzt")
+            if result_text not in self.ad_text_filter \
+                    and element_with_gesponsert_validation \
+                    and element_with_Jetzt_einkaufen_validation:
 
-                if result_text not in self.ad_text_filter \
-                        and element_with_gesponsert_validation \
-                        and element_wit_Jetzt_einkaufen_validation:
-
-                    """create ad object"""
-                    print("collecting ad \033[1;31;40mtype 9\033[0;0m ...")
-                    ad = SearchedProductSponsoredBrandTop(webElement)
-                    ad.text = result_text
-                    ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                    print("ad \033[1;31;40mtype 9\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                    if ad.text is not None:
-                        self.ad_text_filter.append(ad.text)
-                    return
-
-    def collect_ad_type_9_alternative(self) -> None:
-        """Create ad type 9 | the same type of ad type 7 (type 7 is only for TOP presenting),
-        send to DB and save scr of ad"""
-
-        ads_webelements: [WebElement] = self.get_webelements_ads_9_alt()
-        for web_element in ads_webelements:
-            if web_element.size["height"] > 40:
-
-                elements: list[WebElement] = web_element.find_elements(AppiumBy.XPATH,
-                                                                       "//*[@class='android.view.View']")
-
-                try:
-                    result_text: str = elements[1].get_attribute("content-desc")
-                    element_with_gesponsert: str = elements[1].get_attribute("content-desc").strip()
-                    element_wit_Jetzt_einkaufen: str = elements[4].get_attribute("content-desc").strip()
-                except IndexError:
-                    return
-
-                element_with_gesponsert_validation: bool = element_with_gesponsert.__contains__("Gesponsert")
-                element_with_Jetzt_einkaufen_validation: bool = element_wit_Jetzt_einkaufen.startswith("Jetzt")
-
-                if result_text not in self.ad_text_filter \
-                        and element_with_gesponsert_validation \
-                        and element_with_Jetzt_einkaufen_validation:
-
-                    """create ad object"""
-                    print("collecting ad \033[1;31;40mtype 9_alt\033[0;0m ...")
-                    ad = SearchedProductSponsoredBrandTop(web_element)
-                    ad.text = result_text
-                    ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                    print("ad \033[1;31;40mtype 9_alt\033[0;0m \033[1;32;40mcollected\033[0;0m")
-                    if ad.text is not None:
-                        self.ad_text_filter.append(ad.text)
-                    return
+                """create ad object"""
+                print("collecting ad \033[1;31;40mtype 9_alt\033[0;0m ...")
+                ad = SearchedProductSponsoredBrandTop(ad_web_element)
+                ad.text = result_text
+                ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
+                print("ad \033[1;31;40mtype 9_alt\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                if ad.text is not None:
+                    self.ad_text_filter.append(ad.text)
+                return
 
     def get_webelements_ads_1(self) -> [WebElement]:
         webelements = []
@@ -380,36 +366,34 @@ class AdHandler(object):
             ads.append(ad)
         return ads
 
-    def collect_ad_type_5(self) -> None:
+    def collect_ad_type_5(self, ad_web_element: WebElement) -> None:
         """
         Collect and save ad of type 5 with the given session, keyword, and user device IDs.
         """
         try:
-            ad_elements: list[WebElement] = self.get_webelements_ads_5()
-            for ad_element in ad_elements:
-                if ad_element.size["height"] <= 10:
-                    continue
+            if ad_web_element.size["height"] <= 10:
+                return
 
-                text_elements: list[WebElement] = ad_element.find_elements(AppiumBy.XPATH,
+            text_elements: list[WebElement] = ad_web_element.find_elements(AppiumBy.XPATH,
                                                                            ".//*[@class='android.view.View']")
-                if len(text_elements) < 8:
-                    continue
+            if len(text_elements) < 8:
+                return
 
-                result_text: str = text_elements[4].get_attribute("text")
-                if not result_text.startswith(self.lang.ad_5_starts_with):
-                    continue
+            result_text: str = text_elements[4].get_attribute("text")
+            if not result_text.startswith(self.lang.ad_5_starts_with):
+                return
 
-                if result_text in self.ad_text_filter or result_text is None:
-                    continue
+            if result_text in self.ad_text_filter or result_text is None:
+                return
 
-                print("Adjusting ad type 5...")
-                AdjustAd(self.driver).match_ad_visibility(ad_element)
-                print("Collecting ad type 5...")
-                ad = SearchedProductAd(ad_element)
-                ad.text = result_text
-                ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                self.ad_text_filter.append(ad.text)
-                print("Ad type 5 collected.")
+            print("Adjusting ad type 5...")
+            AdjustAd(self.driver).match_ad_visibility(ad_web_element)
+            print("Collecting ad type 5...")
+            ad = SearchedProductAd(ad_web_element)
+            ad.text = result_text
+            ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
+            self.ad_text_filter.append(ad.text)
+            print("Ad type 5 collected.")
         except (NoSuchElementException, IndexError):
             pass
 
@@ -534,4 +518,3 @@ class AdjustAd(object):
                     previous_height = web_element.size["height"]
                     self.scroll.press_and_move_to_location(start_location=(10, 1000), end_location=(10, 1500))
                     next_height = web_element.size["height"]
-
