@@ -121,8 +121,7 @@ class AdHandler(object):
         with open(path, "r") as file:
             self.config = yaml.safe_load(file)
 
-    def collect_ad_type_1(self) -> None:
-        """Create, send to DB and save scr of ad"""
+    """def collect_ad_type_1(self) -> None:
         try:
             ads_list: [SearchedAdBottomBanner] = self.collect_ads_1()
             for ad in ads_list:
@@ -132,20 +131,20 @@ class AdHandler(object):
                     self.ad_text_filter.append(ad.text)
                 print("ad \033[1;31;40mtype 1\033[0;0m \033[1;32;40mcollected\033[0;0m")
         except NoSuchElementException:
-            pass
+            pass"""
 
-    def collect_ad_type_2_alt(self) -> None:
+    def collect_ad_type_2_alt(self, ad_web_element: WebElement) -> None:
         """Create, send to DB and save scr of ad"""
+        # TODO test this code
         try:
-            ad_web_elements: list[WebElement] = [web_element for element in self.get_webelements_ads_2_alt()
-                                                 if element.size["height"] > 10
-                                                 for web_element in
-                                                 element.find_elements(AppiumBy.XPATH,
-                                                                       ".//*[@class='android.view.View']")
-                                                 if web_element.get_attribute("clickable") == "true"
-                                                 and web_element.get_attribute("text").startswith(
-                                                self.lang.ad_2_starts_with)
-                                                 and web_element.get_attribute("text") not in self.ad_text_filter]
+            ad_web_elements: list[WebElement] = [
+                web_element
+                for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
+                if web_element.size["height"] > 10
+                and web_element.get_attribute("clickable") == "true"
+                and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
+                and web_element.get_attribute("text") not in self.ad_text_filter
+            ]
 
             for index, web_element in enumerate(ad_web_elements):
                 """scroll through web_elements ads"""
@@ -172,18 +171,18 @@ class AdHandler(object):
         except (NoSuchElementException, IndexError):
             return
 
-    def collect_ad_type_2(self) -> None:
+    def collect_ad_type_2(self, ad_web_element: WebElement) -> None:
         """Create, send to DB and save scr of ad"""
+        # TODO test this code
         try:
-            ad_web_elements: list[WebElement] = [web_element for element in self.get_webelements_ads_2()
-                                                 if element.size["height"] > 10
-                                                 for web_element in
-                                                 element.find_elements(AppiumBy.XPATH,
-                                                                       ".//*[@class='android.view.View']")
-                                                 if web_element.get_attribute("clickable") == "true"
-                                                 and web_element.get_attribute("text").startswith(
-                                                 self.lang.ad_2_starts_with)
-                                                 and web_element.get_attribute("text") not in self.ad_text_filter]
+            ad_web_elements: list[WebElement] = [
+                web_element
+                for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
+                if web_element.size["height"] > 10
+                and web_element.get_attribute("clickable") == "true"
+                and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
+                and web_element.get_attribute("text") not in self.ad_text_filter
+            ]
 
             for index, web_element in enumerate(ad_web_elements):
                 """scroll through web_elements ads"""
@@ -254,7 +253,7 @@ class AdHandler(object):
         print(result_text)
 
         element_1_gesponsert: WebElement = ad_web_element.find_element(AppiumBy.XPATH,
-                                                                   ".//following-sibling::*/following-sibling::*")
+                                                                       ".//following-sibling::*/following-sibling::*")
         element_1_gesponsert_text: str = element_1_gesponsert.get_attribute("text")
         print(element_1_gesponsert_text)
 
@@ -311,7 +310,7 @@ class AdHandler(object):
         if ad_web_element.size["height"] > 40:
 
             elements: list[WebElement] = ad_web_element.find_elements(AppiumBy.XPATH,
-                                                                   "//*[@class='android.view.View']")
+                                                                      "//*[@class='android.view.View']")
 
             try:
                 result_text: str = elements[1].get_attribute("content-desc")
@@ -354,15 +353,6 @@ class AdHandler(object):
         for webElement in webelements:
             """create an object of ad"""
             ad = SearchedAdBottomBanner(webElement)
-            ads.append(ad)
-        return ads
-
-    def collect_ads_2(self) -> [BrandsRelatedToYourSearch]:
-        ads = []
-        ads_webelements = self.get_webelements_ads_2()
-        for web_element in ads_webelements:
-            """create an object of ad"""
-            ad = BrandsRelatedToYourSearch(web_element)
             ads.append(ad)
         return ads
 
