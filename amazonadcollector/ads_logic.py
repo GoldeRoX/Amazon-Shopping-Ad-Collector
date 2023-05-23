@@ -213,7 +213,7 @@ class AdHandler(object):
         if ad_web_element.size["height"] > 10 and ad_web_element.get_attribute("resource-id") != "search":
             result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
                                                                         f"{self.lang.ad_7_text_starts_with}')]") \
-                .get_attribute("text")
+                                                                        .get_attribute("text")
 
             """create ad object"""
             print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
