@@ -144,7 +144,7 @@ class AdHandler(object):
 
             for index, web_element in enumerate(ad_web_elements):
                 """scroll through web_elements ads"""
-                print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
+                print("collecting ad type 2 ...")
                 if index == 0:
                     print("adjusting ad type 2 ...")
                     AdjustAd(self.driver).match_ad_visibility(web_element)
@@ -323,7 +323,7 @@ class AdHandler(object):
                     and element_with_Jetzt_einkaufen_validation:
 
                 """create ad object"""
-                print("collecting ad \033[1;31;40mtype 9_alt\033[0;0m ...")
+                print("collecting ad type 9_alt ...")
                 ad = SearchedProductSponsoredBrandTop(ad_web_element)
                 ad.text = result_text
                 ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
@@ -456,7 +456,7 @@ class AdHandler(object):
                 AdjustAd(self.driver).match_ad_visibility(video_ad_web_element)
 
                 """create ad object"""
-                print("collecting ad \033[1;31;40mvideo type 6\033[0;0m ...")
+                print("collecting ad video type 6 ...")
                 ad = SearchedProductAdVideo(video_ad_web_element)
                 ad.text = text
 
