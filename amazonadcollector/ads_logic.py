@@ -52,22 +52,22 @@ class AdFactory(object):
         """
         ad_collection: {WebElement: int} = self.dict_of_ads
 
-        for ad in ad_collection:
-            # TODO create switch instead of if
-            if ad == 1:
-                return SearchedAdBottomBanner(ad[1])
-            elif ad == 4:
-                return SearchedProductCarouselOfAds(ad)
-            elif ad == 7:
-                return SearchedProductSponsoredBrandTop(ad)
-            elif ad == 5:
-                return SearchedProductAd(ad)
-            elif ad == 6:
-                return SearchedProductAdVideo(ad)
-            elif ad == 2:
-                return BrandsRelatedToYourSearch(ad)
-            else:
-                raise ValueError(f"Invalid ad type '{ad}'")
+        for web_element, ad_type in ad_collection.items():
+            match ad_type:
+                case 1:
+                    return SearchedAdBottomBanner(web_element)
+                case 2:
+                    return BrandsRelatedToYourSearch(web_element)
+                case 4:
+                    return SearchedProductCarouselOfAds(web_element)
+                case 5:
+                    return SearchedProductAd(web_element)
+                case 6:
+                    return SearchedProductAdVideo(web_element)
+                case 7:
+                    return SearchedProductSponsoredBrandTop(web_element)
+                case _:
+                    raise ValueError(f"Invalid ad type '{ad_type}'")
 
 
 class AdCollector(object):
