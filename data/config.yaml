@@ -1,5 +1,5 @@
 APP:
-  LANG: "DE" # options: DE / ENG
+  LANG: "ENG" # options: DE / ENG
 
 DATABASE:
   USERNAME: "root"

@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 
 from selenium.common.exceptions import WebDriverException
-from amazonadcollector.ads_logic import SQLAdManager, AdHandler
+from amazonadcollector.ads_logic import SQLAdManager, AdFactory
 from amazonadcollector.base import MyDriver, BaseMethods, Scroll
 from amazonadcollector.locators_data import DE, UK
 
@@ -45,7 +45,7 @@ def main(udid: int):
     keyword_id = keyword["id"]
     new_udid = 1
 
-    ad_handler = AdHandler(session.driver, lang=UK, session_id=session_id, keyword_id=keyword_id, udid=new_udid)
+    ad_factory = AdFactory(session.driver, lang=UK, session_id=session_id, keyword_id=keyword_id, udid=new_udid)
 
     for i in range(30):
 
@@ -63,20 +63,11 @@ def main(udid: int):
             is_end_of_page = False
             previous_page_source = session.driver.page_source
 
-            ad_handler.collect_ad_type_7()  # works
-            # ad_handler.collect_ad_type_9()
-            # ad_handler.collect_ad_type_9_alternative()
-            # ad_handler.collect_ad_type_10()
-
             while not is_end_of_page:
                 base_methods.amazon_not_responding_close()
                 base_methods.cookies_click()
 
-                ad_handler.collect_video_ad()  # works
-                ad_handler.collect_ad_type_5()  # works
-                ad_handler.collect_ad_type_2()
-                ad_handler.collect_ad_type_2_alt()
-                ad_handler.collect_ad_type_8()
+                ad_factory.create_and_save_mid_ads()
 
                 scroll.scroll_down()
 

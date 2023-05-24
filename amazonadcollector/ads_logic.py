@@ -12,7 +12,7 @@ from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
 
 from amazonadcollector.Ad import Ad, SearchedProductSponsoredBrandTop, SearchedProductAd, SearchedProductAdVideo, \
-    SearchedAdBottomBanner, BrandsRelatedToYourSearch, SearchedProductCarouselOfAds
+     SearchedAdBottomBanner, BrandsRelatedToYourSearch, SearchedProductCarouselOfAds
 from amazonadcollector.base import Scroll
 from amazonadcollector.database_connector import SQLAdManager
 
@@ -27,7 +27,7 @@ class AdFactory(object):
         self.keyword_id = keyword_id
         self.udid = udid
         self.ad_collector = AdCollector(self.driver, self.lang)
-        self.adHandler = AdHandler(self.driver, self.lang, self.session_id, self.keyword_id, self.udid)
+        self.ad_handler = AdHandler(self.driver, self.lang, self.session_id, self.keyword_id, self.udid)
 
     def collect_ads_mid(self) -> {WebElement: int}:
 
@@ -40,32 +40,28 @@ class AdFactory(object):
         for ad in self.ad_collector.get_webelements_ads_5():
             self.dict_of_ads.update({ad: 5})
 
-        for ad in self.ad_collector.get_webelements_ads_8():
-            self.dict_of_ads.update({ad: 8})
+        """for ad in self.ad_collector.get_webelements_ads_8():
+            self.dict_of_ads.update({ad: 8})"""
 
         return self.dict_of_ads
 
-    def create_and_save_ads(self) -> Ad:
+    def create_and_save_mid_ads(self) -> None:
         """
-        Creates and saves an Ad object based on the type of advertisement element passed to it.
+        Creates and saves an Ad object from middle sector of app
+        based on the type of advertisement element passed to it.
         :return: Ad object corresponding to the advertisement type
         """
+        self.collect_ads_mid()
         ad_collection: {WebElement: int} = self.dict_of_ads
 
         for web_element, ad_type in ad_collection.items():
             match ad_type:
-                case 1:
-                    return SearchedAdBottomBanner(web_element)
                 case 2:
-                    return BrandsRelatedToYourSearch(web_element)
-                case 4:
-                    return SearchedProductCarouselOfAds(web_element)
+                    self.ad_handler.collect_ad_type_2(web_element)
                 case 5:
-                    return SearchedProductAd(web_element)
+                    self.ad_handler.collect_ad_type_5(web_element)
                 case 6:
-                    return SearchedProductAdVideo(web_element)
-                case 7:
-                    return SearchedProductSponsoredBrandTop(web_element)
+                    self.ad_handler.collect_video_ad()
                 case _:
                     raise ValueError(f"Invalid ad type '{ad_type}'")
 
@@ -125,11 +121,11 @@ class AdHandler(object):
         try:
             ads_list: [SearchedAdBottomBanner] = self.collect_ads_1()
             for ad in ads_list:
-                print("collecting ad \033[1;31;40mtype 1\033[0;0m ...")
+                print("collecting ad type 1 ...")
                 self.save_ad(ad)
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
-                print("ad \033[1;31;40mtype 1\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                print("ad type 1 collected")
         except NoSuchElementException:
             pass"""
 
@@ -165,7 +161,7 @@ class AdHandler(object):
                 """create an object of ad"""
                 ad = BrandsRelatedToYourSearch(web_element)
                 ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                print("ad type 2 collected")
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, IndexError):
@@ -186,7 +182,7 @@ class AdHandler(object):
 
             for index, web_element in enumerate(ad_web_elements):
                 """scroll through web_elements ads"""
-                print("collecting ad \033[1;31;40mtype 2\033[0;0m ...")
+                print("collecting ad type 2 ...")
                 if index == 0:
                     print("adjusting ad type 2 ...")
                     AdjustAd(self.driver).match_ad_visibility(web_element)
@@ -202,7 +198,7 @@ class AdHandler(object):
                 """create an object of ad"""
                 ad = BrandsRelatedToYourSearch(web_element)
                 ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                print("ad \033[1;31;40mtype 2\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                print("ad type 2 collected")
                 if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
         except (NoSuchElementException, IndexError):
@@ -216,11 +212,11 @@ class AdHandler(object):
                                                                         .get_attribute("text")
 
             """create ad object"""
-            print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
+            print("collecting ad type 7 ...")
             ad = SearchedProductSponsoredBrandTop(ad_web_element)
             ad.text = result_text
             ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-            print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+            print("ad type 7 collected")
 
             if ad.text is not None:
                 self.ad_text_filter.append(ad.text)
@@ -237,11 +233,11 @@ class AdHandler(object):
 
             if valid.__contains__("Jetzt"):
                 """create ad object"""
-                print("collecting ad \033[1;31;40mtype 10\033[0;0m ...")
+                print("collecting ad type 10 ...")
                 ad = SearchedProductSponsoredBrandTop(ad_web_element)
                 ad.text = result_text
                 ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                print("ad \033[1;31;40mtype 10\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                print("ad type 10 collected")
         else:
             return
 
@@ -265,11 +261,11 @@ class AdHandler(object):
         if ad_web_element.size["height"] > 10 and result_text not in self.ad_text_filter:
 
             """create ad object"""
-            print("collecting ad \033[1;31;40mtype 7\033[0;0m ...")
+            print("collecting ad type 7 ...")
             ad = SearchedProductSponsoredBrandTop(ad_web_element)
             ad.text = result_text
             ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-            print("ad \033[1;31;40mtype 7\033[0;0m \033[1;32;40mcollected\033[0;0m")
+            print("ad type 7 collected")
             if ad.text is not None:
                 self.ad_text_filter.append(ad.text)
 
@@ -295,11 +291,11 @@ class AdHandler(object):
                     and element_wit_Jetzt_einkaufen_validation:
 
                 """create ad object"""
-                print("collecting ad \033[1;31;40mtype 9\033[0;0m ...")
+                print("collecting ad type 9 ...")
                 ad = SearchedProductSponsoredBrandTop(ad_web_element)
                 ad.text = result_text
                 ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                print("ad \033[1;31;40mtype 9\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                print("ad type 9 collected")
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
                 return
@@ -331,7 +327,7 @@ class AdHandler(object):
                 ad = SearchedProductSponsoredBrandTop(ad_web_element)
                 ad.text = result_text
                 ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                print("ad \033[1;31;40mtype 9_alt\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                print("ad type 9_alt collected")
                 if ad.text is not None:
                     self.ad_text_filter.append(ad.text)
                 return
@@ -474,7 +470,7 @@ class AdHandler(object):
                     self.ad_text_filter.append(ad.text)
 
                 self.create_and_crop_video(video_ad_web_element, manager.data_set_id)
-                print("ad \033[1;31;40mvideo\033[0;0m \033[1;32;40mcollected\033[0;0m")
+                print("ad video collected")
                 return None
 
         except NoSuchElementException:
