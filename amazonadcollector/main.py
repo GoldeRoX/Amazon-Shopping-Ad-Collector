@@ -49,7 +49,8 @@ def main(udid: int):
 
     for i in range(30):
 
-        base_methods.get_page(keyword["keyword"])
+        # base_methods.get_page(keyword["keyword"])
+        base_methods.get_page("Laptop")
 
         try:
             base_methods.amazon_not_responding_close()
@@ -62,6 +63,8 @@ def main(udid: int):
 
             is_end_of_page = False
             previous_page_source = session.driver.page_source
+
+            ad_factory.create_and_save_top_ads()
 
             while not is_end_of_page:
                 base_methods.amazon_not_responding_close()

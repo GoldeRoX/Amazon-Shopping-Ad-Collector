@@ -20,7 +20,8 @@ from amazonadcollector.database_connector import SQLAdManager
 class AdFactory(object):
 
     def __init__(self, driver: WebDriver, lang, session_id: int, keyword_id: int, udid: int):
-        self.dict_of_ads: {WebElement: int} = {}
+        self.dict_of_ads_top: {WebElement: int} = {}
+        self.dict_of_ads_mid: {WebElement: int} = {}
         self.driver = driver
         self.lang = lang
         self.session_id = session_id
@@ -29,32 +30,50 @@ class AdFactory(object):
         self.ad_collector = AdCollector(self.driver, self.lang)
         self.ad_handler = AdHandler(self.driver, self.lang, self.session_id, self.keyword_id, self.udid)
 
+    def collect_ads_top(self) -> {WebElement: int}:
+        self.dict_of_ads_top.clear()
+
+        for ad in self.ad_collector.get_webelements_ads_7():
+            self.dict_of_ads_top.update({ad: 7})
+
+        return self.dict_of_ads_top
+
     def collect_ads_mid(self) -> {WebElement: int}:
+        self.dict_of_ads_mid.clear()
 
         for ad in self.ad_collector.get_webelements_ads_2():
-            self.dict_of_ads.update({ad: 2})
+            self.dict_of_ads_mid.update({ad: 2})
 
         for ad in self.ad_collector.get_webelements_ads_2_alt():
-            self.dict_of_ads.update({ad: 2})
+            self.dict_of_ads_mid.update({ad: 2})
 
         for ad in self.ad_collector.get_webelements_ads_5():
-            self.dict_of_ads.update({ad: 5})
+            self.dict_of_ads_mid.update({ad: 5})
 
-        """for ad in self.ad_collector.get_webelements_ads_8():
-            self.dict_of_ads.update({ad: 8})"""
+        return self.dict_of_ads_mid
 
-        return self.dict_of_ads
+    def create_and_save_top_ads(self) -> None:
+        """
+        Creates and saves an Ad object from top sector of app
+        based on the type of advertisement element passed to it.
+        """
+        self.collect_ads_top()
+
+        for web_element, ad_type in self.dict_of_ads_top.items():
+            match ad_type:
+                case 7:
+                    self.ad_handler.collect_ad_type_7(web_element)
+                case _:
+                    raise ValueError(f"Invalid ad type '{ad_type}'")
 
     def create_and_save_mid_ads(self) -> None:
         """
         Creates and saves an Ad object from middle sector of app
         based on the type of advertisement element passed to it.
-        :return: Ad object corresponding to the advertisement type
         """
         self.collect_ads_mid()
-        ad_collection: {WebElement: int} = self.dict_of_ads
 
-        for web_element, ad_type in ad_collection.items():
+        for web_element, ad_type in self.dict_of_ads_mid.items():
             match ad_type:
                 case 2:
                     self.ad_handler.collect_ad_type_2(web_element)
