@@ -128,7 +128,6 @@ class AdHandler(object):
         self.session_id = session_id
         self.keyword_id = keyword_id
         self.udid = udid
-
         self.scroll = Scroll(self.driver)
         self.ad_text_filter = []
 
@@ -150,7 +149,6 @@ class AdHandler(object):
 
     def collect_ad_type_2_alt(self, ad_web_element: WebElement) -> None:
         """Create, send to DB and save scr of ad"""
-        # TODO test this code
         try:
             ad_web_elements: list[WebElement] = [
                 web_element
@@ -188,7 +186,6 @@ class AdHandler(object):
 
     def collect_ad_type_2(self, ad_web_element: WebElement) -> None:
         """Create, send to DB and save scr of ad"""
-        # TODO test this code
         try:
             ad_web_elements: list[WebElement] = [
                 web_element
@@ -244,6 +241,7 @@ class AdHandler(object):
 
     def collect_ad_type_10(self, ad_web_element: WebElement) -> None:
         """Create, send data to DB and save scr of ad"""
+        # TODO this code works only for DE, change to multi lang config
         if ad_web_element.size["height"] > 10 and ad_web_element.get_attribute("resource-id") != "search":
             elements: [WebElement] = ad_web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
 
