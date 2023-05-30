@@ -18,7 +18,6 @@ def main(udid: int):
     pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid)}:{sql_manager.get_proxy_port(udid)} -port {udid}") # UK
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
-    # time to start an emulator
     time.sleep(15)
 
     start_time = time.time()
@@ -46,20 +45,18 @@ def main(udid: int):
     new_udid = 1
 
     ad_factory = AdFactory(session.driver, lang=UK, session_id=session_id, keyword_id=keyword_id, udid=new_udid)
+    scroll = Scroll(session.driver)
 
     for i in range(30):
 
-        # base_methods.get_page(keyword["keyword"])
-        base_methods.get_page("Laptop")
+        # base_methods.get_page("Monitor")
+        base_methods.get_page(keyword["keyword"])
 
         try:
             base_methods.amazon_not_responding_close()
             time.sleep(2)
             base_methods.cookies_click()
             time.sleep(4)
-
-            """scroll down through app Y and collect ads"""
-            scroll = Scroll(session.driver)
 
             is_end_of_page = False
             previous_page_source = session.driver.page_source

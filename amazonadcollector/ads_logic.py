@@ -50,6 +50,9 @@ class AdFactory(object):
         for ad in self.ad_collector.get_webelements_ads_5():
             self.dict_of_ads_mid.update({ad: 5})
 
+        for ad in self.ad_collector.get_webelements_ads_6():
+            self.dict_of_ads_mid.update({ad: 6})
+
         return self.dict_of_ads_mid
 
     def create_and_save_top_ads(self) -> None:
@@ -113,6 +116,9 @@ class AdCollector(object):
 
     def get_webelements_ads_9(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_9)
+
+    def get_webelements_ads_6(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_video)
 
     def get_webelements_ads_9_alt(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_9_alt)
@@ -430,6 +436,7 @@ class AdHandler(object):
         test = cv2.rectangle(new_img, (video_element.location["x"], video_element.location["y"]),
                              (video_element.location["x"] + video_element.size["width"],
                               video_element.location["y"] + video_element.size["height"]), (0, 0, 0), -1)
+
         cropped_image = test[
                         ad.location_y:ad.location_y + ad.height,
                         ad.location_x:ad.location_x + ad.width
@@ -465,7 +472,7 @@ class AdHandler(object):
         """Collecting video, scr and modified scr for ad of type 6 - video_ad"""
         try:
             video_ad_web_element = self.driver.find_element(AppiumBy.XPATH, self.lang.ad_video)
-            path: str = ".//child::*" + 7 * "/following-sibling::*"
+            path: str = ".//child::*" + 4 * "/following-sibling::*"
             text: str = video_ad_web_element.find_element(AppiumBy.XPATH, path).get_attribute("text")
             if video_ad_web_element.size["height"] > 10 and text not in self.ad_text_filter:
 
