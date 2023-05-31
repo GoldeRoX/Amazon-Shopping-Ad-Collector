@@ -376,9 +376,7 @@ class AdHandler(object):
         return ads
 
     def collect_ad_type_5(self, ad_web_element: WebElement) -> None:
-        """
-        Collect and save ad of type 5 with the given session, keyword, and user device IDs.
-        """
+        """Create, send to DB and save scr of ad"""
         try:
             if ad_web_element.size["height"] <= 10:
                 return
@@ -404,7 +402,7 @@ class AdHandler(object):
             self.ad_text_filter.append(ad.text)
             print("Ad type 5 collected.")
         except (NoSuchElementException, IndexError):
-            pass
+            return
 
     def save_cropped_scr_for_videos(self, ad: Ad, filename: str) -> None:
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
