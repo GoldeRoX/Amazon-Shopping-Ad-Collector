@@ -35,7 +35,7 @@ def main(udid: int):
     base_methods.first_launch()
     base_methods.cookies_click()
 
-    # base_methods.change_lang_from_eng_to_de()
+    base_methods.change_setting_to_de()
     # base_methods.change_setting_to_uk()
 
     session_id = SQLAdManager().get_last_saved_session_id_from_db() + 1
