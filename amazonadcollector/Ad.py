@@ -6,7 +6,6 @@ from amazonadcollector.database_connector import SQLAdManager
 from amazonadcollector.base import save_cropped_scr
 
 
-@dataclass
 class Ad(object):
     """
     Represents a generic advertisement.
@@ -71,6 +70,26 @@ class BrandsRelatedToYourSearch(Ad):
 
     def save_ad(self, driver, id_session: int, keyword_id: int, udid: int):
         self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
+
+
+class HighlyRatedProductCarouselOfAds(Ad):
+    def __init__(self, element: WebElement):
+        super().__init__(element)
+        self.ad_type: int = 4
+
+    def send_data_to_db(self, id_session: int, keyword_id: int, udid: int) -> int:
+        """
+
+        Args:
+            id_session: id of current session
+            keyword_id: id of keyword that was used for searching an ad
+            udid: Android Device ID
+
+        Returns:
+            data_set_id: int
+        """
+        return SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
+                                            self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
 
 
 class SearchedProductCarouselOfAds(Ad):
