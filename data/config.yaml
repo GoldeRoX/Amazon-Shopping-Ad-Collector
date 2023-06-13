@@ -1,11 +1,11 @@
 APP:
-  LANG: "DE" # options: DE / ENG
+  LANG: "UK" # options: DE / UK
 
 DATABASE:
   USERNAME: "root"
   PASSWORD: ""
   HOST: "127.0.0.1"
-  DB: "amazon_emulated_mobile_de"
+  DB: "amazon_emulated_mobile_uk"
   CHARSET: 'utf8mb4'
 
 #DATABASE:
