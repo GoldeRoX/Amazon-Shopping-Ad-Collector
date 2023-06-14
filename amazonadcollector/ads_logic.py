@@ -12,7 +12,7 @@ from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException
 
 from amazonadcollector.Ad import Ad, SearchedProductSponsoredBrandTop, SearchedProductAd, SearchedProductAdVideo, \
-     SearchedAdBottomBanner, BrandsRelatedToYourSearch, SearchedProductCarouselOfAds
+    SearchedAdBottomBanner, BrandsRelatedToYourSearch, HighlyRatedProductCarouselOfAds
 from amazonadcollector.base import Scroll
 from amazonadcollector.database_connector import SQLAdManager
 
@@ -47,6 +47,10 @@ class AdFactory(object):
         for ad in self.ad_collector.get_webelements_ads_2_alt():
             self.dict_of_ads_mid.update({ad: 2})
 
+        for ad in self.ad_collector.get_webelements_ads_4():
+            print(ad)
+            self.dict_of_ads_mid.update({ad: 4})
+
         for ad in self.ad_collector.get_webelements_ads_5():
             self.dict_of_ads_mid.update({ad: 5})
 
@@ -80,6 +84,8 @@ class AdFactory(object):
             match ad_type:
                 case 2:
                     self.ad_handler.collect_ad_type_2(web_element)
+                # case 4:
+                    # self.ad_handler.collect_ad_type_4(web_element)
                 case 5:
                     self.ad_handler.collect_ad_type_5(web_element)
                 case 6:
@@ -99,8 +105,10 @@ class AdCollector(object):
     def get_webelements_ads_2_alt(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.Items_related_to_your_search_element_node)
 
-    def get_webelements_ads_4(self) -> [WebElement]:
-        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_4_node)
+    """def get_webelements_ads_4(self) -> [WebElement]:
+        element = self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_4_locator)
+        print(element)
+        return element"""
 
     def get_webelements_ads_5(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_5_node)
@@ -140,18 +148,6 @@ class AdHandler(object):
         path: str = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
         with open(path, "r") as file:
             self.config = yaml.safe_load(file)
-
-    """def collect_ad_type_1(self) -> None:
-        try:
-            ads_list: [SearchedAdBottomBanner] = self.collect_ads_1()
-            for ad in ads_list:
-                print("collecting ad type 1 ...")
-                self.save_ad(ad)
-                if ad.text.strip() is not None:
-                    self.ad_text_filter.append(ad.text)
-                print("ad type 1 collected")
-        except NoSuchElementException:
-            pass"""
 
     def collect_ad_type_2_alt(self, ad_web_element: WebElement) -> None:
         """Create, send to DB and save scr of ad"""
@@ -226,6 +222,43 @@ class AdHandler(object):
         except (NoSuchElementException, IndexError):
             return
 
+    """def collect_ad_type_4(self, ad_web_element: WebElement) -> None:
+        try:
+            ad = HighlyRatedProductCarouselOfAds(ad_web_element)
+            ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
+
+            ad_web_element = ad_web_element.find_element(AppiumBy.XPATH, ".//child::*/child::*")
+            ad_web_elements: list[WebElement] = [
+                web_element
+                for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
+                if web_element.size["height"] > 10
+                and web_element.get_attribute("text").startswith(self.lang.ad_4_starts_with)
+            ]
+
+            for index, ad_element in enumerate(ad_web_elements):
+                if index == 0:
+                    print("adjusting ad type 4")
+                    AdjustAd(self.driver).match_ad_visibility(ad_element)
+
+                element_1: WebElement = ad_element.find_element(AppiumBy.XPATH, ".//child::*")
+                text_1: str = element_1.text
+                element_2: WebElement = element_1.find_element(AppiumBy.XPATH, ".//child::*")
+                text_2: str = element_2.text
+                text: str = " ".join([text_1, text_2])
+
+                ad_element: WebElement = element_1.find_element(AppiumBy.XPATH, ".//parent::*")
+                print("collecting ad type 4 ...")
+                ad = HighlyRatedProductCarouselOfAds(ad_element)
+                ad.text = text
+                ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
+                print("ad type 4 collected")
+
+                if ad.text.strip() is not None:
+                    self.ad_text_filter.append(ad.text)
+
+        except Exception as e:
+            print(e)"""
+
     def collect_ad_type_7(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         if ad_web_element.size["height"] > 10 and ad_web_element.get_attribute("resource-id") != "search":
@@ -240,7 +273,7 @@ class AdHandler(object):
             ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
             print("ad type 7 collected")
 
-            if ad.text is not None:
+            if ad.text.strip() is not None:
                 self.ad_text_filter.append(ad.text)
 
             return None
@@ -289,7 +322,7 @@ class AdHandler(object):
             ad.text = result_text
             ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
             print("ad type 7 collected")
-            if ad.text is not None:
+            if ad.text.strip() is not None:
                 self.ad_text_filter.append(ad.text)
 
     def collect_ad_type_9(self, ad_web_element: WebElement) -> None:
@@ -319,7 +352,7 @@ class AdHandler(object):
                 ad.text = result_text
                 ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
                 print("ad type 9 collected")
-                if ad.text is not None:
+                if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
                 return
 
@@ -351,7 +384,7 @@ class AdHandler(object):
                 ad.text = result_text
                 ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
                 print("ad type 9_alt collected")
-                if ad.text is not None:
+                if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
                 return
 
@@ -488,7 +521,7 @@ class AdHandler(object):
 
                 self.save_cropped_scr_for_videos(ad, str(manager.get_last_saved_id_from_db()))
 
-                if ad.text is not None:
+                if ad.text.strip() is not None:
                     self.ad_text_filter.append(ad.text)
 
                 self.create_and_crop_video(video_ad_web_element, manager.data_set_id)
