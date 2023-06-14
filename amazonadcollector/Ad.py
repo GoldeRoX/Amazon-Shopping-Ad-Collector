@@ -91,6 +91,12 @@ class HighlyRatedProductCarouselOfAds(Ad):
         return SQLAdManager.send_data_to_db(SQLAdManager(), self.width, self.height, self.location_x, self.location_y,
                                             self.text, self.timestamp, self.ad_type, id_session, keyword_id, udid)
 
+    def save_cropped_scr(self, driver, data_set_id: int):
+        save_cropped_scr(driver, self, str(data_set_id))
+
+    def save_ad(self, driver, id_session: int, keyword_id: int, udid: int):
+        self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
+
 
 class SearchedProductCarouselOfAds(Ad):
     def __init__(self, element: WebElement):
