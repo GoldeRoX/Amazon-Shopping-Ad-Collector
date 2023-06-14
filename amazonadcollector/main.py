@@ -35,7 +35,7 @@ def main(udid: int):
     base_methods.first_launch()
     base_methods.cookies_click()
 
-    base_methods.change_setting_to_de()
+    # base_methods.change_setting_to_de()
     # base_methods.change_setting_to_uk()
 
     session_id = SQLAdManager().get_last_saved_session_id_from_db() + 1
@@ -49,15 +49,15 @@ def main(udid: int):
 
     for i in range(30):
 
-        # base_methods.get_page("Monitor")
-        base_methods.get_page(keyword["keyword"])
+        base_methods.get_page("Lego")
+        # base_methods.get_page(keyword["keyword"])
+
+        base_methods.amazon_not_responding_close()
+        time.sleep(2)
+        base_methods.cookies_click()
+        time.sleep(4)
 
         try:
-            base_methods.amazon_not_responding_close()
-            time.sleep(2)
-            base_methods.cookies_click()
-            time.sleep(4)
-
             is_end_of_page = False
             previous_page_source = session.driver.page_source
 
