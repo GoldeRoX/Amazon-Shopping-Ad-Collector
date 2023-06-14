@@ -37,8 +37,7 @@ def cursor(*args, **kwargs) -> ContextManager[Cursor]:
 class SQLAdManager(object):
     def __init__(self):
         self.data_set_id = None
-        self.path = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
-        with open(self.path, "r") as file:
+        with open(os.path.join(os.path.dirname(__file__), "../data/config.yaml"), "r") as file:
             self.config = yaml.safe_load(file)
         self.db_credentials = {
             'host': self.config["DATABASE"]["HOST"],
