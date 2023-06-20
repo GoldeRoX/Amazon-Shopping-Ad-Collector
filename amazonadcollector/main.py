@@ -49,8 +49,8 @@ def main(udid: int):
 
     for i in range(30):
 
-        base_methods.get_page("L")
-        # base_methods.get_page(keyword["keyword"])
+        # base_methods.get_page("Monitors")
+        base_methods.get_page(keyword["keyword"])
 
         base_methods.amazon_not_responding_close()
         time.sleep(2)
