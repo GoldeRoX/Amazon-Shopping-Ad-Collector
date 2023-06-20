@@ -11,6 +11,8 @@ class UK(object):
     # ad_4_starts_with = "Sponsored Ad –"
     ad_7 = "//*[starts-with(@text, 'Sponsored ad from')]/parent::*/parent::*"
     ad_7_text_starts_with = "Sponsored ad from"
+    ad_1 = "//*[starts-with(@text, 'Sponsored ad from')]/parent::*/parent::*/parent::*/parent::*"
+    ad_1_text_starts_with = "Sponsored ad from"
     accept_cookies = "//*[@text='Accept Cookies']"
     # ad_4_locator = "//*[starts-with(@text, 'Highly rated View Sponsored')]"
 
@@ -29,4 +31,6 @@ class DE(object):
     App_schlieBen = "android:id/aerr_close"
     ad_7 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
     ad_7_text_starts_with = "Gesponserte Werbeanzeige von"
+    ad_1 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*/parent::*/parent::*"
+    ad_1_text_starts_with = "Gesponserte Werbeanzeige von"
     accept_cookies = "//*[@text='Cookies akzeptieren']"

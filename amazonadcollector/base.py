@@ -81,27 +81,23 @@ class BaseMethods(object):
         except (NoSuchElementException, TimeoutException):
             pass
 
-    # TODO modify search from universal lang
     def get_page(self, phrase_to_search: str) -> None:
         """
-        
-        Args:
-            phrase_to_search: phrase used for going to next page
 
-        Returns:
-            None
+                Args:
+                    phrase_to_search: phrase used for going to next page
 
-        """""
+                Returns:
+                    None
+
+                """""
+
         try:
-            self.get_element_when_located(AppiumBy.XPATH, DE.search_icon, time_to_wait=10).click()
-        except (NoSuchElementException, TimeoutException, WebDriverException):
-            try:
-                self.get_element_when_located(AppiumBy.XPATH, UK.search_icon)
-                self.driver.find_element(AppiumBy.XPATH, UK.search_icon).click()
-            except (NoSuchElementException, TimeoutException):
-                self.get_element_when_located(AppiumBy.ID,
-                                              "com.amazon.mShop.android.shopping:id/"
-                                              "chrome_action_bar_search_icon").click()
+            self.get_element_when_located(AppiumBy.XPATH, self.lang.search_icon, time_to_wait=10).click()
+        except (NoSuchElementException, TimeoutException):
+            self.get_element_when_located(AppiumBy.ID,
+                                          "com.amazon.mShop.android.shopping:id/"
+                                          "chrome_action_bar_search_icon").click()
 
         self.send_text(AppiumBy.ID, 'com.amazon.mShop.android.shopping:id/rs_search_src_text', phrase_to_search)
 

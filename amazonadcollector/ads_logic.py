@@ -33,6 +33,9 @@ class AdFactory(object):
     def collect_ads_top(self) -> {WebElement: int}:
         self.dict_of_ads_top.clear()
 
+        for ad in self.ad_collector.get_webelements_ads_1():
+            self.dict_of_ads_top.update({ad: 1})
+
         for ad in self.ad_collector.get_webelements_ads_7():
             self.dict_of_ads_top.update({ad: 7})
 
@@ -47,9 +50,9 @@ class AdFactory(object):
         for ad in self.ad_collector.get_webelements_ads_2_alt():
             self.dict_of_ads_mid.update({ad: 2})
 
-        for ad in self.ad_collector.get_webelements_ads_4():
+        """for ad in self.ad_collector.get_webelements_ads_4():
             print(ad)
-            self.dict_of_ads_mid.update({ad: 4})
+            self.dict_of_ads_mid.update({ad: 4})"""
 
         for ad in self.ad_collector.get_webelements_ads_5():
             self.dict_of_ads_mid.update({ad: 5})
@@ -68,6 +71,8 @@ class AdFactory(object):
 
         for web_element, ad_type in self.dict_of_ads_top.items():
             match ad_type:
+                case 1:
+                    self.ad_handler.collect_ad_type_1(web_element)
                 case 7:
                     self.ad_handler.collect_ad_type_7(web_element)
                 case _:
@@ -85,7 +90,7 @@ class AdFactory(object):
                 case 2:
                     self.ad_handler.collect_ad_type_2(web_element)
                 # case 4:
-                    # self.ad_handler.collect_ad_type_4(web_element)
+                # self.ad_handler.collect_ad_type_4(web_element)
                 case 5:
                     self.ad_handler.collect_ad_type_5(web_element)
                 case 6:
@@ -98,6 +103,9 @@ class AdCollector(object):
     def __init__(self, driver: WebDriver, lang):
         self.driver = driver
         self.lang = lang
+
+    def get_webelements_ads_1(self) -> [WebElement]:
+        return self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_1)
 
     def get_webelements_ads_2(self) -> [WebElement]:
         return self.driver.find_elements(AppiumBy.XPATH, self.lang.brands_related_to_your_search_element_node)
@@ -156,9 +164,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                and web_element.get_attribute("clickable") == "true"
-                and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
-                and web_element.get_attribute("text") not in self.ad_text_filter
+                   and web_element.get_attribute("clickable") == "true"
+                   and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
+                   and web_element.get_attribute("text") not in self.ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -193,9 +201,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                and web_element.get_attribute("clickable") == "true"
-                and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
-                and web_element.get_attribute("text") not in self.ad_text_filter
+                   and web_element.get_attribute("clickable") == "true"
+                   and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
+                   and web_element.get_attribute("text") not in self.ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -261,10 +269,12 @@ class AdHandler(object):
 
     def collect_ad_type_7(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
-        if ad_web_element.size["height"] > 10 and ad_web_element.get_attribute("resource-id") != "search":
+        if ad_web_element.size["height"] > 10 and ad_web_element.get_attribute("resource-id") != "search" \
+                and ad_web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")[-2]\
+                .get_attribute("text") == "Sponsored":
             result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
                                                                         f"{self.lang.ad_7_text_starts_with}')]") \
-                                                                        .get_attribute("text")
+                .get_attribute("text")
 
             """create ad object"""
             print("collecting ad type 7 ...")
@@ -272,6 +282,25 @@ class AdHandler(object):
             ad.text = result_text
             ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
             print("ad type 7 collected")
+
+            if ad.text.strip() is not None:
+                self.ad_text_filter.append(ad.text)
+
+            return
+
+    def collect_ad_type_1(self, ad_web_element: WebElement) -> None:
+        """Create and send data to DB, then save scr of ad"""
+        if ad_web_element.size["height"] > 10 and ad_web_element.get_attribute("resource-id") not in ("search", "a-page"):
+            result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
+                                                                        f"{self.lang.ad_1_text_starts_with}')]") \
+                .get_attribute("text")
+
+            """create ad object"""
+            print("collecting ad type 1 ...")
+            ad = SearchedProductSponsoredBrandTop(ad_web_element)
+            ad.text = result_text
+            ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
+            print("ad type 1 collected")
 
             if ad.text.strip() is not None:
                 self.ad_text_filter.append(ad.text)
