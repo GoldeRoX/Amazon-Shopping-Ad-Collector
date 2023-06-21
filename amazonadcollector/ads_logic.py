@@ -304,7 +304,7 @@ class AdHandler(object):
                 .get_attribute("text") == "Sponsored":
             result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
                                                                         f"{self.lang.ad_7_text_starts_with}')]") \
-                .get_attribute("text")
+                                                                        .get_attribute("text")
 
             if result_text in self.ad_text_filter or result_text is None:
                 return
