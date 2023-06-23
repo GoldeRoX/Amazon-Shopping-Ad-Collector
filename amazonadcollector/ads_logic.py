@@ -12,7 +12,7 @@ from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 
 from amazonadcollector.Ad import Ad, SearchedProductSponsoredBrandTop, SearchedProductAd, SearchedProductAdVideo, \
-    SearchedAdBottomBanner, BrandsRelatedToYourSearch, SearchedProductSponsoredBrandMid
+    BrandsRelatedToYourSearch, SearchedProductSponsoredBrandMid
 from amazonadcollector.base import Scroll
 from amazonadcollector.database_connector import SQLAdManager
 
@@ -326,10 +326,10 @@ class AdHandler(object):
     def collect_ad_type_8(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         if ad_web_element.size["height"] > 100 and ad_web_element.get_attribute("resource-id") not in (
-                "search", "a-page"):
+                "search", "a-page") and ad_web_element.get_attribute("text").strip() is None:
             result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
                                                                         f"{self.lang.ad_1_text_starts_with}')]") \
-                .get_attribute("text")
+                                                                        .get_attribute("text")
 
             if result_text in self.ad_text_filter or result_text is None:
                 return
@@ -350,7 +350,7 @@ class AdHandler(object):
     def collect_ad_type_1(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         if ad_web_element.size["height"] > 600 and ad_web_element.get_attribute("resource-id") not in (
-                "search", "a-page"):
+                "search", "a-page") and ad_web_element.get_attribute("text").strip() is None:
             result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
                                                                         f"{self.lang.ad_1_text_starts_with}')]") \
                 .get_attribute("text")
@@ -368,7 +368,7 @@ class AdHandler(object):
             Scroll(self.driver).scroll_down(y=ad_web_element.size["height"] - (ad_web_element.size["height"] / 3))
             return None
 
-    def collect_ad_type_10(self, ad_web_element: WebElement) -> None:
+    '''def collect_ad_type_10(self, ad_web_element: WebElement) -> None:
         """Create, send data to DB and save scr of ad"""
         # TODO this code works only for DE, change to multi lang config
         if ad_web_element.size["height"] > 10 and ad_web_element.get_attribute("resource-id") != "search":
@@ -385,9 +385,9 @@ class AdHandler(object):
                 ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
                 print("ad type 10 collected")
         else:
-            return
+            return'''
 
-    def get_webelements_ads_1(self) -> [WebElement]:
+    '''def get_webelements_ads_1(self) -> [WebElement]:
         webelements = []
         elements = self.driver.find_elements(AppiumBy.XPATH, self.lang.BOTTOM_AD)
 
@@ -395,9 +395,9 @@ class AdHandler(object):
             text_element_node = self.driver.find_element(AppiumBy.XPATH, self.lang.BOTTOM_AD_TEXT_ELEMENT)
             if element.size["height"] > 300 and text_element_node.size["width"] > 500:
                 webelements.append(element)
-        return webelements
+        return webelements'''
 
-    def collect_ads_1(self) -> [SearchedAdBottomBanner]:
+    '''def collect_ads_1(self) -> [SearchedAdBottomBanner]:
         ads = []
         webelements = self.get_webelements_ads_1()
 
@@ -405,7 +405,7 @@ class AdHandler(object):
             """create an object of ad"""
             ad = SearchedAdBottomBanner(webElement)
             ads.append(ad)
-        return ads
+        return ads'''
 
     def collect_ad_type_5(self, ad_web_element: WebElement) -> None:
         """Create, send to DB and save scr of ad"""
@@ -531,7 +531,7 @@ class AdHandler(object):
                 print("ad video collected")
                 return None
 
-        except NoSuchElementException:
+        except (NoSuchElementException, StaleElementReferenceException):
             return None
 
 
