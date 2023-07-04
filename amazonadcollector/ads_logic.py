@@ -5,14 +5,11 @@ import time
 import cv2
 import yaml
 
-from datetime import datetime
-from appium.webdriver import WebElement
 from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.webdriver import WebDriver
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 
-from amazonadcollector.Ad import Ad, SearchedProductSponsoredBrandTop, SearchedProductAd, SearchedProductAdVideo, \
-    BrandsRelatedToYourSearch, SearchedProductSponsoredBrandMid
+from amazonadcollector.Ad import *
 from amazonadcollector.base import Scroll
 from amazonadcollector.database_connector import SQLAdManager
 
@@ -175,9 +172,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                and web_element.get_attribute("clickable") == "true"
-                and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
-                and web_element.get_attribute("text") not in self.ad_text_filter
+                   and web_element.get_attribute("clickable") == "true"
+                   and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
+                   and web_element.get_attribute("text") not in self.ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -212,9 +209,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                and web_element.get_attribute("clickable") == "true"
-                and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
-                and web_element.get_attribute("text") not in self.ad_text_filter
+                   and web_element.get_attribute("clickable") == "true"
+                   and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
+                   and web_element.get_attribute("text") not in self.ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -280,7 +277,7 @@ class AdHandler(object):
 
     def collect_ad_type_7(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
-        if ad_web_element.size["height"] > 1000 and ad_web_element.get_attribute("resource-id") != "search" \
+        if ad_web_element.size["height"] > 50 and ad_web_element.get_attribute("resource-id") != "search" \
                 and ad_web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")[-2] \
                 .get_attribute("text") == "Sponsored":
             result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
@@ -293,34 +290,43 @@ class AdHandler(object):
             ad.text = result_text
             ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
             print("ad type 7 collected")
-
-            Scroll(self.driver).scroll_down(y=ad_web_element.size["height"] - (ad_web_element.size["height"] / 3))
             return
 
     def collect_ad_type_3(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
-        if ad_web_element.size["height"] > 100 and ad_web_element.get_attribute("resource-id") != "search" \
-                and ad_web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")[-2] \
-                .get_attribute("text") == "Sponsored":
-            result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
-                                                                        f"{self.lang.ad_7_text_starts_with}')]") \
-                                                                        .get_attribute("text")
+        try:
+            if ad_web_element.size["height"] > 50 and ad_web_element.get_attribute("resource-id") != "search" \
+                    and ad_web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")[-2] \
+                    .get_attribute("text") == "Sponsored":
 
-            if result_text in self.ad_text_filter or result_text is None:
+                try:
+                    ad_web_element.find_element(AppiumBy.XPATH, "./preceding-sibling::*[2]")
+                except NoSuchElementException:
+                    print("nie znaleziono")
+                    return
+
+                result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
+                                                                            f"{self.lang.ad_7_text_starts_with}')]") \
+                                                                            .get_attribute("text")
+
+                if result_text in self.ad_text_filter or result_text is None:
+                    print("element XXX")
+                    return
+
+                print("Adjusting ad type 3...")
+                AdjustAd(self.driver).match_ad_visibility(ad_web_element)
+                """create ad object"""
+                print("collecting ad type 3 ...")
+                ad = SearchedProductSponsoredBrandMid(ad_web_element)
+                ad.text = result_text
+                ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
+                print("ad type 3 collected")
+
+                if ad.text.strip() is not None:
+                    self.ad_text_filter.append(ad.text)
+
                 return
-
-            print("Adjusting ad type 3...")
-            AdjustAd(self.driver).match_ad_visibility(ad_web_element)
-            """create ad object"""
-            print("collecting ad type 3 ...")
-            ad = SearchedProductSponsoredBrandMid(ad_web_element)
-            ad.text = result_text
-            ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-            print("ad type 3 collected")
-
-            if ad.text.strip() is not None:
-                self.ad_text_filter.append(ad.text)
-
+        except StaleElementReferenceException:
             return
 
     def collect_ad_type_8(self, ad_web_element: WebElement) -> None:
@@ -329,7 +335,7 @@ class AdHandler(object):
                 "search", "a-page") and ad_web_element.get_attribute("text").strip() is None:
             result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
                                                                         f"{self.lang.ad_1_text_starts_with}')]") \
-                                                                        .get_attribute("text")
+                .get_attribute("text")
 
             if result_text in self.ad_text_filter or result_text is None:
                 return
@@ -354,18 +360,20 @@ class AdHandler(object):
             result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
                                                                         f"{self.lang.ad_1_text_starts_with}')]") \
                 .get_attribute("text")
+            try:
+                ad_web_element.find_element(AppiumBy.XPATH, "./preceding-sibling::*[2]")
+            except NoSuchElementException:
+                return
 
             """create ad object"""
             print("collecting ad type 1 ...")
-            ad = SearchedProductSponsoredBrandTop(ad_web_element)
+            ad = SearchedProductSponsoredBrandMid(ad_web_element)
             ad.text = result_text
             ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
             print("ad type 1 collected")
 
             if ad.text.strip() is not None:
                 self.ad_text_filter.append(ad.text)
-
-            Scroll(self.driver).scroll_down(y=ad_web_element.size["height"] - (ad_web_element.size["height"] / 3))
             return None
 
     '''def collect_ad_type_10(self, ad_web_element: WebElement) -> None:
@@ -433,19 +441,26 @@ class AdHandler(object):
             ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
             self.ad_text_filter.append(ad.text)
             print("Ad type 5 collected.")
-        except (NoSuchElementException, IndexError):
+        except (NoSuchElementException, IndexError, StaleElementReferenceException):
             return
 
     def save_cropped_scr_for_videos(self, ad: Ad, filename: str) -> None:
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
-        path = self.config["COMPUTER"]["SAVE_PATH"]
-        if not os.path.exists(f"{path}/{date_folder_name}"):
-            os.mkdir(f"{path}/{date_folder_name}")
+        save_path = self.config["COMPUTER"]["SAVE_PATH"]
+
+        if not os.path.exists(f"{save_path}/DE"):
+            os.mkdir(f"{save_path}/DE")
+
+        if not os.path.exists(f"{save_path}/UK"):
+            os.mkdir(f"{save_path}/UK")
+
+        if not os.path.exists(f"{save_path}/{self.config['APP']['LANG']}/{date_folder_name}"):
+            os.mkdir(f"{save_path}/{self.config['APP']['LANG']}/{date_folder_name}")
 
         img_name = filename
 
-        image_path: str = f"{path}/{date_folder_name}/{str(img_name)}_thumb.png"
+        image_path: str = f"{save_path}/{self.config['APP']['LANG']}/{date_folder_name}/{str(img_name)}_thumb.png"
         self.driver.save_screenshot(image_path)
         img = cv2.imread(image_path)
 
@@ -456,7 +471,7 @@ class AdHandler(object):
 
         cv2.imwrite(image_path, cropped_image)
 
-        image_path = f"{path}/{date_folder_name}/{str(img_name)}.png"
+        image_path = f"{save_path}/{self.config['APP']['LANG']}/{date_folder_name}/{str(img_name)}.png"
         video_element_ad_web_element = self.driver.find_element(AppiumBy.XPATH, self.lang.ad_video)
         path = ".//child::*/following-sibling::*"
         video_element = video_element_ad_web_element.find_element(AppiumBy.XPATH, path)
@@ -481,22 +496,29 @@ class AdHandler(object):
         date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
         path = self.config["COMPUTER"]["SAVE_PATH"]
-        if not os.path.exists(f"{path}/{date_folder_name}"):
-            os.mkdir(f"{path}/{date_folder_name}")
+
+        if not os.path.exists(f"{path}/DE"):
+            os.mkdir(f"{path}/DE")
+
+        if not os.path.exists(f"{path}/UK"):
+            os.mkdir(f"{path}/UK")
+
+        if not os.path.exists(f"{path}//{self.config['APP']['LANG']}/{date_folder_name}"):
+            os.mkdir(f"{path}/{self.config['APP']['LANG']}/{date_folder_name}")
 
         self.driver.start_recording_screen()
         time.sleep(60)
         video_rawdata = self.driver.stop_recording_screen()
 
         video_name = str(db_id)
-        filepath = os.path.join(f"{path}/{date_folder_name}", "test_" + video_name + ".mp4")
+        filepath = os.path.join(f"{path}/{self.config['APP']['LANG']}/{date_folder_name}", "test_" + video_name + ".mp4")
         with open(filepath, "wb+") as vd:
             vd.write(base64.b64decode(video_rawdata))
         os.system(
-            f'ffmpeg -i {path}/{date_folder_name}/test_{video_name}.mp4 -vf "crop={video_ad_web_element.size["width"]}:'
+            f'ffmpeg -i {path}/{self.config["APP"]["LANG"]}/{date_folder_name}/test_{video_name}.mp4 -vf "crop={video_ad_web_element.size["width"]}:'
             f'{video_ad_web_element.size["height"]}:{video_ad_web_element.location["x"]}:'
-            f'{video_ad_web_element.location["y"]}" {path}/{date_folder_name}/{video_name}.mp4')
-        os.system(f"unlink {path}/{date_folder_name}/test_{video_name}.mp4")
+            f'{video_ad_web_element.location["y"]}" {path}/{self.config["APP"]["LANG"]}/{date_folder_name}/{video_name}.mp4')
+        os.system(f"unlink {path}/{self.config['APP']['LANG']}/{date_folder_name}/test_{video_name}.mp4")
 
     def collect_video_ad(self) -> None:
         """Collecting video, scr and modified scr for ad of type 6 - video_ad"""

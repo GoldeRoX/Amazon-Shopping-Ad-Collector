@@ -10,12 +10,14 @@ from amazonadcollector.ads_logic import SQLAdManager, AdFactory
 from amazonadcollector.base import MyDriver, BaseMethods, Scroll
 from amazonadcollector.locators_data import DE, UK
 
+# print("test")
+
 
 def main(udid: int):
 
     sql_manager = SQLAdManager()
 
-    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid)}:{sql_manager.get_proxy_port(udid)} -port {udid}") # UK
+    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid)}:{int(sql_manager.get_proxy_port(udid))} -port {udid}") # UK
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
     time.sleep(15)
@@ -30,7 +32,7 @@ def main(udid: int):
 
     time.sleep(5)
 
-    base_methods = BaseMethods(session.driver, lang=UK)
+    base_methods = BaseMethods(session.driver, lang=DE)
     base_methods.amazon_not_responding_close()
     base_methods.first_launch()
     base_methods.cookies_click()
@@ -44,12 +46,12 @@ def main(udid: int):
     keyword_id = keyword["id"]
     new_udid = 1
 
-    ad_factory = AdFactory(session.driver, lang=UK, session_id=session_id, keyword_id=keyword_id, udid=new_udid)
+    ad_factory = AdFactory(session.driver, lang=DE, session_id=session_id, keyword_id=keyword_id, udid=new_udid)
     scroll = Scroll(session.driver)
 
     for i in range(30):
 
-        base_methods.get_page("Laptops")
+        base_methods.get_page("Monitor")
         # Apple
         # base_methods.get_page(keyword["keyword"])
 

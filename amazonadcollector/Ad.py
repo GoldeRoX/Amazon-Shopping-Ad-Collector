@@ -6,6 +6,7 @@ from amazonadcollector.database_connector import SQLAdManager
 from amazonadcollector.base import save_cropped_scr
 
 
+@dataclass
 class Ad(object):
     """
     Represents a generic advertisement.
@@ -201,6 +202,7 @@ class SearchedProductSponsoredBrandTop(Ad):
     def save_ad(self, driver, id_session: int, keyword_id: int, udid: int) -> None:
         self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
 
+
 class SearchedProductSponsoredBrandMid(Ad):
     def __init__(self, element: WebElement):
         super().__init__(element)
@@ -226,4 +228,3 @@ class SearchedProductSponsoredBrandMid(Ad):
 
     def save_ad(self, driver, id_session: int, keyword_id: int, udid: int) -> None:
         self.save_cropped_scr(driver, self.send_data_to_db(id_session, keyword_id, udid))
-

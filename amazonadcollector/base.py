@@ -19,8 +19,6 @@ from datetime import datetime
 from typing import Tuple
 from appium.webdriver.webdriver import WebDriver
 
-from amazonadcollector.locators_data import *
-
 
 class MyDriver(object):
 
@@ -211,12 +209,19 @@ def save_cropped_scr(driver: WebDriver, ad, filename: str) -> None:
     date_folder_name = datetime.now().strftime("%Y-%m-%d")
 
     save_path = config["COMPUTER"]["SAVE_PATH"]
-    if not os.path.exists(f"{save_path}/{date_folder_name}"):
-        os.mkdir(f"{save_path}/{date_folder_name}")
+
+    if not os.path.exists(f"{save_path}/DE"):
+        os.mkdir(f"{save_path}/DE")
+
+    if not os.path.exists(f"{save_path}/UK"):
+        os.mkdir(f"{save_path}/UK")
+
+    if not os.path.exists(f"{save_path}/{config['APP']['LANG']}/{date_folder_name}"):
+        os.mkdir(f"{save_path}/{config['APP']['LANG']}/{date_folder_name}")
 
     img_name = filename
 
-    image_path = f"{save_path}/{date_folder_name}/{str(img_name)}.png"
+    image_path = f"{save_path}/{config['APP']['LANG']}/{date_folder_name}/{str(img_name)}.png"
     driver.save_screenshot(image_path)
     img = cv2.imread(image_path)
 

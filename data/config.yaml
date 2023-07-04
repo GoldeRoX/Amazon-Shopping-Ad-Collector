@@ -1,11 +1,11 @@
 APP:
-  LANG: "UK" # options: DE / UK
+  LANG: "DE" # options: DE / UK
 
 DATABASE:
   USERNAME: "root"
   PASSWORD: ""
   HOST: "127.0.0.1"
-  DB: "amazon_emulated_mobile_uk"
+  DB: "amazon_emulated_mobile_de"
   CHARSET: 'utf8mb4'
 
 #DATABASE:
@@ -17,4 +17,5 @@ DATABASE:
 
 COMPUTER:
   IP: "1"
-  SAVE_PATH: "/home/krzysztof/nfs/Screenshots"
+  SAVE_PATH: "/home/krzysztof/nfs"
+
