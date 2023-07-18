@@ -92,8 +92,8 @@ class AdFactory(object):
             match ad_type:
                 case 2:
                     self.ad_handler.collect_ad_type_2(web_element)
-                case 3:
-                    self.ad_handler.collect_ad_type_3(web_element)
+                # case 3:
+                # self.ad_handler.collect_ad_type_3(web_element)
                 # case 4:
                 # self.ad_handler.collect_ad_type_4(web_element)
                 case 5:
@@ -172,9 +172,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                   and web_element.get_attribute("clickable") == "true"
-                   and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
-                   and web_element.get_attribute("text") not in self.ad_text_filter
+                and web_element.get_attribute("clickable") == "true"
+                and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
+                and web_element.get_attribute("text") not in self.ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -209,9 +209,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                   and web_element.get_attribute("clickable") == "true"
-                   and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
-                   and web_element.get_attribute("text") not in self.ad_text_filter
+                and web_element.get_attribute("clickable") == "true"
+                and web_element.get_attribute("text").startswith(self.lang.ad_2_starts_with)
+                and web_element.get_attribute("text") not in self.ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -279,7 +279,7 @@ class AdHandler(object):
         """Create and send data to DB, then save scr of ad"""
         if ad_web_element.size["height"] > 50 and ad_web_element.get_attribute("resource-id") != "search" \
                 and ad_web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")[-2] \
-                .get_attribute("text") == "Sponsored":
+                .get_attribute("text") == self.lang.sponsored:
             result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
                                                                         f"{self.lang.ad_7_text_starts_with}')]") \
                 .get_attribute("text")
@@ -297,7 +297,7 @@ class AdHandler(object):
         try:
             if ad_web_element.size["height"] > 50 and ad_web_element.get_attribute("resource-id") != "search" \
                     and ad_web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")[-2] \
-                    .get_attribute("text") == "Sponsored":
+                    .get_attribute("text") == self.lang.sponsored:
 
                 try:
                     ad_web_element.find_element(AppiumBy.XPATH, "./preceding-sibling::*[2]")
@@ -307,7 +307,7 @@ class AdHandler(object):
 
                 result_text: str = self.driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
                                                                             f"{self.lang.ad_7_text_starts_with}')]") \
-                                                                            .get_attribute("text")
+                    .get_attribute("text")
 
                 if result_text in self.ad_text_filter or result_text is None:
                     print("element XXX")
@@ -511,7 +511,8 @@ class AdHandler(object):
         video_rawdata = self.driver.stop_recording_screen()
 
         video_name = str(db_id)
-        filepath = os.path.join(f"{path}/{self.config['APP']['LANG']}/{date_folder_name}", "test_" + video_name + ".mp4")
+        filepath = os.path.join(f"{path}/{self.config['APP']['LANG']}/{date_folder_name}",
+                                "test_" + video_name + ".mp4")
         with open(filepath, "wb+") as vd:
             vd.write(base64.b64decode(video_rawdata))
         os.system(

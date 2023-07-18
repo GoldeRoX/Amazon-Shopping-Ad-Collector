@@ -4,6 +4,7 @@ class UK(object):
     search_input = 'com.amazon.mShop.android.shopping:id/rs_search_src_text'
     ad_5_node = "//*[starts-with(@text, 'Sponsored')]/parent::*"
     ad_5_starts_with = "Sponsored"
+    sponsored = "Sponsored"
     ad_video = "//*[starts-with(@text, 'Sponsored video')]/parent::*/parent::*"
     brands_related_to_your_search_element_node = "//*[@text='Brands related to your search']/parent::*"
     Items_related_to_your_search_element_node = "//*[@text='Items related to your search']/parent::*"
@@ -27,6 +28,7 @@ class DE(object):
     ad_4_node = "//*[starts-with(@text,'Gesponserte Anzeige –')]/parent::*"
     ad_5_node = "//*[starts-with(@text,'Gesponsert')]/parent::*"
     ad_5_starts_with = "Gesponsert"
+    sponsored = "Gesponsert"
     ad_2_starts_with = "Gesponserte Werbeanzeige von"
     ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]/parent::*/parent::*" # zmienic wyszukiwanie po samym sponsored video a nie po mute sponsored video
     App_schlieBen = "android:id/aerr_close"

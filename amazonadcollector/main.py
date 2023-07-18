@@ -10,14 +10,12 @@ from amazonadcollector.ads_logic import SQLAdManager, AdFactory
 from amazonadcollector.base import MyDriver, BaseMethods, Scroll
 from amazonadcollector.locators_data import DE, UK
 
-# print("test")
-
 
 def main(udid: int):
 
     sql_manager = SQLAdManager()
 
-    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid)}:{int(sql_manager.get_proxy_port(udid))} -port {udid}") # UK
+    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid).strip()}:{int(sql_manager.get_proxy_port(udid))} -port {udid}") # UK
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
     time.sleep(15)
