@@ -1,3 +1,24 @@
+import os
+import yaml
+
+
+class Lang(object):
+
+    __lang = None
+
+    def __init__(self):
+        with open(os.path.join(os.path.dirname(__file__), "../data/config.yaml"), "r") as file:
+            __config = yaml.safe_load(file)
+
+        if __config["APP"]["LANG"] == "DE":
+            self.__lang = DE()
+        elif __config["APP"]["LANG"] == "UK":
+            self.__lang = UK()
+
+    def get_lang(self):
+        return self.__lang
+
+
 class UK(object):
     search_icon = '(//android.widget.LinearLayout[@content-desc="Search"])[1]/' \
                   'android.widget.LinearLayout/android.widget.TextView '
