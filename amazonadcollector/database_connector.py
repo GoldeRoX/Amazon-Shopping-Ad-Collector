@@ -46,10 +46,7 @@ class SQLAdManager(object):
             'password': self.config["DATABASE"]["PASSWORD"],
             'charset': self.config["DATABASE"]["CHARSET"]
         }
-        self.__session_id: int = self.__get_last_saved_session_id_from_db() + 1
-
-    def get_session_id(self) -> int:
-        return self.__session_id
+        self.session_id: int = self.__get_last_saved_session_id_from_db() + 1
 
     def insert_empty_query(self):
         query_insert = """
@@ -66,7 +63,7 @@ class SQLAdManager(object):
         self.__data_set_id = str(c.lastrowid)
 
     def update_query(self, width: int, height: int, location_x: int, location_y: int, text: str,
-                     timestamp: str, id_ad_type: int, keyword_id: int, ip: int, udid: int) -> None:
+                     timestamp: str, id_ad_type: int, id_session: int, keyword_id: int, ip: int, udid: int) -> None:
         query_update = f"""
                 UPDATE ads_meta_data
                 SET filename = '{self.__data_set_id + ".png"}', 
@@ -90,11 +87,11 @@ class SQLAdManager(object):
             c.execute(
                 query_update,
                 (width, height, location_x, location_y, text, timestamp, id_ad_type,
-                 self.get_session_id(), keyword_id, ip, udid)
+                 id_session, keyword_id, ip, udid)
             )
 
     def send_data_to_db(self, width: int, height: int, location_x: int, location_y: int, text: str,
-                        timestamp: str, ad_type: int, keyword_id: int, udid: int) -> int:
+                        timestamp: str, ad_type: int, keyword_id: int, id_session: int, udid: int) -> int:
         """
         Sends collected data to database and return id of that data set
 
@@ -107,6 +104,7 @@ class SQLAdManager(object):
             timestamp: timestamp of ad creation
             ad_type: type of ad
             keyword_id: id of keyword used to locating ad
+            id_session: id of current session
             udid: udid of android emulator
 
         Returns:
@@ -114,7 +112,7 @@ class SQLAdManager(object):
         """
         self.insert_empty_query()
         self.update_query(width, height, location_x, location_y, text, timestamp, ad_type,
-                          keyword_id, self.config["COMPUTER"]["IP"], udid)
+                          keyword_id, id_session, self.config["COMPUTER"]["IP"], udid)
         return self.__data_set_id
 
     def get_last_saved_id_from_db(self) -> int:

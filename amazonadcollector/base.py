@@ -8,7 +8,7 @@ from appium.webdriver import WebElement
 from appium.webdriver.common.appiumby import AppiumBy
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException, \
-    StaleElementReferenceException
+    StaleElementReferenceException, InvalidSessionIdException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.actions import interaction
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
@@ -62,15 +62,20 @@ class BaseMethods(object):
     def config_app_settings(self):
 
         if self.__lang.__class__.__name__ == "DE":
-            print("test DEF")
+            pass
+            # TODO refactor for the new update
             # base_methods.change_setting_to_de()
         elif self.__lang.__class__.__name__ == "UK":
-            print("test UKf")
+            pass
+            # TODO refactor for the new update
             # base_methods.change_setting_to_uk()
 
     def get_element_when_located(self, by_type, path: str, time_to_wait: int = 5) -> WebElement:
-        return WebDriverWait(self.__driver, time_to_wait).until(
-            EC.presence_of_element_located((by_type, path)))
+        try:
+            return WebDriverWait(self.__driver, time_to_wait).until(
+                EC.presence_of_element_located((by_type, path)))
+        except InvalidSessionIdException:
+            pass
 
     def send_text(self, by_type, path: str, text_to_send: str) -> None:
         try:
