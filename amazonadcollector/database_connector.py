@@ -36,7 +36,7 @@ def cursor(*args, **kwargs) -> ContextManager[Cursor]:
 
 class SQLAdManager(object):
     def __init__(self):
-        self.data_set_id = None
+        self.__data_set_id = None
         with open(os.path.join(os.path.dirname(__file__), "../data/config.yaml"), "r") as file:
             self.config = yaml.safe_load(file)
         self.db_credentials = {
@@ -46,6 +46,10 @@ class SQLAdManager(object):
             'password': self.config["DATABASE"]["PASSWORD"],
             'charset': self.config["DATABASE"]["CHARSET"]
         }
+        self.__session_id: int = self.__get_last_saved_session_id_from_db() + 1
+
+    def get_session_id(self) -> int:
+        return self.__session_id
 
     def insert_empty_query(self):
         query_insert = """
@@ -59,13 +63,13 @@ class SQLAdManager(object):
 
         with cursor(**self.db_credentials) as c:
             c.execute(query_insert)
-        self.data_set_id = str(c.lastrowid)
+        self.__data_set_id = str(c.lastrowid)
 
     def update_query(self, width: int, height: int, location_x: int, location_y: int, text: str,
-                     timestamp: str, id_ad_type: int, id_session: int, keyword_id: int, ip: int, udid: int) -> None:
+                     timestamp: str, id_ad_type: int, keyword_id: int, ip: int, udid: int) -> None:
         query_update = f"""
                 UPDATE ads_meta_data
-                SET filename = '{self.data_set_id + ".png"}', 
+                SET filename = '{self.__data_set_id + ".png"}', 
                 width = %s, 
                 height = %s, 
                 location_x = %s, 
@@ -77,7 +81,7 @@ class SQLAdManager(object):
                 keyword_id = %s,
                 id_host_ip = %s,
                 id_emulator = %s
-                WHERE id = {self.data_set_id};
+                WHERE id = {self.__data_set_id};
                 """
         with cursor(**self.db_credentials) as c:
             if not text:
@@ -85,11 +89,12 @@ class SQLAdManager(object):
 
             c.execute(
                 query_update,
-                (width, height, location_x, location_y, text, timestamp, id_ad_type, id_session, keyword_id, ip, udid)
+                (width, height, location_x, location_y, text, timestamp, id_ad_type,
+                 self.get_session_id(), keyword_id, ip, udid)
             )
 
     def send_data_to_db(self, width: int, height: int, location_x: int, location_y: int, text: str,
-                        timestamp: str, ad_type: int, id_session: int, keyword_id: int, udid: int) -> int:
+                        timestamp: str, ad_type: int, keyword_id: int, udid: int) -> int:
         """
         Sends collected data to database and return id of that data set
 
@@ -101,7 +106,6 @@ class SQLAdManager(object):
             text: text of ad
             timestamp: timestamp of ad creation
             ad_type: type of ad
-            id_session: id of current session
             keyword_id: id of keyword used to locating ad
             udid: udid of android emulator
 
@@ -110,13 +114,13 @@ class SQLAdManager(object):
         """
         self.insert_empty_query()
         self.update_query(width, height, location_x, location_y, text, timestamp, ad_type,
-                          id_session, keyword_id, self.config["COMPUTER"]["IP"], udid)
-        return self.data_set_id
+                          keyword_id, self.config["COMPUTER"]["IP"], udid)
+        return self.__data_set_id
 
     def get_last_saved_id_from_db(self) -> int:
-        return self.data_set_id
+        return self.__data_set_id
 
-    def get_last_saved_session_id_from_db(self) -> int:
+    def __get_last_saved_session_id_from_db(self) -> int:
         query = "SELECT COALESCE(MAX(id_session), 0) FROM ads_meta_data;"
         with cursor(**self.db_credentials) as c:
             c.execute(query)

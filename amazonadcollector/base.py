@@ -19,6 +19,8 @@ from datetime import datetime
 from typing import Tuple
 from appium.webdriver.webdriver import WebDriver
 
+from amazonadcollector.locators_data import Lang
+
 
 class MyDriver(object):
 
@@ -53,12 +55,21 @@ class MyDriver(object):
 
 class BaseMethods(object):
 
-    def __init__(self, driver, lang):
-        self.driver: WebDriver = driver
-        self.lang = lang
+    def __init__(self, driver):
+        self.__driver: WebDriver = driver
+        self.__lang = Lang().get_lang()
+
+    def config_app_settings(self):
+
+        if self.__lang.__class__.__name__ == "DE":
+            print("test DEF")
+            # base_methods.change_setting_to_de()
+        elif self.__lang.__class__.__name__ == "UK":
+            print("test UKf")
+            # base_methods.change_setting_to_uk()
 
     def get_element_when_located(self, by_type, path: str, time_to_wait: int = 5) -> WebElement:
-        return WebDriverWait(self.driver, time_to_wait).until(
+        return WebDriverWait(self.__driver, time_to_wait).until(
             EC.presence_of_element_located((by_type, path)))
 
     def send_text(self, by_type, path: str, text_to_send: str) -> None:
@@ -91,7 +102,7 @@ class BaseMethods(object):
                 """""
 
         try:
-            self.get_element_when_located(AppiumBy.XPATH, self.lang.search_icon, time_to_wait=10).click()
+            self.get_element_when_located(AppiumBy.XPATH, self.__lang.search_icon, time_to_wait=10).click()
         except (NoSuchElementException, TimeoutException):
             self.get_element_when_located(AppiumBy.ID,
                                           "com.amazon.mShop.android.shopping:id/"
@@ -100,11 +111,11 @@ class BaseMethods(object):
         self.send_text(AppiumBy.ID, 'com.amazon.mShop.android.shopping:id/rs_search_src_text', phrase_to_search)
 
         """press enter"""
-        self.driver.press_keycode(66)
+        self.__driver.press_keycode(66)
 
     def amazon_not_responding_close(self):
         try:
-            close = self.driver.find_elements(AppiumBy.ID, "android:id/aerr_close")
+            close = self.__driver.find_elements(AppiumBy.ID, "android:id/aerr_close")
             close[0].click()
         except (IndexError, WebDriverException):
             pass
@@ -115,18 +126,18 @@ class BaseMethods(object):
         try:
             self.get_element_when_located(AppiumBy.XPATH, xpath, time_to_wait=15).click()
             time.sleep(4)
-            TouchAction(self.driver).tap(None, 500, 500, 1).perform()
+            TouchAction(self.__driver).tap(None, 500, 500, 1).perform()
             self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Fertig']", time_to_wait=8).click()
         except (NoSuchElementException, TimeoutException, StaleElementReferenceException):
             pass
 
     def cookies_click(self) -> None:
         try:
-            self.driver.find_element(AppiumBy.ID, "cc-banner-accept").click()
+            self.__driver.find_element(AppiumBy.ID, "cc-banner-accept").click()
             return
         except NoSuchElementException:
             try:
-                self.driver.find_element(AppiumBy.XPATH, self.lang.accept_cookies).click()
+                self.__driver.find_element(AppiumBy.XPATH, self.__lang.accept_cookies).click()
                 return
             except NoSuchElementException:
                 return
@@ -142,9 +153,9 @@ class BaseMethods(object):
                 self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Settings']", time_to_wait=1).click()
                 break
             except (NoSuchElementException, TimeoutException):
-                Scroll(self.driver).scroll_down()
+                Scroll(self.__driver).scroll_down()
 
-        Scroll(self.driver).scroll_down()
+        Scroll(self.__driver).scroll_down()
         self.get_element_when_located(AppiumBy.XPATH, "//*[starts-with(@text,'Country')]", time_to_wait=10).click()
 
         try:
@@ -153,16 +164,16 @@ class BaseMethods(object):
         except (NoSuchElementException, TimeoutException):
             self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Done']").click()
             return
-        TouchAction(self.driver).tap(x=403, y=330).perform()
+        TouchAction(self.__driver).tap(x=403, y=330).perform()
 
         for i in range(8):
-            Scroll(self.driver).scroll_down()
-        TouchAction(self.driver).tap(x=403, y=330).perform()
+            Scroll(self.__driver).scroll_down()
+        TouchAction(self.__driver).tap(x=403, y=330).perform()
         time.sleep(3)
 
         self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Currency: US$ - USD - US Dollar']").click()
         time.sleep(3)
-        TouchAction(self.driver).tap(x=354, y=603).perform()
+        TouchAction(self.__driver).tap(x=354, y=603).perform()
 
         self.get_element_when_located(AppiumBy.XPATH, "//*[@text='Done']").click()
         return
