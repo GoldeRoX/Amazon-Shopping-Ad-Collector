@@ -16,7 +16,6 @@ def main(udid: int):
 
     pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid).strip()}:{int(sql_manager.get_proxy_port(udid))} -port {udid}")
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
-    # testowa lokalizacja | w produkcji lokalizacja automatycznie przekazywana configiem
 
     # time to cold boot emulator
     time.sleep(15)
@@ -32,7 +31,7 @@ def main(udid: int):
     # time to start app
     time.sleep(5)
 
-    base_methods = BaseMethods(session.driver)
+    base_methods = BaseMethods(driver=session.driver)
     base_methods.amazon_not_responding_close()
     base_methods.first_launch()
     base_methods.cookies_click()
@@ -41,8 +40,8 @@ def main(udid: int):
 
     new_udid = 1
 
-    ad_factory = AdFactory(session.driver, sql_ad_manager=sql_manager, udid=new_udid)
-    scroll = Scroll(session.driver)
+    ad_factory = AdFactory(driver=session.driver, sql_ad_manager=sql_manager, udid=new_udid)
+    scroll = Scroll(driver=session.driver)
 
     for i in range(30):
 
