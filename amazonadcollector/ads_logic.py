@@ -24,9 +24,9 @@ class AdFactory(object):
         self.__session_id = sql_ad_manager.session_id
         self.__driver = driver
         self.__keyword_id = sql_ad_manager.get_random_keyword()["id"]
-        self.udid = udid
+        self.__udid = udid
         self.__ad_collector = AdCollector(self.__driver, self.__lang)
-        self.__ad_handler = AdHandler(self.__driver, self.__lang, self.__session_id, sql_ad_manager, self.udid)
+        self.__ad_handler = AdHandler(self.__driver, self.__lang, self.__session_id, sql_ad_manager, self.__udid)
 
     def collect_ads_top(self) -> {WebElement: int}:
         self.__dict_of_ads_top.clear()

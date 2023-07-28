@@ -8,7 +8,6 @@ from datetime import datetime
 from selenium.common.exceptions import WebDriverException
 from amazonadcollector.ads_logic import SQLAdManager, AdFactory
 from amazonadcollector.base import MyDriver, BaseMethods, Scroll
-from amazonadcollector.locators_data import Lang
 
 
 def main(udid: int):
@@ -78,5 +77,5 @@ def main(udid: int):
         finally:
             session.driver.quit()
             process_emulator.terminate()
-            print(f"end of session: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            print(f"end of session {sql_manager.session_id}: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
             print("--- %s seconds running ---" % (time.time() - start_time))
