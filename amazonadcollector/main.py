@@ -14,7 +14,6 @@ from amazonadcollector.locators_data import Lang
 def main(udid: int):
 
     sql_manager = SQLAdManager()
-    session_id = sql_manager.session_id
 
     pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid).strip()}:{int(sql_manager.get_proxy_port(udid))} -port {udid}")
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
@@ -42,7 +41,7 @@ def main(udid: int):
 
     new_udid = 1
 
-    ad_factory = AdFactory(session.driver, sql_ad_manager=sql_manager, session_id=session_id, udid=new_udid)
+    ad_factory = AdFactory(session.driver, sql_ad_manager=sql_manager, udid=new_udid)
     scroll = Scroll(session.driver)
 
     for i in range(30):

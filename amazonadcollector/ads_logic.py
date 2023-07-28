@@ -17,11 +17,11 @@ from amazonadcollector.locators_data import Lang
 
 class AdFactory(object):
 
-    def __init__(self, driver: WebDriver, sql_ad_manager: SQLAdManager, session_id: int, udid: int):
+    def __init__(self, driver: WebDriver, sql_ad_manager: SQLAdManager, udid: int):
         self.__dict_of_ads_top: {WebElement: int} = {}
         self.__dict_of_ads_mid: {WebElement: int} = {}
         self.__lang = Lang().get_lang()
-        self.__session_id = session_id
+        self.__session_id = sql_ad_manager.session_id
         self.__driver = driver
         self.__keyword_id = sql_ad_manager.get_random_keyword()["id"]
         self.udid = udid
