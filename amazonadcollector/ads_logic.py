@@ -580,13 +580,12 @@ class AdHandler(object):
 class AdjustAd(object):
 
     def __init__(self, driver: WebDriver):
-        self.driver: WebDriver = driver
-        self.scroll = Scroll(self.driver)
+        self.__scroll = Scroll(driver)
 
     def match_ad_visibility(self, web_element: WebElement) -> None:
         if web_element.size["height"] > 10 and web_element.size["width"] > 10:
             previous_height: int = web_element.size["height"]
-            self.scroll.press_and_move_to_location(start_location=(10, 1100), end_location=(10, 1000))
+            self.__scroll.press_and_move_to_location(start_location=(10, 1100), end_location=(10, 1000))
             next_height: int = web_element.size["height"]
 
             while True:
@@ -596,11 +595,11 @@ class AdjustAd(object):
                 if next_height > previous_height:
                     """case if element is on the bottom"""
                     previous_height = web_element.size["height"]
-                    self.scroll.press_and_move_to_location(start_location=(10, 1100), end_location=(10, 1000))
+                    self.__scroll.press_and_move_to_location(start_location=(10, 1100), end_location=(10, 1000))
                     next_height = web_element.size["height"]
 
                 else:
                     """case if element is on the top"""
                     previous_height = web_element.size["height"]
-                    self.scroll.press_and_move_to_location(start_location=(10, 1000), end_location=(10, 1500))
+                    self.__scroll.press_and_move_to_location(start_location=(10, 1000), end_location=(10, 1500))
                     next_height = web_element.size["height"]
