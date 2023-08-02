@@ -43,9 +43,12 @@ def main(udid: int):
     ad_factory = AdFactory(driver=session.driver, sql_ad_manager=sql_manager, udid=new_udid)
     scroll = Scroll(driver=session.driver)
 
+    # base_methods.config_app_settings()
+
     for i in range(30):
 
         base_methods.get_page(sql_manager.get_random_keyword()["keyword"])
+        # base_methods.get_page("Monitor")
 
         base_methods.amazon_not_responding_close()
         time.sleep(2)

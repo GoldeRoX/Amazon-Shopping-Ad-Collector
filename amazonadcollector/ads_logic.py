@@ -77,7 +77,7 @@ class AdFactory(object):
             match ad_type:
                 case 1:
                     print("test_1")
-                    # self.ad_handler.collect_ad_type_1(web_element)
+                    self.__ad_handler.collect_ad_type_1(web_element)
                 case 7:
                     self.__ad_handler.collect_ad_type_7(web_element)
                 case _:
@@ -97,7 +97,7 @@ class AdFactory(object):
                 case 3:
                     self.__ad_handler.collect_ad_type_3(web_element)
                 # case 4:
-                # self.ad_handler.collect_ad_type_4(web_element)
+                # self.__ad_handler.collect_ad_type_4(web_element)
                 case 5:
                     self.__ad_handler.collect_ad_type_5(web_element)
                 case 6:
@@ -175,9 +175,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                and web_element.get_attribute("clickable") == "true"
-                and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
-                and web_element.get_attribute("text") not in self.__ad_text_filter
+                   and web_element.get_attribute("clickable") == "true"
+                   and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
+                   and web_element.get_attribute("text") not in self.__ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -212,9 +212,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                and web_element.get_attribute("clickable") == "true"
-                and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
-                and web_element.get_attribute("text") not in self.__ad_text_filter
+                   and web_element.get_attribute("clickable") == "true"
+                   and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
+                   and web_element.get_attribute("text") not in self.__ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -511,9 +511,9 @@ class AdHandler(object):
             pass
 
     def __create_and_crop_video(self, video_ad_web_element: WebElement, db_id: int) -> None:
-        date_folder_name = datetime.now().strftime("%Y-%m-%d")
+        date_folder_name: str = datetime.now().strftime("%Y-%m-%d")
 
-        path = self.config["COMPUTER"]["SAVE_PATH"]
+        path: str = self.config["COMPUTER"]["SAVE_PATH"]
 
         if not os.path.exists(f"{path}/DE"):
             os.mkdir(f"{path}/DE")
@@ -542,14 +542,14 @@ class AdHandler(object):
     def collect_video_ad(self) -> None:
         """Collecting video, scr and modified scr for ad of type 6 - video_ad"""
         try:
-            video_ad_web_element = self.__driver.find_element(AppiumBy.XPATH, self.__lang.ad_video)
+            video_ad_web_element: WebElement = self.__driver.find_element(AppiumBy.XPATH, self.__lang.ad_video)
 
-            path = ".//child::*" + 4 * "/following-sibling::*"
-            element = video_ad_web_element.find_element(AppiumBy.XPATH, path)
+            path: str = ".//child::*" + 4 * "/following-sibling::*"
+            element: WebElement = video_ad_web_element.find_element(AppiumBy.XPATH, path)
             text_element: WebElement = element.find_element(AppiumBy.XPATH, ".//child::*" + 3 * "/following-sibling::*")
             text: str = text_element.get_attribute("text")
 
-            if video_ad_web_element.size["height"] > 10 and text is not None\
+            if video_ad_web_element.size["height"] > 10 and text is not None \
                     and text not in self.__ad_text_video_filter:
 
                 print("adjusting video ad ...")

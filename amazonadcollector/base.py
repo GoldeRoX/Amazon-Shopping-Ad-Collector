@@ -64,7 +64,7 @@ class BaseMethods(object):
         if self.__lang.__class__.__name__ == "DE":
             pass
             # TODO refactor for the new Amazon update
-            # base_methods.change_setting_to_de()
+            self.change_setting_to_de()
         elif self.__lang.__class__.__name__ == "UK":
             pass
             # TODO refactor for the new Amazon update
@@ -108,7 +108,7 @@ class BaseMethods(object):
 
         try:
             self.get_element_when_located(AppiumBy.XPATH, self.__lang.search_icon, time_to_wait=10).click()
-        except (NoSuchElementException, TimeoutException):
+        except (NoSuchElementException, TimeoutException, AttributeError):
             self.get_element_when_located(AppiumBy.ID,
                                           "com.amazon.mShop.android.shopping:id/"
                                           "chrome_action_bar_search_icon").click()
