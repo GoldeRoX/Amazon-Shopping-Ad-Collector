@@ -21,12 +21,10 @@ class AdFactory(object):
         self.__dict_of_ads_top: {WebElement: int} = {}
         self.__dict_of_ads_mid: {WebElement: int} = {}
         self.__lang = Lang().get_lang()
-        self.__session_id = sql_ad_manager.session_id
         self.__driver = driver
-        self.__keyword_id = sql_ad_manager.get_random_keyword()["id"]
         self.__udid = udid
         self.__ad_collector = AdCollector(self.__driver, self.__lang)
-        self.__ad_handler = AdHandler(self.__driver, self.__lang, self.__session_id, sql_ad_manager, self.__udid)
+        self.__ad_handler = AdHandler(driver, self.__lang, sql_ad_manager.session_id, sql_ad_manager, self.__udid)
 
     def collect_ads_top(self) -> {WebElement: int}:
         self.__dict_of_ads_top.clear()
