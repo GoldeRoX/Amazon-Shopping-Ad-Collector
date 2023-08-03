@@ -175,9 +175,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                   and web_element.get_attribute("clickable") == "true"
-                   and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
-                   and web_element.get_attribute("text") not in self.__ad_text_filter
+                and web_element.get_attribute("clickable") == "true"
+                and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
+                and web_element.get_attribute("text") not in self.__ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -212,9 +212,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                   and web_element.get_attribute("clickable") == "true"
-                   and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
-                   and web_element.get_attribute("text") not in self.__ad_text_filter
+                and web_element.get_attribute("clickable") == "true"
+                and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
+                and web_element.get_attribute("text") not in self.__ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -510,7 +510,7 @@ class AdHandler(object):
         except cv2.error:
             pass
 
-    def __create_and_crop_video(self, video_ad_web_element: WebElement, db_id: int) -> None:
+    def __create_and_crop_video(self, video_ad_web_element: WebElement) -> None:
         date_folder_name: str = datetime.now().strftime("%Y-%m-%d")
 
         path: str = self.config["COMPUTER"]["SAVE_PATH"]
@@ -528,7 +528,7 @@ class AdHandler(object):
         time.sleep(60)
         video_rawdata = self.__driver.stop_recording_screen()
 
-        video_name = str(db_id)
+        video_name = str(self.__sql_ad_manager.get_last_saved_id_from_db())
         filepath = os.path.join(f"{path}/{self.config['APP']['LANG']}/{date_folder_name}",
                                 "test_" + video_name + ".mp4")
         with open(filepath, "wb+") as vd:
@@ -569,7 +569,7 @@ class AdHandler(object):
                 if ad.text.strip() is not None:
                     self.__ad_text_video_filter.append(ad.text)
 
-                self.__create_and_crop_video(video_ad_web_element, self.__sql_ad_manager.get_last_saved_id_from_db())
+                self.__create_and_crop_video(video_ad_web_element)
                 print("ad video collected")
                 return
 
