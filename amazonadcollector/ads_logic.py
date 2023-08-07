@@ -17,14 +17,15 @@ from amazonadcollector.locators_data import Lang
 
 class AdFactory(object):
 
-    def __init__(self, driver: WebDriver, sql_ad_manager: SQLAdManager, udid: int):
+    def __init__(self, driver: WebDriver, sql_ad_manager: SQLAdManager, random_keyword: {str: int}):
         self.__dict_of_ads_top: {WebElement: int} = {}
         self.__dict_of_ads_mid: {WebElement: int} = {}
         self.__lang = Lang().get_lang()
         self.__driver = driver
-        self.__udid = udid
         self.__ad_collector = AdCollector(self.__driver, self.__lang)
-        self.__ad_handler = AdHandler(driver, self.__lang, sql_ad_manager.session_id, sql_ad_manager, self.__udid)
+        self.__ad_handler = AdHandler(driver, self.__lang, sql_ad_manager.get_session_id(), sql_ad_manager,
+                                      sql_ad_manager.get_udid(), random_keyword["id"])
+        self.__keyword = random_keyword["keyword"]
 
     def collect_ads_top(self) -> {WebElement: int}:
         self.__dict_of_ads_top.clear()
@@ -151,12 +152,12 @@ class AdCollector(object):
 
 
 class AdHandler(object):
-    def __init__(self, driver: WebDriver, lang, session_id, sql_ad_manager: SQLAdManager, udid: int):
+    def __init__(self, driver: WebDriver, lang, session_id, sql_ad_manager: SQLAdManager, udid: int, keyword_id: int):
         self.__sql_ad_manager: SQLAdManager = sql_ad_manager
         self.__driver: WebDriver = driver
         self.__lang = lang
         self.__session_id = session_id
-        self.__keyword_id = self.__sql_ad_manager.get_random_keyword()["id"]
+        self.__keyword_id = keyword_id
         self.__udid = udid
         self.__scroll = Scroll(self.__driver)
         self.__ad_text_filter = []
@@ -195,8 +196,8 @@ class AdHandler(object):
                     time.sleep(3)
 
                 """create an object of ad"""
-                ad = BrandsRelatedToYourSearch(web_element)
-                ad.save_ad(self.__driver, self.__keyword_id, self.__session_id, self.__udid)
+                ad = BrandsRelatedToYourSearch(web_element, self.__sql_ad_manager)
+                ad.save_ad(self.__driver, self.__keyword_id)
                 print("ad type 2 collected")
                 if ad.text.strip() is not None:
                     self.__ad_text_filter.append(ad.text)
@@ -231,8 +232,8 @@ class AdHandler(object):
                     time.sleep(1.5)
 
                 """create an object of ad"""
-                ad = BrandsRelatedToYourSearch(web_element)
-                ad.save_ad(self.__driver, self.__keyword_id, self.__session_id, self.__udid)
+                ad = BrandsRelatedToYourSearch(web_element, self.__sql_ad_manager)
+                ad.save_ad(self.__driver, self.__keyword_id)
                 print("ad type 2 collected")
                 if ad.text.strip() is not None:
                     self.__ad_text_filter.append(ad.text)
@@ -288,9 +289,9 @@ class AdHandler(object):
 
                 """create ad object"""
                 print("collecting ad type 7 ...")
-                ad = SearchedProductSponsoredBrandTop(ad_web_element)
-                ad.text = result_text
-                ad.save_ad(self.__driver, self.__keyword_id, self.__session_id, self.__udid)
+                ad = SearchedProductSponsoredBrandTop(ad_web_element, self.__sql_ad_manager)
+                ad.__text = result_text
+                ad.save_ad(self.__driver, self.__keyword_id)
                 print("ad type 7 collected")
                 return
         except StaleElementReferenceException:
@@ -320,9 +321,9 @@ class AdHandler(object):
                 AdjustAd(self.__driver).match_ad_visibility(ad_web_element)
                 """create ad object"""
                 print("collecting ad type 3 ...")
-                ad = SearchedProductSponsoredBrandMid(ad_web_element)
-                ad.text = result_text
-                ad.save_ad(self.__driver, self.__keyword_id, self.__session_id, self.__udid)
+                ad = SearchedProductSponsoredBrandMid(ad_web_element, self.__sql_ad_manager)
+                ad.__text = result_text
+                ad.save_ad(self.__driver, self.__keyword_id)
                 print("ad type 3 collected")
 
                 if ad.text.strip() is not None:
@@ -347,9 +348,9 @@ class AdHandler(object):
                 AdjustAd(self.__driver).match_ad_visibility(ad_web_element)
                 """create ad object"""
                 print("collecting ad type 8 ...")
-                ad = SearchedProductSponsoredBrandTop(ad_web_element)
-                ad.text = result_text
-                ad.save_ad(self.__driver, self.__keyword_id, self.__session_id, self.__udid)
+                ad = SearchedProductSponsoredBrandTop(ad_web_element, self.__sql_ad_manager)
+                ad.__text = result_text
+                ad.save_ad(self.__driver, self.__keyword_id)
                 print("ad type 8 collected")
 
                 if ad.text.strip() is not None:
@@ -381,9 +382,9 @@ class AdHandler(object):
 
                 """create ad object"""
                 print("collecting ad type 1 ...")
-                ad = SearchedProductSponsoredBrandMid(ad_web_element)
-                ad.text = result_text
-                ad.save_ad(self.__driver, self.__keyword_id, self.__session_id, self.__udid)
+                ad = SearchedProductSponsoredBrandMid(ad_web_element, self.__sql_ad_manager)
+                ad.__text = result_text
+                ad.save_ad(self.__driver, self.__keyword_id)
                 print("ad type 1 collected")
 
                 if ad.text.strip() is not None:
@@ -452,9 +453,9 @@ class AdHandler(object):
             print("Adjusting ad type 5...")
             AdjustAd(self.__driver).match_ad_visibility(ad_web_element)
             print("Collecting ad type 5...")
-            ad = SearchedProductAd(ad_web_element)
-            ad.text = result_text
-            ad.save_ad(self.__driver, self.__keyword_id, self.__session_id, self.__udid)
+            ad = SearchedProductAd(ad_web_element, self.__sql_ad_manager)
+            ad.__text = result_text
+            ad.save_ad(self.__driver, self.__keyword_id)
             self.__ad_text_filter.append(ad.text)
             print("Ad type 5 collected.")
         except (NoSuchElementException, IndexError, StaleElementReferenceException):
@@ -481,8 +482,8 @@ class AdHandler(object):
         img = cv2.imread(image_path)
 
         cropped_image = img[
-                        ad.location_y:ad.location_y + ad.height,
-                        ad.location_x:ad.location_x + ad.width
+                        ad.get_location_y():ad.get_location_y() + ad.get_height(),
+                        ad.get_location_x():ad.get_location_x() + ad.get_width()
                         ]
 
         cv2.imwrite(image_path, cropped_image)
@@ -499,8 +500,8 @@ class AdHandler(object):
                               video_element.location["y"] + video_element.size["height"]), (0, 0, 0), -1)
 
         cropped_image = test[
-                        ad.location_y:ad.location_y + ad.height,
-                        ad.location_x:ad.location_x + ad.width
+                        ad.get_location_y():ad.get_location_y() + ad.get_height(),
+                        ad.get_location_x():ad.get_location_x() + ad.get_width()
                         ]
 
         try:
@@ -555,12 +556,12 @@ class AdHandler(object):
 
                 """create ad object"""
                 print("collecting ad video type 6 ...")
-                ad = SearchedProductAdVideo(video_ad_web_element)
-                ad.text = text
+                ad = SearchedProductAdVideo(video_ad_web_element, self.__sql_ad_manager)
+                ad.__text = text
 
-                self.__sql_ad_manager.send_data_to_db(ad.width, ad.height, ad.location_x, ad.location_y, ad.text,
-                                                      ad.timestamp, ad.ad_type, self.__keyword_id,
-                                                      self.__session_id, self.__udid)
+                self.__sql_ad_manager.send_data_to_db(ad.get_width(), ad.get_height(), ad.get_location_x(),
+                                                      ad.get_location_y(), ad.text, ad.get_timestamp(), ad.ad_type,
+                                                      self.__keyword_id,)
 
                 self.__save_cropped_scr_for_videos(ad, str(self.__sql_ad_manager.get_last_saved_id_from_db()))
 

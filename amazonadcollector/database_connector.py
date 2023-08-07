@@ -35,7 +35,8 @@ def cursor(*args, **kwargs) -> ContextManager[Cursor]:
 
 
 class SQLAdManager(object):
-    def __init__(self):
+    def __init__(self, udid: int):
+        self.__udid = udid
         self.__data_set_id = None
         with open(os.path.join(os.path.dirname(__file__), "../data/config.yaml"), "r") as file:
             self.config = yaml.safe_load(file)
@@ -46,7 +47,16 @@ class SQLAdManager(object):
             'password': self.config["DATABASE"]["PASSWORD"],
             'charset': self.config["DATABASE"]["CHARSET"]
         }
-        self.session_id: int = self.__get_last_saved_session_id_from_db() + 1
+        self.__session_id: int = self.__get_last_saved_session_id_from_db() + 1
+
+    def get_udid(self) -> int:
+        return self.__udid
+
+    def get_last_saved_id_from_db(self) -> str:
+        return self.__data_set_id
+
+    def get_session_id(self) -> int:
+        return self.__session_id
 
     def insert_empty_query(self):
         query_insert = """
@@ -63,35 +73,33 @@ class SQLAdManager(object):
         self.__data_set_id = str(c.lastrowid)
 
     def update_query(self, width: int, height: int, location_x: int, location_y: int, text: str,
-                     timestamp: str, id_ad_type: int, id_session: int, keyword_id: int, ip: int, udid: int) -> None:
-        query_update = f"""
-                UPDATE ads_meta_data
-                SET filename = '{self.__data_set_id + ".png"}', 
-                width = %s, 
-                height = %s, 
-                location_x = %s, 
-                location_y = %s,
-                text = %s, 
-                timestamp = %s, 
-                id_ad_type = %s, 
-                id_session = %s,
-                keyword_id = %s,
-                id_host_ip = %s,
-                id_emulator = %s
-                WHERE id = {self.__data_set_id};
-                """
+                     timestamp: str, id_ad_type: int, keyword_id: int) -> None:
+
         with cursor(**self.db_credentials) as c:
             if not text:
                 text = None
 
-            c.execute(
-                query_update,
-                (width, height, location_x, location_y, text, timestamp, id_ad_type,
-                 id_session, keyword_id, ip, udid)
-            )
+            query_update = f"""
+                    UPDATE ads_meta_data 
+                    SET filename = '{self.get_last_saved_id_from_db() + ".png"}',
+                    width = {width},
+                    height = {height},
+                    location_x = {location_x},
+                    location_y = {location_y},
+                    text = '{text}',
+                    timestamp = '{timestamp}',
+                    id_ad_type = {id_ad_type},
+                    id_session = {self.get_session_id()},
+                    keyword_id = {keyword_id},
+                    id_host_ip = {self.config["COMPUTER"]["IP"]},
+                    id_emulator = {self.get_id_emulator()} 
+                    WHERE id = {self.get_last_saved_id_from_db()};
+                    """
+
+            c.execute(query_update)
 
     def send_data_to_db(self, width: int, height: int, location_x: int, location_y: int, text: str,
-                        timestamp: str, ad_type: int, keyword_id: int, id_session: int, udid: int) -> int:
+                        timestamp: str, ad_type: int, keyword_id: int) -> int:
         """
         Sends collected data to database and return id of that data set
 
@@ -104,18 +112,12 @@ class SQLAdManager(object):
             timestamp: timestamp of ad creation
             ad_type: type of ad
             keyword_id: id of keyword used to locating ad
-            id_session: id of current session
-            udid: udid of android emulator
 
         Returns:
             data_set_id: int
         """
         self.insert_empty_query()
-        self.update_query(width, height, location_x, location_y, text, timestamp, ad_type,
-                          keyword_id, id_session, self.config["COMPUTER"]["IP"], udid)
-        return self.__data_set_id
-
-    def get_last_saved_id_from_db(self) -> int:
+        self.update_query(width, height, location_x, location_y, text, timestamp, ad_type, keyword_id)
         return self.__data_set_id
 
     def __get_last_saved_session_id_from_db(self) -> int:
@@ -169,7 +171,7 @@ class SQLAdManager(object):
 
         return result
 
-    def get_proxy_port(self, emulator_id: int) -> str:
+    def get_proxy_port(self, emulator_id: int) -> int:
         """
         Returns:
             proxy_port from db
@@ -186,4 +188,25 @@ class SQLAdManager(object):
             c.execute(query)
             result = c.fetchone()[0]
 
-        return result
+        return int(result)
+
+    def get_id_emulator(self) -> int:
+        """
+        Returns:
+            proxy_port from db
+        """
+
+        """gets from database udid based on computer ip_id and udid of an emulator"""
+
+        query = f"""
+            SELECT id
+            FROM emulators
+            WHERE udid = {self.__udid} 
+            AND id_host_ip = {self.config["COMPUTER"]["IP"]}
+            """
+
+        with cursor(**self.db_credentials) as c:
+            c.execute(query)
+            result = c.fetchone()[0]
+
+        return int(result)
