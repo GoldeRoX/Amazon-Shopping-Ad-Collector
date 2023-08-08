@@ -52,7 +52,7 @@ class Ad(object):
         self.save_cropped_scr(driver, self.send_data_to_db(keyword_id))
 
 
-class SearchedAdBottomBanner(Ad):
+class MainPageBannerAd(Ad):
     def __init__(self, element: WebElement, sql_ad_manager: SQLAdManager):
         super().__init__(element, sql_ad_manager)
         self.ad_type: int = 1

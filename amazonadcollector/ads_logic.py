@@ -65,6 +65,9 @@ class AdFactory(object):
 
         return self.__dict_of_ads_mid
 
+    def create_and_save_main_page_ads(self) -> None:
+        self.__ad_handler.collect_main_page_banner_ad()
+
     def create_and_save_top_ads(self) -> None:
         """
         Creates and saves an Ad object from top sector of app
@@ -573,6 +576,23 @@ class AdHandler(object):
                 return
 
         except (NoSuchElementException, StaleElementReferenceException):
+            return
+
+    def collect_main_page_banner_ad(self) -> None:
+        web_element: WebElement = self.__driver.find_element(AppiumBy.XPATH, self.__lang.main_page_banner_ad_id)
+        """Create, send to DB and save scr of ad"""
+        try:
+            if web_element.size["height"] <= 10:
+                return
+
+            print("Adjusting ad type 1...")
+            AdjustAd(self.__driver).match_ad_visibility(web_element)
+            print("Collecting ad type 1...")
+            ad = MainPageBannerAd(web_element, self.__sql_ad_manager)
+            ad.save_ad(self.__driver, self.__keyword_id)
+            self.__ad_text_filter.append(ad.text)
+            print("Ad type 1 collected.")
+        except (NoSuchElementException, IndexError, StaleElementReferenceException):
             return
 
 

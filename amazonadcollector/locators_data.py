@@ -20,6 +20,7 @@ class Lang(object):
 
 
 class UK(object):
+    main_page_banner_ad_id = "ape_gateway_atf_mshop_wrapper"
     search_icon = '(//android.widget.LinearLayout[@content-desc="Search"])[1]/' \
                   'android.widget.LinearLayout/android.widget.TextView '
     search_input = 'com.amazon.mShop.android.shopping:id/rs_search_src_text'
@@ -40,6 +41,7 @@ class UK(object):
 
 
 class DE(object):
+    main_page_banner_ad_id = "//*[@text='Feedback zu gesponserter Anzeige geben']/parent::*/parent::*/parent::*"
     search_icon = "//android.widget.LinearLayout[@content-desc='Suche']"
     search_input = "com.amazon.mShop.android.shopping:id/rs_search_src_text"
     BOTTOM_AD = "//*[@text='Feedback zur gesponserten Werbeanzeige geben']/parent::*/parent::*"
