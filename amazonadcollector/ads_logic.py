@@ -66,6 +66,7 @@ class AdFactory(object):
         return self.__dict_of_ads_mid
 
     def create_and_save_main_page_ads(self) -> None:
+        self.__ad_handler.collect_main_page_top_carousel_of_ads()
         self.__ad_handler.collect_main_page_banner_ad()
 
     def create_and_save_top_ads(self) -> None:
@@ -293,7 +294,7 @@ class AdHandler(object):
                 """create ad object"""
                 print("collecting ad type 7 ...")
                 ad = SearchedProductSponsoredBrandTop(ad_web_element, self.__sql_ad_manager)
-                ad.__text = result_text
+                ad.text = result_text
                 ad.save_ad(self.__driver, self.__keyword_id)
                 print("ad type 7 collected")
                 return
@@ -325,7 +326,7 @@ class AdHandler(object):
                 """create ad object"""
                 print("collecting ad type 3 ...")
                 ad = SearchedProductSponsoredBrandMid(ad_web_element, self.__sql_ad_manager)
-                ad.__text = result_text
+                ad.text = result_text
                 ad.save_ad(self.__driver, self.__keyword_id)
                 print("ad type 3 collected")
 
@@ -352,7 +353,7 @@ class AdHandler(object):
                 """create ad object"""
                 print("collecting ad type 8 ...")
                 ad = SearchedProductSponsoredBrandTop(ad_web_element, self.__sql_ad_manager)
-                ad.__text = result_text
+                ad.text = result_text
                 ad.save_ad(self.__driver, self.__keyword_id)
                 print("ad type 8 collected")
 
@@ -386,7 +387,7 @@ class AdHandler(object):
                 """create ad object"""
                 print("collecting ad type 1 ...")
                 ad = SearchedProductSponsoredBrandMid(ad_web_element, self.__sql_ad_manager)
-                ad.__text = result_text
+                ad.text = result_text
                 ad.save_ad(self.__driver, self.__keyword_id)
                 print("ad type 1 collected")
 
@@ -457,7 +458,7 @@ class AdHandler(object):
             AdjustAd(self.__driver).match_ad_visibility(ad_web_element)
             print("Collecting ad type 5...")
             ad = SearchedProductAd(ad_web_element, self.__sql_ad_manager)
-            ad.__text = result_text
+            ad.text = result_text
             ad.save_ad(self.__driver, self.__keyword_id)
             self.__ad_text_filter.append(ad.text)
             print("Ad type 5 collected.")
@@ -579,9 +580,9 @@ class AdHandler(object):
             return
 
     def collect_main_page_banner_ad(self) -> None:
-        web_element: WebElement = self.__driver.find_element(AppiumBy.XPATH, self.__lang.main_page_banner_ad_id)
         """Create, send to DB and save scr of ad"""
         try:
+            web_element: WebElement = self.__driver.find_element(AppiumBy.XPATH, self.__lang.main_page_banner_ad_id)
             if web_element.size["height"] <= 10:
                 return
 
@@ -594,6 +595,22 @@ class AdHandler(object):
             print("Ad type 1 collected.")
         except (NoSuchElementException, IndexError, StaleElementReferenceException):
             return
+
+    def collect_main_page_top_carousel_of_ads(self) -> None:
+        """Create, send to DB and save scr of ad"""
+        try:
+            web_elements: [WebElement] = self.__driver.find_elements(AppiumBy.XPATH,
+                                                                     self.__lang.main_page_carousel_of_ads)
+
+            for element in web_elements:
+                print(element.get_attribute("text"))
+
+                ad = MainPageBannerAd(element, self.__sql_ad_manager)
+                ad.save_ad(self.__driver, self.__keyword_id)
+                self.__ad_text_filter.append(ad.text)
+                print("gitówa")
+        except NoSuchElementException:
+            print("not gitówa ;O (sadge)")
 
 
 class AdjustAd(object):

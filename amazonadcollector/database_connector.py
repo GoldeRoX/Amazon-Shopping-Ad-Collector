@@ -76,8 +76,6 @@ class SQLAdManager(object):
                      timestamp: str, id_ad_type: int, keyword_id: int) -> None:
 
         with cursor(**self.db_credentials) as c:
-            if not text:
-                text = None
 
             query_update = f"""
                     UPDATE ads_meta_data 
@@ -193,7 +191,7 @@ class SQLAdManager(object):
     def get_id_emulator(self) -> int:
         """
         Returns:
-            proxy_port from db
+            emulator id from db
         """
 
         """gets from database udid based on computer ip_id and udid of an emulator"""

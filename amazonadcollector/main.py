@@ -51,7 +51,8 @@ def main(udid: int):
 
         base_methods.get_page(random_keyword["keyword"])
         # base_methods.get_page("Monitor")
-
+        # time to load new page
+        time.sleep(8)
         base_methods.amazon_not_responding_close()
         time.sleep(2)
         base_methods.cookies_click()
