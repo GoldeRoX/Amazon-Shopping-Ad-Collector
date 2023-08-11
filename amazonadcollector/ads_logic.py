@@ -67,7 +67,7 @@ class AdFactory(object):
 
     def create_and_save_main_page_ads(self) -> None:
         self.__ad_handler.collect_main_page_top_carousel_of_ads()
-        self.__ad_handler.collect_main_page_banner_ad()
+        # self.__ad_handler.collect_main_page_banner_ad()
 
     def create_and_save_top_ads(self) -> None:
         """
@@ -164,8 +164,9 @@ class AdHandler(object):
         self.__keyword_id = keyword_id
         self.__udid = udid
         self.__scroll = Scroll(self.__driver)
-        self.__ad_text_filter = []
-        self.__ad_text_video_filter = []
+        self.__ad_text_filter: [str] = []
+        self.__ad_text_video_filter: [str] = []
+        self.__main_carousel_ads: [str] = []
 
         path: str = os.path.join(os.path.dirname(__file__), "../data/config.yaml")
         with open(path, "r") as file:
@@ -178,9 +179,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                and web_element.get_attribute("clickable") == "true"
-                and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
-                and web_element.get_attribute("text") not in self.__ad_text_filter
+                   and web_element.get_attribute("clickable") == "true"
+                   and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
+                   and web_element.get_attribute("text") not in self.__ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -215,9 +216,9 @@ class AdHandler(object):
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                and web_element.get_attribute("clickable") == "true"
-                and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
-                and web_element.get_attribute("text") not in self.__ad_text_filter
+                   and web_element.get_attribute("clickable") == "true"
+                   and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
+                   and web_element.get_attribute("text") not in self.__ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -565,7 +566,7 @@ class AdHandler(object):
 
                 self.__sql_ad_manager.send_data_to_db(ad.get_width(), ad.get_height(), ad.get_location_x(),
                                                       ad.get_location_y(), ad.text, ad.get_timestamp(), ad.ad_type,
-                                                      self.__keyword_id,)
+                                                      self.__keyword_id, )
 
                 self.__save_cropped_scr_for_videos(ad, str(self.__sql_ad_manager.get_last_saved_id_from_db()))
 
@@ -596,21 +597,47 @@ class AdHandler(object):
         except (NoSuchElementException, IndexError, StaleElementReferenceException):
             return
 
-    def collect_main_page_top_carousel_of_ads(self) -> None:
+    def collect_main_page_top_carousel_of_ads(self, max_attempts: int = 150) -> None:
         """Create, send to DB and save scr of ad"""
-        try:
-            web_elements: [WebElement] = self.__driver.find_elements(AppiumBy.XPATH,
-                                                                     self.__lang.main_page_carousel_of_ads)
+        attempts = 0
+        while attempts < max_attempts:
+            try:
+                carousel_elements = self.__driver.find_elements(AppiumBy.XPATH,
+                                                                self.__lang.main_page_carousel_of_ads)
 
-            for element in web_elements:
-                print(element.get_attribute("text"))
+                ads_saved = 0
 
-                ad = MainPageBannerAd(element, self.__sql_ad_manager)
-                ad.save_ad(self.__driver, self.__keyword_id)
-                self.__ad_text_filter.append(ad.text)
-                print("gitówa")
-        except NoSuchElementException:
-            print("not gitówa ;O (sadge)")
+                for element in carousel_elements:
+                    if element.size["width"] <= 10:
+                        continue
+
+                    try:
+                        web_elements = self.__driver.find_elements(AppiumBy.XPATH,
+                                                                   self.__lang.main_page_carousel_of_ads)
+
+                        for i in range(len(web_elements)):
+                            ad_text = web_elements[i].get_attribute("text")
+                            if web_elements[i].size["width"] <= 10 or ad_text in self.__main_carousel_ads:
+                                continue
+
+                            ad = MainPageBannerAd(web_elements[i], self.__sql_ad_manager)
+                            ad.save_ad(self.__driver, self.__keyword_id)
+                            self.__main_carousel_ads.append(ad_text)
+                            ads_saved += 1
+
+                            if ads_saved >= max_attempts:
+                                break
+
+                    except (NoSuchElementException, StaleElementReferenceException):
+                        pass
+
+                if ads_saved >= max_attempts:
+                    break
+
+            except Exception as e:
+                print(e)
+
+            attempts += 1
 
 
 class AdjustAd(object):

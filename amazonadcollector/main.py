@@ -5,6 +5,7 @@ import time
 
 from datetime import datetime
 
+from appium.webdriver.common.appiumby import AppiumBy
 from selenium.common.exceptions import WebDriverException
 from amazonadcollector.ads_logic import SQLAdManager, AdFactory
 from amazonadcollector.base import MyDriver, BaseMethods, Scroll
@@ -18,7 +19,7 @@ def main(udid: int):
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
     # time to cold boot emulator
-    time.sleep(15)
+    # time.sleep(15)
 
     start_time = time.time()
 
@@ -29,7 +30,15 @@ def main(udid: int):
                            skip_device_initialization=False, skip_server_installation=False, no_reset=False)
 
     # time to start app
-    time.sleep(5)
+    print("test_1")
+    random_keyword = sql_manager.get_random_keyword()
+    ad_factory = AdFactory(driver=session.driver, sql_ad_manager=sql_manager, random_keyword=random_keyword)
+
+    # session.driver.reset()
+    print("test_2")
+    ad_factory.create_and_save_main_page_ads()
+    # ad_factory.create_and_save_main_page_ads()
+    print("test_3")
 
     base_methods = BaseMethods(driver=session.driver)
     base_methods.amazon_not_responding_close()
@@ -40,14 +49,12 @@ def main(udid: int):
 
     scroll = Scroll(driver=session.driver)
 
-    random_keyword = sql_manager.get_random_keyword()
-
     # base_methods.config_app_settings()
 
     for i in range(30):
         ad_factory = AdFactory(driver=session.driver, sql_ad_manager=sql_manager, random_keyword=random_keyword)
 
-        ad_factory.create_and_save_main_page_ads()
+        # ad_factory.create_and_save_main_page_ads()
 
         base_methods.get_page(random_keyword["keyword"])
         # base_methods.get_page("Monitor")
