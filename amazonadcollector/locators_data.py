@@ -42,7 +42,7 @@ class UK(object):
 
 
 class DE(object):
-    main_page_carousel_of_ads = "//*[starts-with(@resource-id,'gw-ftGr-mobile-hero-')]/child::*"
+    main_page_carousel_of_ads = "//*[starts-with(@resource-id,'mobile-hero-order')]"
     main_page_banner_ad_id = "//*[@text='Feedback zu gesponserter Anzeige geben']/parent::*/parent::*/parent::*"
     search_icon = "//android.widget.LinearLayout[@content-desc='Suche']"
     search_input = "com.amazon.mShop.android.shopping:id/rs_search_src_text"

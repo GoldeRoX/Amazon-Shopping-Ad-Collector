@@ -67,7 +67,7 @@ class AdFactory(object):
 
     def create_and_save_main_page_ads(self) -> None:
         self.__ad_handler.collect_main_page_top_carousel_of_ads()
-        # self.__ad_handler.collect_main_page_banner_ad()
+        self.__ad_handler.collect_main_page_banner_ad()
 
     def create_and_save_top_ads(self) -> None:
         """
@@ -77,14 +77,13 @@ class AdFactory(object):
         self.collect_ads_top()
 
         for web_element, ad_type in self.__dict_of_ads_top.items():
-            match ad_type:
-                case 1:
-                    print("test_1")
-                    self.__ad_handler.collect_ad_type_1(web_element)
-                case 7:
-                    self.__ad_handler.collect_ad_type_7(web_element)
-                case _:
-                    raise ValueError(f"Invalid ad type '{ad_type}'")
+            if ad_type == 1:
+                print("test_1")
+                self.__ad_handler.collect_ad_type_1(web_element)
+            elif ad_type == 7:
+                self.__ad_handler.collect_ad_type_7(web_element)
+            else:
+                raise ValueError(f"Invalid ad type '{ad_type}'")
 
     def create_and_save_mid_ads(self) -> None:
         """
@@ -94,21 +93,20 @@ class AdFactory(object):
         self.collect_ads_mid()
 
         for web_element, ad_type in self.__dict_of_ads_mid.items():
-            match ad_type:
-                case 2:
-                    self.__ad_handler.collect_ad_type_2(web_element)
-                case 3:
-                    self.__ad_handler.collect_ad_type_3(web_element)
-                # case 4:
-                # self.__ad_handler.collect_ad_type_4(web_element)
-                case 5:
-                    self.__ad_handler.collect_ad_type_5(web_element)
-                case 6:
-                    self.__ad_handler.collect_video_ad()
-                case 8:
-                    self.__ad_handler.collect_ad_type_8(web_element)
-                case _:
-                    raise ValueError(f"Invalid ad type '{ad_type}'")
+            if ad_type == 2:
+                self.__ad_handler.collect_ad_type_2(web_element)
+            elif ad_type == 3:
+                self.__ad_handler.collect_ad_type_3(web_element)
+            # elif ad_type == 4:
+            #     self.__ad_handler.collect_ad_type_4(web_element)
+            elif ad_type == 5:
+                self.__ad_handler.collect_ad_type_5(web_element)
+            elif ad_type == 6:
+                self.__ad_handler.collect_video_ad()
+            elif ad_type == 8:
+                self.__ad_handler.collect_ad_type_8(web_element)
+            else:
+                raise ValueError(f"Invalid ad type '{ad_type}'")
 
 
 class AdCollector(object):
@@ -597,45 +595,42 @@ class AdHandler(object):
         except (NoSuchElementException, IndexError, StaleElementReferenceException):
             return
 
-    def collect_main_page_top_carousel_of_ads(self, max_attempts: int = 150) -> None:
+    def collect_main_page_top_carousel_of_ads(self, max_attempts: int = 15) -> None:
         """Create, send to DB and save scr of ad"""
+
         attempts = 0
+
         while attempts < max_attempts:
             try:
-                carousel_elements = self.__driver.find_elements(AppiumBy.XPATH,
-                                                                self.__lang.main_page_carousel_of_ads)
+                main_carousel_ads = self.__driver.find_element(AppiumBy.XPATH, self.__lang.main_page_carousel_of_ads)
+
+                ad_text_elements: list[WebElement] = main_carousel_ads.find_elements(AppiumBy.XPATH,
+                                                                                     ".//*[@class='android.view.View']")
 
                 ads_saved = 0
 
-                for element in carousel_elements:
+                for element in ad_text_elements:
                     if element.size["width"] <= 10:
                         continue
 
-                    try:
-                        web_elements = self.__driver.find_elements(AppiumBy.XPATH,
-                                                                   self.__lang.main_page_carousel_of_ads)
+                    ad_text: str = element.get_attribute("text").strip()
+                    if element.size["width"] <= 10 or ad_text in self.__main_carousel_ads and ad_text is not None:
+                        continue
 
-                        for i in range(len(web_elements)):
-                            ad_text = web_elements[i].get_attribute("text")
-                            if web_elements[i].size["width"] <= 10 or ad_text in self.__main_carousel_ads:
-                                continue
+                    ad = MainPageCarouselOfAds(main_carousel_ads, self.__sql_ad_manager)
+                    ad.text = ad_text
+                    ad.save_ad(self.__driver, self.__keyword_id)
+                    self.__main_carousel_ads.append(ad_text)
+                    ads_saved += 1
 
-                            ad = MainPageBannerAd(web_elements[i], self.__sql_ad_manager)
-                            ad.save_ad(self.__driver, self.__keyword_id)
-                            self.__main_carousel_ads.append(ad_text)
-                            ads_saved += 1
-
-                            if ads_saved >= max_attempts:
-                                break
-
-                    except (NoSuchElementException, StaleElementReferenceException):
-                        pass
+                    if ads_saved >= max_attempts:
+                        break
 
                 if ads_saved >= max_attempts:
                     break
 
-            except Exception as e:
-                print(e)
+            except (NoSuchElementException, StaleElementReferenceException):
+                pass
 
             attempts += 1
 
