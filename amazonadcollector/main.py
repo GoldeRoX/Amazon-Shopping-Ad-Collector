@@ -5,7 +5,6 @@ import time
 
 from datetime import datetime
 
-from appium.webdriver.common.appiumby import AppiumBy
 from selenium.common.exceptions import WebDriverException
 from amazonadcollector.ads_logic import SQLAdManager, AdFactory
 from amazonadcollector.base import MyDriver, BaseMethods, Scroll
@@ -18,9 +17,6 @@ def main(udid: int):
     pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid).strip()}:{int(sql_manager.get_proxy_port(udid))} -port {udid}")
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
-    # time to cold boot emulator
-    # time.sleep(15)
-
     start_time = time.time()
 
     try:
@@ -29,11 +25,9 @@ def main(udid: int):
         session = MyDriver(udid="emulator-" + str(udid), device_name="emulator-" + str(udid),
                            skip_device_initialization=False, skip_server_installation=False, no_reset=False)
 
-    # time to start app
     random_keyword = sql_manager.get_random_keyword()
     ad_factory = AdFactory(driver=session.driver, sql_ad_manager=sql_manager, random_keyword=random_keyword)
 
-    # session.driver.reset()
     ad_factory.create_and_save_main_page_ads()
     # ad_factory.create_and_save_main_page_ads()
 
