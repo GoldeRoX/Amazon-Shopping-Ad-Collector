@@ -2,4 +2,8 @@ from amazonadcollector.main import main
 
 if __name__ == "__main__":
     while True:
-        main(5556)
+        try:
+            main(5556)
+        except Exception as e:
+            print(e)
+            pass
