@@ -19,7 +19,7 @@ class Ad(object):
         self.location_y: int = element.location["y"]
         self.text: str = element.get_attribute("text")
         self.__timestamp: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.sql_ad_manager: SQLAdManager = sql_ad_manager
+        self.__sql_ad_manager: SQLAdManager = sql_ad_manager
         self.ad_type = None
 
     def get_width(self) -> int:
@@ -42,7 +42,7 @@ class Ad(object):
         Returns:
             data_set_id: int
         """
-        return SQLAdManager.send_data_to_db(self.sql_ad_manager, self.width, self.height, self.location_x,
+        return SQLAdManager.send_data_to_db(self.__sql_ad_manager, self.width, self.height, self.location_x,
                                             self.location_y, self.text, self.__timestamp, self.ad_type, keyword_id)
 
     def save_cropped_scr(self, driver, data_set_id: int):

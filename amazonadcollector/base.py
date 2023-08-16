@@ -109,9 +109,12 @@ class BaseMethods(object):
         try:
             self.get_element_when_located(AppiumBy.XPATH, self.__lang.search_icon, time_to_wait=10).click()
         except (NoSuchElementException, TimeoutException, AttributeError):
-            self.get_element_when_located(AppiumBy.ID,
-                                          "com.amazon.mShop.android.shopping:id/"
-                                          "chrome_action_bar_search_icon").click()
+            try:
+                self.get_element_when_located(AppiumBy.ID,
+                                              "com.amazon.mShop.android.shopping:id/"
+                                              "chrome_action_bar_search_icon").click()
+            except Exception as e:
+                print(e)
 
         self.send_text(AppiumBy.ID, 'com.amazon.mShop.android.shopping:id/rs_search_src_text', phrase_to_search)
 
