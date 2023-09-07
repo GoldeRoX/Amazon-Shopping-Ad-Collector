@@ -46,7 +46,7 @@ def main(udid: int):
     for i in range(30):
         ad_factory = AdFactory(driver=session.driver, sql_ad_manager=sql_manager, random_keyword=random_keyword)
 
-        base_methods.get_page("TV")
+        base_methods.get_page("phone")
         # base_methods.get_page(random_keyword["keyword"])
         # time to load new page
         time.sleep(8)
