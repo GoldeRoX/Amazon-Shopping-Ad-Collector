@@ -18,7 +18,7 @@ from amazonadcollector.locators_data import Lang
 class AdFactory(object):
 
     def __init__(self, driver: WebDriver, sql_ad_manager: SQLAdManager, random_keyword: {str: int}):
-        self.__dict_of_ads_top: {WebElement: int} = {}
+        self.__collection_of_ads_top: [] = []
         self.__dict_of_ads_mid: {WebElement: int} = {}
         self.__lang = Lang().get_lang()
         self.__driver = driver
@@ -28,15 +28,15 @@ class AdFactory(object):
         self.__keyword = random_keyword["keyword"]
 
     def collect_ads_top(self) -> {WebElement: int}:
-        self.__dict_of_ads_top.clear()
+        self.__collection_of_ads_top.clear()
 
         for ad in self.__ad_collector.get_webelements_ads_1():
-            self.__dict_of_ads_top.update({ad: 1})
+            self.__collection_of_ads_top.append([ad, 1])
 
         for ad in self.__ad_collector.get_webelements_ads_7():
-            self.__dict_of_ads_top.update({ad: 7})
+            self.__collection_of_ads_top.append([ad, 7])
 
-        return self.__dict_of_ads_top
+        return self.__collection_of_ads_top
 
     def collect_ads_mid(self) -> {WebElement: int}:
         self.__dict_of_ads_mid.clear()
@@ -76,9 +76,8 @@ class AdFactory(object):
         """
         self.collect_ads_top()
 
-        for web_element, ad_type in self.__dict_of_ads_top.items():
+        for web_element, ad_type in self.__collection_of_ads_top:
             if ad_type == 1:
-                print("test_1")
                 self.__ad_handler.collect_ad_type_1(web_element)
             elif ad_type == 7:
                 self.__ad_handler.collect_ad_type_7(web_element)
@@ -367,21 +366,12 @@ class AdHandler(object):
     def collect_ad_type_1(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         try:
-            print(ad_web_element.size["height"])
-            print(ad_web_element.get_attribute("resource-id"))
-            print(ad_web_element.get_attribute("text").strip())
+            if (600 > ad_web_element.size["height"] > 100 and ad_web_element.get_attribute("resource-id")
+                    not in ("search", "a-page")):
 
-            if ad_web_element.size["height"] < 600 and ad_web_element.get_attribute("resource-id") not in (
-                    "search", "a-page") and ad_web_element.get_attribute("text").strip() is None:
-                print("testu")
                 result_text: str = self.__driver.find_element(AppiumBy.XPATH, f"//*[starts-with(@text, '"
                                                                               f"{self.__lang.ad_1_text_starts_with}')]") \
                     .get_attribute("text")
-                print("passed")
-                try:
-                    ad_web_element.find_element(AppiumBy.XPATH, "./preceding-sibling::*[2]")
-                except NoSuchElementException:
-                    return
 
                 """create ad object"""
                 print("collecting ad type 1 ...")

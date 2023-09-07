@@ -59,6 +59,6 @@ class DE(object):
     App_schlieBen = "android:id/aerr_close"
     ad_7 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
     ad_7_text_starts_with = "Gesponserte Werbeanzeige von"
-    ad_1 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
+    ad_1 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*/parent::*/parent::*"
     ad_1_text_starts_with = "Gesponserte Werbeanzeige von"
     accept_cookies = "//*[@text='Cookies akzeptieren']"
