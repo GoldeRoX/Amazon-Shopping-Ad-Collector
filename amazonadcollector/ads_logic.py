@@ -19,7 +19,7 @@ class AdFactory(object):
 
     def __init__(self, driver: WebDriver, sql_ad_manager: SQLAdManager, random_keyword: {str: int}):
         self.__collection_of_ads_top: [] = []
-        self.__dict_of_ads_mid: {WebElement: int} = {}
+        self.__collection_of_ads_mid: [] = []
         self.__lang = Lang().get_lang()
         self.__driver = driver
         self.__ad_collector = AdCollector(self.__driver, self.__lang)
@@ -39,31 +39,31 @@ class AdFactory(object):
         return self.__collection_of_ads_top
 
     def collect_ads_mid(self) -> {WebElement: int}:
-        self.__dict_of_ads_mid.clear()
+        self.__collection_of_ads_mid.clear()
 
         for ad in self.__ad_collector.get_webelements_ads_2():
-            self.__dict_of_ads_mid.update({ad: 2})
+            self.__collection_of_ads_mid.append([ad, 2])
 
         for ad in self.__ad_collector.get_webelements_ads_2_alt():
-            self.__dict_of_ads_mid.update({ad: 2})
+            self.__collection_of_ads_mid.append([ad, 2])
 
         for ad in self.__ad_collector.get_webelements_ads_7():
-            self.__dict_of_ads_mid.update({ad: 3})
+            self.__collection_of_ads_mid.append([ad, 3])
 
         """for ad in self.ad_collector.get_webelements_ads_4():
             print(ad)
             self.dict_of_ads_mid.update({ad: 4})"""
 
         for ad in self.__ad_collector.get_webelements_ads_5():
-            self.__dict_of_ads_mid.update({ad: 5})
+            self.__collection_of_ads_mid.append([ad, 5])
 
         for ad in self.__ad_collector.get_webelements_ads_6():
-            self.__dict_of_ads_mid.update({ad: 6})
+            self.__collection_of_ads_mid.append([ad, 6])
 
         for ad in self.__ad_collector.get_webelements_ads_1():
-            self.__dict_of_ads_mid.update({ad: 8})
+            self.__collection_of_ads_mid.append([ad, 8])
 
-        return self.__dict_of_ads_mid
+        return self.__collection_of_ads_mid
 
     def create_and_save_main_page_ads(self) -> None:
         self.__ad_handler.collect_main_page_top_carousel_of_ads()
@@ -91,7 +91,7 @@ class AdFactory(object):
         """
         self.collect_ads_mid()
 
-        for web_element, ad_type in self.__dict_of_ads_mid.items():
+        for web_element, ad_type in self.__collection_of_ads_mid:
             if ad_type == 2:
                 self.__ad_handler.collect_ad_type_2(web_element)
             elif ad_type == 3:
@@ -440,7 +440,7 @@ class AdHandler(object):
             if not result_text.startswith(self.__lang.ad_5_starts_with):
                 return
 
-            if result_text in self.__ad_text_filter or result_text is None:
+            if result_text in self.__ad_text_filter or not result_text:
                 return
 
             print("Adjusting ad type 5...")
