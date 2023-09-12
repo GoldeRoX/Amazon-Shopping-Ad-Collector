@@ -64,9 +64,7 @@ def main(udid: int):
             while not is_end_of_page:
                 base_methods.amazon_not_responding_close()
                 base_methods.cookies_click()
-
                 ad_factory.create_and_save_mid_ads()
-
                 scroll.scroll_down()
 
                 is_end_of_page = previous_page_source == session.driver.page_source

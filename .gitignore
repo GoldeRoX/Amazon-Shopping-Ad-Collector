@@ -12,3 +12,4 @@
 .idea/**/gradle.xml
 .idea/**/libraries
 *.iws /out/
+/data/ad_samples
