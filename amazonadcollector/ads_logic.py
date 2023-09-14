@@ -362,7 +362,6 @@ class AdHandler(object):
         except StaleElementReferenceException:
             return
 
-    # TODO test
     def collect_ad_type_1(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         try:
