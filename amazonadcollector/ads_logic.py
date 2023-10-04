@@ -78,9 +78,9 @@ class AdFactory(object):
 
         for web_element, ad_type in self.__collection_of_ads_top:
             if ad_type == 1:
-                self.__ad_handler.collect_ad_type_1(web_element)
+                self.__ad_handler.collect_sponsored_brand_top_carousel(web_element)
             elif ad_type == 7:
-                self.__ad_handler.collect_ad_type_7(web_element)
+                self.__ad_handler.collect_sponsored_brand_top_image_box(web_element)
             else:
                 raise ValueError(f"Invalid ad type '{ad_type}'")
 
@@ -93,9 +93,9 @@ class AdFactory(object):
 
         for web_element, ad_type in self.__collection_of_ads_mid:
             if ad_type == 2:
-                self.__ad_handler.collect_ad_type_2(web_element)
+                self.__ad_handler.collect_brands_related_to_your_search_carousel_of_ads(web_element)
             elif ad_type == 3:
-                self.__ad_handler.collect_ad_type_3(web_element)
+                self.__ad_handler.collect_searched_product_sponsored_brand_mid(web_element)
             # elif ad_type == 4:
             #     self.__ad_handler.collect_ad_type_4(web_element)
             elif ad_type == 5:
@@ -103,7 +103,7 @@ class AdFactory(object):
             elif ad_type == 6:
                 self.__ad_handler.collect_video_ad()
             elif ad_type == 8:
-                self.__ad_handler.collect_ad_type_8(web_element)
+                self.__ad_handler.collect_sponsored_brand_mid_carousel(web_element)
             else:
                 raise ValueError(f"Invalid ad type '{ad_type}'")
 
@@ -169,16 +169,16 @@ class AdHandler(object):
         with open(path, "r") as file:
             self.config = yaml.safe_load(file)
 
-    def collect_ad_type_2_alt(self, ad_web_element: WebElement) -> None:
+    def collect_brands_related_to_your_search_carousel_of_ads_alt(self, ad_web_element: WebElement) -> None:
         """Create, send to DB and save scr of ad"""
         try:
             ad_web_elements: list[WebElement] = [
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                   and web_element.get_attribute("clickable") == "true"
-                   and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
-                   and web_element.get_attribute("text") not in self.__ad_text_filter
+                and web_element.get_attribute("clickable") == "true"
+                and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
+                and web_element.get_attribute("text") not in self.__ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -206,16 +206,16 @@ class AdHandler(object):
         except (NoSuchElementException, IndexError, StaleElementReferenceException):
             return
 
-    def collect_ad_type_2(self, ad_web_element: WebElement) -> None:
+    def collect_brands_related_to_your_search_carousel_of_ads(self, ad_web_element: WebElement) -> None:
         """Create, send to DB and save scr of ad"""
         try:
             ad_web_elements: list[WebElement] = [
                 web_element
                 for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
                 if web_element.size["height"] > 10
-                   and web_element.get_attribute("clickable") == "true"
-                   and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
-                   and web_element.get_attribute("text") not in self.__ad_text_filter
+                and web_element.get_attribute("clickable") == "true"
+                and web_element.get_attribute("text").startswith(self.__lang.ad_2_starts_with)
+                and web_element.get_attribute("text") not in self.__ad_text_filter
             ]
 
             for index, web_element in enumerate(ad_web_elements):
@@ -279,7 +279,7 @@ class AdHandler(object):
         except Exception as e:
             print(e)"""
 
-    def collect_ad_type_7(self, ad_web_element: WebElement) -> None:
+    def collect_sponsored_brand_top_image_box(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         try:
             if ad_web_element.size["height"] > 50 and ad_web_element.get_attribute("resource-id") != "search" \
@@ -300,7 +300,7 @@ class AdHandler(object):
             return
 
     # TODO test
-    def collect_ad_type_3(self, ad_web_element: WebElement) -> None:
+    def collect_searched_product_sponsored_brand_mid(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         try:
             if ad_web_element.size["height"] > 50 and ad_web_element.get_attribute("resource-id") != "search" \
@@ -335,7 +335,7 @@ class AdHandler(object):
         except StaleElementReferenceException:
             return
 
-    def collect_ad_type_8(self, ad_web_element: WebElement) -> None:
+    def collect_sponsored_brand_mid_carousel(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         try:
             if ad_web_element.size["height"] > 100 and ad_web_element.get_attribute("resource-id") not in (
@@ -346,14 +346,14 @@ class AdHandler(object):
 
                 if result_text in self.__ad_text_filter or result_text is None:
                     return
-                print("Adjusting ad type 8...")
+                print("Adjusting ad type 3...")
                 AdjustAd(self.__driver).match_ad_visibility(ad_web_element)
                 """create ad object"""
-                print("collecting ad type 8 ...")
+                print("collecting ad type 3 ...")
                 ad = SearchedProductSponsoredBrandTop(ad_web_element, self.__sql_ad_manager)
                 ad.text = result_text
                 ad.save_ad(self.__driver, self.__keyword_id)
-                print("ad type 8 collected")
+                print("ad type 3 collected")
 
                 if ad.text.strip() is not None:
                     self.__ad_text_filter.append(ad.text)
@@ -362,7 +362,8 @@ class AdHandler(object):
         except StaleElementReferenceException:
             return
 
-    def collect_ad_type_1(self, ad_web_element: WebElement) -> None:
+    # TODO done update
+    def collect_sponsored_brand_top_carousel(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         try:
             if (600 > ad_web_element.size["height"] > 100 and ad_web_element.get_attribute("resource-id")
@@ -373,11 +374,11 @@ class AdHandler(object):
                     .get_attribute("text")
 
                 """create ad object"""
-                print("collecting ad type 1 ...")
+                print("collecting sponsored brand top carousel ...")
                 ad = SearchedProductSponsoredBrandMid(ad_web_element, self.__sql_ad_manager)
                 ad.text = result_text
                 ad.save_ad(self.__driver, self.__keyword_id)
-                print("ad type 1 collected")
+                print("sponsored brand top carousel collected")
 
                 if ad.text.strip() is not None:
                     self.__ad_text_filter.append(ad.text)
@@ -606,11 +607,13 @@ class AdHandler(object):
                     if element.size["width"] <= 10 or ad_text in self.__main_carousel_ads and ad_text is not None:
                         continue
 
+                    print("Collecting ad type 8...")
                     ad = MainPageCarouselOfAds(main_carousel_ads, self.__sql_ad_manager)
                     ad.text = ad_text
                     ad.save_ad(self.__driver, self.__keyword_id)
                     self.__main_carousel_ads.append(ad_text)
                     ads_saved += 1
+                    print("Ad type 8 collected.")
 
                     if ads_saved >= max_attempts:
                         break
