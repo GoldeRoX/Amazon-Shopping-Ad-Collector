@@ -99,7 +99,7 @@ class AdFactory(object):
             # elif ad_type == 4:
             #     self.__ad_handler.collect_ad_type_4(web_element)
             elif ad_type == 5:
-                self.__ad_handler.collect_ad_type_5(web_element)
+                self.__ad_handler.collect_searched_product_ad(web_element)
             elif ad_type == 6:
                 self.__ad_handler.collect_video_ad()
             elif ad_type == 8:
@@ -425,7 +425,7 @@ class AdHandler(object):
             ads.append(ad)
         return ads'''
 
-    def collect_ad_type_5(self, ad_web_element: WebElement) -> None:
+    def collect_searched_product_ad(self, ad_web_element: WebElement) -> None:
         """Create, send to DB and save scr of ad"""
         try:
             if ad_web_element.size["height"] <= 10:
