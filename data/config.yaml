@@ -8,13 +8,6 @@ DATABASE:
   DB: "amazon_emulated_mobile_de"
   CHARSET: 'utf8mb4'
 
-#DATABASE:
-#  USERNAME: "krzysiek"
-#  PASSWORD: "ndXs5RzCCPot90Se"
-#  HOST: "10.10.10.19"
-#  DB: "amazon_krzysiek"
-#  CHARSET: 'utf8mb4'
-
 COMPUTER:
   IP: "1"
   SAVE_PATH: "/home/krzysztof/nfs"
