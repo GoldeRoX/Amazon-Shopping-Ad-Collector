@@ -80,7 +80,7 @@ class AdFactory(object):
             if ad_type == 1:
                 self.__ad_handler.collect_sponsored_brand_top_carousel(web_element)
             elif ad_type == 7:
-                self.__ad_handler.collect_sponsored_brand_top_image_box(web_element)
+                self.__ad_handler.collect_sponsored_brand_top(web_element)
             else:
                 raise ValueError(f"Invalid ad type '{ad_type}'")
 
@@ -279,7 +279,7 @@ class AdHandler(object):
         except Exception as e:
             print(e)"""
 
-    def collect_sponsored_brand_top_image_box(self, ad_web_element: WebElement) -> None:
+    def collect_sponsored_brand_top(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         try:
             if ad_web_element.size["height"] > 50 and ad_web_element.get_attribute("resource-id") != "search" \
@@ -536,10 +536,15 @@ class AdHandler(object):
         try:
             video_ad_web_element: WebElement = self.__driver.find_element(AppiumBy.XPATH, self.__lang.ad_video)
 
-            path: str = ".//child::*" + 4 * "/following-sibling::*"
-            element: WebElement = video_ad_web_element.find_element(AppiumBy.XPATH, path)
-            text_element: WebElement = element.find_element(AppiumBy.XPATH, ".//child::*" + 3 * "/following-sibling::*")
-            text: str = text_element.get_attribute("text")
+            bottom_element_ad_path: str = ".//child::*" + 4 * "/following-sibling::*"
+            element: WebElement = video_ad_web_element.find_element(AppiumBy.XPATH, bottom_element_ad_path)
+
+            child_elements: [WebElement] = element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
+            text: str = ""
+            for web_element in child_elements:
+                if web_element.get_attribute("text").startswith("Gesponsert"):
+                    text: str = web_element.get_attribute("text")
+                    break
 
             if video_ad_web_element.size["height"] > 10 and text is not None \
                     and text not in self.__ad_text_video_filter:
@@ -550,7 +555,7 @@ class AdHandler(object):
                 """create ad object"""
                 print("collecting ad video type 6 ...")
                 ad = SearchedProductAdVideo(video_ad_web_element, self.__sql_ad_manager)
-                ad.__text = text
+                ad.text = text
 
                 self.__sql_ad_manager.send_data_to_db(ad.get_width(), ad.get_height(), ad.get_location_x(),
                                                       ad.get_location_y(), ad.text, ad.get_timestamp(), ad.ad_type,
@@ -625,6 +630,16 @@ class AdHandler(object):
                 pass
 
             attempts += 1
+
+    def collect_searched_product_banner_ad(self) -> None:
+        try:
+            element: WebElement = self.__driver.find_element(AppiumBy.XPATH, self.__lang.searched_product_banner)
+            ad = SearchedProductBanner(element, self.__sql_ad_manager)
+            ad.save_ad(self.__driver, self.__keyword_id)
+            if ad.text not in self.__ad_text_filter:
+                return
+        except(NoSuchElementException, StaleElementReferenceException):
+            pass
 
 
 class AdjustAd(object):

@@ -104,3 +104,9 @@ class MainPageCarouselOfAds(Ad):
     def __init__(self, element: WebElement, sql_ad_manager: SQLAdManager):
         super().__init__(element, sql_ad_manager)
         self.ad_type: int = 8
+
+
+class SearchedProductBanner(Ad):
+    def __init__(self, element: WebElement, sql_ad_manager: SQLAdManager):
+        super().__init__(element, sql_ad_manager)
+        self.ad_type: int = 9

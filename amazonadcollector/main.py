@@ -45,7 +45,7 @@ def main(udid: int):
     for i in range(30):
         ad_factory = AdFactory(driver=session.driver, sql_ad_manager=sql_manager, random_keyword=random_keyword)
 
-        base_methods.get_page("book")
+        base_methods.get_page("Monitors")
         # base_methods.get_page(random_keyword["keyword"])
 
         # time to load new page
@@ -65,6 +65,7 @@ def main(udid: int):
                 base_methods.amazon_not_responding_close()
                 base_methods.cookies_click()
                 ad_factory.create_and_save_mid_ads()
+
                 scroll.scroll_down()
 
                 is_end_of_page = previous_page_source == session.driver.page_source

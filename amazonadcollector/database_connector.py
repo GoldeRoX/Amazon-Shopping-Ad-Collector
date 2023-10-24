@@ -84,7 +84,7 @@ class SQLAdManager(object):
                     height = {height},
                     location_x = {location_x},
                     location_y = {location_y},
-                    text = '{text}',
+                    text = '{text.strip()}',
                     timestamp = '{timestamp}',
                     id_ad_type = {id_ad_type},
                     id_session = {self.get_session_id()},

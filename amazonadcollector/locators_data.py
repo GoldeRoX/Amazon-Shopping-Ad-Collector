@@ -20,7 +20,7 @@ class Lang(object):
 
 
 class UK(object):
-    main_page_carousel_of_ads = "//*[starts-with(@resource-id,'gw-ftGr-mobile-hero-')]/child::*"
+    main_page_carousel_of_ads = "//*[starts-with(@resource-id,'mobile-hero-order')]"
     main_page_banner_ad_id = "ape_gateway_atf_mshop_wrapper"
     search_icon = '(//android.widget.LinearLayout[@content-desc="Search"])[1]/' \
                   'android.widget.LinearLayout/android.widget.TextView '
@@ -62,3 +62,7 @@ class DE(object):
     ad_1 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*/parent::*/parent::*"
     ad_1_text_starts_with = "Gesponserte Werbeanzeige von"
     accept_cookies = "//*[@text='Cookies akzeptieren']"
+    searched_product_banner = "//*[@text='Feedback zu gesponserter Anzeige geben']/parent::*/parent::*"
+
+
+# Gesponsertes Video, klicken Sie, um zur vorgestellten Seite zu navigieren.
