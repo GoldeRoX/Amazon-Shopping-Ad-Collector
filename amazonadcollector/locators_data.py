@@ -38,7 +38,6 @@ class UK(object):
     ad_1 = "//*[starts-with(@text, 'Sponsored ad from')]/parent::*/parent::*/parent::*/parent::*"
     ad_1_text_starts_with = "Sponsored ad from"
     accept_cookies = "//*[@text='Accept Cookies']"
-    # ad_4_locator = "//*[starts-with(@text, 'Highly rated View Sponsored')]"
 
 
 class DE(object):
@@ -55,7 +54,7 @@ class DE(object):
     ad_5_starts_with = "Gesponsert"
     sponsored = "Gesponsert"
     ad_2_starts_with = "Gesponserte Werbeanzeige von"
-    ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]/parent::*/parent::*" # zmienic wyszukiwanie po samym sponsored video a nie po mute sponsored video
+    ad_video = "//*[starts-with(@text, 'Gesponsertes Video stummschalten')]/parent::*/parent::*"
     App_schlieBen = "android:id/aerr_close"
     ad_7 = "//*[starts-with(@text, 'Gesponserte Werbeanzeige von')]/parent::*/parent::*"
     ad_7_text_starts_with = "Gesponserte Werbeanzeige von"
@@ -64,5 +63,3 @@ class DE(object):
     accept_cookies = "//*[@text='Cookies akzeptieren']"
     searched_product_banner = "//*[@text='Feedback zu gesponserter Anzeige geben']/parent::*/parent::*"
 
-
-# Gesponsertes Video, klicken Sie, um zur vorgestellten Seite zu navigieren.

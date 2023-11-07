@@ -50,10 +50,6 @@ class AdFactory(object):
         for ad in self.__ad_collector.get_webelements_ads_7():
             self.__collection_of_ads_mid.append([ad, 3])
 
-        """for ad in self.ad_collector.get_webelements_ads_4():
-            print(ad)
-            self.dict_of_ads_mid.update({ad: 4})"""
-
         for ad in self.__ad_collector.get_webelements_ads_5():
             self.__collection_of_ads_mid.append([ad, 5])
 
@@ -121,11 +117,6 @@ class AdCollector(object):
 
     def get_webelements_ads_2_alt(self) -> [WebElement]:
         return self.__driver.find_elements(AppiumBy.XPATH, self.__lang.Items_related_to_your_search_element_node)
-
-    """def get_webelements_ads_4(self) -> [WebElement]:
-        element = self.driver.find_elements(AppiumBy.XPATH, self.lang.ad_4_locator)
-        print(element)
-        return element"""
 
     def get_webelements_ads_5(self) -> [WebElement]:
         return self.__driver.find_elements(AppiumBy.XPATH, self.__lang.ad_5_node)
@@ -242,43 +233,6 @@ class AdHandler(object):
         except (NoSuchElementException, IndexError, StaleElementReferenceException):
             return
 
-    """def collect_ad_type_4(self, ad_web_element: WebElement) -> None:
-        try:
-            ad = HighlyRatedProductCarouselOfAds(ad_web_element)
-            ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-
-            ad_web_element = ad_web_element.find_element(AppiumBy.XPATH, ".//child::*/child::*")
-            ad_web_elements: list[WebElement] = [
-                web_element
-                for web_element in ad_web_element.find_elements(AppiumBy.XPATH, ".//*[@class='android.view.View']")
-                if web_element.size["height"] > 10
-                and web_element.get_attribute("text").startswith(self.lang.ad_4_starts_with)
-            ]
-
-            for index, ad_element in enumerate(ad_web_elements):
-                if index == 0:
-                    print("adjusting ad type 4")
-                    AdjustAd(self.driver).match_ad_visibility(ad_element)
-
-                element_1: WebElement = ad_element.find_element(AppiumBy.XPATH, ".//child::*")
-                text_1: str = element_1.text
-                element_2: WebElement = element_1.find_element(AppiumBy.XPATH, ".//child::*")
-                text_2: str = element_2.text
-                text: str = " ".join([text_1, text_2])
-
-                ad_element: WebElement = element_1.find_element(AppiumBy.XPATH, ".//parent::*")
-                print("collecting ad type 4 ...")
-                ad = HighlyRatedProductCarouselOfAds(ad_element)
-                ad.text = text
-                ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                print("ad type 4 collected")
-
-                if ad.text.strip() is not None:
-                    self.ad_text_filter.append(ad.text)
-
-        except Exception as e:
-            print(e)"""
-
     def collect_sponsored_brand_top(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         try:
@@ -299,7 +253,6 @@ class AdHandler(object):
         except StaleElementReferenceException:
             return
 
-    # TODO test
     def collect_searched_product_sponsored_brand_mid(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         try:
@@ -362,7 +315,6 @@ class AdHandler(object):
         except StaleElementReferenceException:
             return
 
-    # TODO done update
     def collect_sponsored_brand_top_carousel(self, ad_web_element: WebElement) -> None:
         """Create and send data to DB, then save scr of ad"""
         try:
@@ -385,45 +337,6 @@ class AdHandler(object):
                 return
         except StaleElementReferenceException:
             return
-
-    '''def collect_ad_type_10(self, ad_web_element: WebElement) -> None:
-        """Create, send data to DB and save scr of ad"""
-        # TODO this code works only for DE, change to multi lang config
-        if ad_web_element.size["height"] > 10 and ad_web_element.get_attribute("resource-id") != "search":
-            elements: [WebElement] = ad_web_element.find_elements(AppiumBy.XPATH, "//*[@class='android.view.View']")
-
-            result_text: str = elements[2].get_attribute("content-desc")
-            valid: str = elements[len(elements) - 1].get_attribute("content-desc")
-
-            if valid.__contains__("Jetzt"):
-                """create ad object"""
-                print("collecting ad type 10 ...")
-                ad = SearchedProductSponsoredBrandTop(ad_web_element)
-                ad.text = result_text
-                ad.save_ad(self.driver, self.session_id, self.keyword_id, self.udid)
-                print("ad type 10 collected")
-        else:
-            return'''
-
-    '''def get_webelements_ads_1(self) -> [WebElement]:
-        webelements = []
-        elements = self.driver.find_elements(AppiumBy.XPATH, self.lang.BOTTOM_AD)
-
-        for element in elements:
-            text_element_node = self.driver.find_element(AppiumBy.XPATH, self.lang.BOTTOM_AD_TEXT_ELEMENT)
-            if element.size["height"] > 300 and text_element_node.size["width"] > 500:
-                webelements.append(element)
-        return webelements'''
-
-    '''def collect_ads_1(self) -> [SearchedAdBottomBanner]:
-        ads = []
-        webelements = self.get_webelements_ads_1()
-
-        for webElement in webelements:
-            """create an object of ad"""
-            ad = SearchedAdBottomBanner(webElement)
-            ads.append(ad)
-        return ads'''
 
     def collect_searched_product_ad(self, ad_web_element: WebElement) -> None:
         """Create, send to DB and save scr of ad"""
