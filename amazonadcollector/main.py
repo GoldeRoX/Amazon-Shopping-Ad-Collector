@@ -13,8 +13,7 @@ from amazonadcollector.base import MyDriver, BaseMethods, Scroll
 def main(udid: int):
 
     sql_manager = SQLAdManager(udid)
-    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -port {udid}")
-    # pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid).strip()}:{int(sql_manager.get_proxy_port(udid))} -port {udid}")
+    pars_emulator = shlex.split(f"./emulator -avd Amazon-{udid} -gpu host -accel on -http-proxy http://{sql_manager.get_proxy_address(udid).strip()}:{int(sql_manager.get_proxy_port(udid))} -port {udid}")
 
     process_emulator = subprocess.Popen(pars_emulator, cwd="/home/krzysztof/android-sdk/emulator")
 
@@ -36,17 +35,12 @@ def main(udid: int):
     base_methods.first_launch()
     base_methods.cookies_click()
 
-    # base_methods.config_app_settings()
-
     scroll = Scroll(driver=session.driver)
-
-    # base_methods.config_app_settings()
 
     for i in range(30):
         ad_factory = AdFactory(driver=session.driver, sql_ad_manager=sql_manager, random_keyword=random_keyword)
 
-        base_methods.get_page("Monitors")
-        # base_methods.get_page(random_keyword["keyword"])
+        base_methods.get_page(random_keyword["keyword"])
 
         # time to load new page
         time.sleep(8)
