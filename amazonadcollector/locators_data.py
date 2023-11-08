@@ -21,7 +21,7 @@ class Lang(object):
 
 class UK(object):
     main_page_carousel_of_ads = "//*[starts-with(@resource-id,'mobile-hero-order')]"
-    main_page_banner_ad_id = "ape_gateway_atf_mshop_wrapper"
+    main_page_banner_ad_id = "//*[@text='Provide feedback on sponsored ad']/parent::*/parent::*/parent::*"
     search_icon = '(//android.widget.LinearLayout[@content-desc="Search"])[1]/' \
                   'android.widget.LinearLayout/android.widget.TextView '
     search_input = 'com.amazon.mShop.android.shopping:id/rs_search_src_text'
@@ -32,7 +32,6 @@ class UK(object):
     brands_related_to_your_search_element_node = "//*[@text='Brands related to your search']/parent::*"
     Items_related_to_your_search_element_node = "//*[@text='Items related to your search']/parent::*"
     ad_2_starts_with = "Sponsored ad from"
-    # ad_4_starts_with = "Sponsored Ad –"
     ad_7 = "//*[starts-with(@text, 'Sponsored ad from')]/parent::*/parent::*"
     ad_7_text_starts_with = "Sponsored ad from"
     ad_1 = "//*[starts-with(@text, 'Sponsored ad from')]/parent::*/parent::*/parent::*/parent::*"

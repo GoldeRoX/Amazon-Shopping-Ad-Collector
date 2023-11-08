@@ -63,11 +63,11 @@ class BaseMethods(object):
 
         if self.__lang.__class__.__name__ == "DE":
             pass
-            # TODO refactor for the new Amazon update
+            # TODO refactor for the new Amazon auto-update
             self.change_setting_to_de()
         elif self.__lang.__class__.__name__ == "UK":
             pass
-            # TODO refactor for the new Amazon update
+            # TODO refactor for the new Amazon auto-update
             # base_methods.change_setting_to_uk()
 
     def get_element_when_located(self, by_type, path: str, time_to_wait: int = 5) -> WebElement:

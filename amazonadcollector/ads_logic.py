@@ -92,8 +92,6 @@ class AdFactory(object):
                 self.__ad_handler.collect_brands_related_to_your_search_carousel_of_ads(web_element)
             elif ad_type == 3:
                 self.__ad_handler.collect_searched_product_sponsored_brand_mid(web_element)
-            # elif ad_type == 4:
-            #     self.__ad_handler.collect_ad_type_4(web_element)
             elif ad_type == 5:
                 self.__ad_handler.collect_searched_product_ad(web_element)
             elif ad_type == 6:
