@@ -10,5 +10,5 @@ DATABASE:
 
 COMPUTER:
   IP: "1"
-  SAVE_PATH: "/home/krzysztof/nfs"
+  SAVE_PATH: "/home/test_user/nfs"
 
