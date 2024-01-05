@@ -8,11 +8,9 @@ This project is designed to collect statistical data of advertisements from vari
 
 - **Data Collection**: The project collects statistical data of advertisements from platforms like "Amazon Shopping."
 
-- **Technology Stack**: Python is the primary programming language, and Appium is used to interact with the Android emulator.
-Additional technologies include opencv, ffmpeg, SQL, and MySQL.
+- **Technology Stack**: Python is the primary programming language, and Appium is used to interact with the Android emulator. Additional technologies include opencv, ffmpeg, SQL, and MySQL.
 
-- **Database Interaction**: The project works closely with databases, ensuring constant communication for data storage.
-The accuracy and verification of the collected data are emphasized for further analysis.
+- **Database Interaction**: The project works closely with databases, ensuring constant communication for data storage. The accuracy and verification of the collected data are emphasized for further analysis.
 
 - **Database Administration**: In addition to data collection, the project involves the creation and administration of the database structure.
 
