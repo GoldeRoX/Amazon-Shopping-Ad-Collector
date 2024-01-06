@@ -18,7 +18,8 @@ This project is designed to collect statistical data of advertisements from vari
 
 - **Python**: Main programming language for project development.
 - **Appium**: Used for interacting with the Android emulator.
-- **HTML/CSS**: Additional technologies for specific functionalities.
+- **FFMPEG**: Processing tool with a focus on audio and video processing.
+- **OpenCV**: Computer vision library with a wide range of image and video processing algorithms.
 - **SQL**: Standard language for managing relational databases.
 - **MySQL**: Database management system used for storing collected data.
 
